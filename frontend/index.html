@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARQL Query Client</title>
+    <script>
+        async function querySPARQL() {
+            const query = document.getElementById('sparqlQuery').value;
+
+            console.log('Running SPARQL query:', query);
+
+            try {
+                const response = await fetch('http://localhost:3000/sparql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log('SPARQL response:', data);
+
+                displayResults(data.results.bindings);
+            } catch (error) {
+                console.error('Error during fetch:', error);
+            }
+        }
+
+        function displayResults(bindings) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            bindings.forEach(binding => {
+                const itemUri = binding.item.value;
+                const itemLabel = binding.itemLabel.value;
+
+                const resultDiv = document.createElement('div');
+                resultDiv.classList.add('result-item');
+
+                const itemLink = document.createElement('a');
+                itemLink.href = itemUri;
+                itemLink.textContent = itemLabel;
+                itemLink.target = '_blank';
+
+                resultDiv.appendChild(itemLink);
+                resultsContainer.appendChild(resultDiv);
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .result-item {
+            margin: 10px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SPARQL Query Client</h1>
+    <textarea id="sparqlQuery" rows="5" cols="80" placeholder="Enter your SPARQL query here..."></textarea><br>
+    <button onclick="querySPARQL()">Run SPARQL Query</button>
+    <h2>Results:</h2>
+    <div id="results"></div>
+</body>
+
+</html>
