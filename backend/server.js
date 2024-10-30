@@ -13,17 +13,16 @@ app.post('/sparql', async (req, res) => {
     console.log('Received SPARQL query:', query.trim());
 
     try {
-    const response = await axios.get(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=xml`)
-      // , {
-        //     params: {
-        //     query: `${encodeURIComponent(query)}`,
-        //         format: 'xml'
-        //     }
-        // });
-
-        console.log('SPARQL response:', JSON.stringify(response.data, null, 2));
-
-        res.json(response.data);
+    const response = await axios.get(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=xml`, 
+      {
+        headers: {
+          'Accept':'application/sparql-results+xml'
+        }
+      });
+    res.set('Content-Type', 'application/rdf+xml')
+    console.log('SPARQL response:', JSON.stringify(response.data, null, 2));
+    res.send(response.data)
+    // res.json(response.data);
     } catch (error) {
         console.error('Error during SPARQL request:', error.response.data || error.message);
         res.status(500).json({ error: error.message });

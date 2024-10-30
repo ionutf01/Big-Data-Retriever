@@ -16,7 +16,6 @@
                     method: 'POST',
                     headers: {
                        'Content-Type': 'application/json',
-                       'Accept': 'application/sparql-results+xml'
                     },
                     body: JSON.stringify({ query }),
                 });
@@ -25,7 +24,6 @@
                     throw new Error('Network response was not ok');
                 }
 
-                // const data = await response.json();
                 const data = await response.text();
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(data, "application/xml")
@@ -33,23 +31,13 @@
 
                 let output = "<ul>"
                 for (let i = 0; i < results.length; i++) {
-                  const item = result[i].getElementsByTagName("binding")[0].getElementsByTagName("uri")[0].textContent;
-                  const label= result[i].getElementsByTagName("binding")[1].getElementsByTagName("literal")[0].textContent;
+                  const item = results[i].getElementsByTagName("binding")[0].getElementsByTagName("uri")[0].textContent;
+                  const label= results[i].getElementsByTagName("binding")[1].getElementsByTagName("literal")[0].textContent;
                   output += `<li>${label} (${item})</li>`;
                 }
                 output += "</ul>" 
 
                 document.getElementById('results').innerHTML = output;
-          //       console.log('SPARQL response:', data);
-          //       
-          //       const resultDiv = document.getElementById('results');
-          //       resultDiv.innerHTML = '';
-          // 
-          //       data.results.bindings.forEach(binding => {
-          //         const item = binding.item.value;
-          //         const itemLabel = binding.itemLabel.value;
-          //     resultDiv.innerHTML += `<p>${itemLabel} (${item})</p>`;
-          //       })
 
                 // displayResults(data.results.bindings);
             } catch (error) {
