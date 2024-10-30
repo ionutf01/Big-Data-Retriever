@@ -13,12 +13,13 @@ app.post('/sparql', async (req, res) => {
     console.log('Received SPARQL query:', query.trim());
 
     try {
-        const response = await axios.get('https://query.wikidata.org/sparql', {
-            params: {
-                query: query.trim(),
-                format: 'json'
-            }
-        });
+    const response = await axios.get(`https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=xml`)
+      // , {
+        //     params: {
+        //     query: `${encodeURIComponent(query)}`,
+        //         format: 'xml'
+        //     }
+        // });
 
         console.log('SPARQL response:', JSON.stringify(response.data, null, 2));
 
