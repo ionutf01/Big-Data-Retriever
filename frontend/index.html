@@ -25,9 +25,19 @@
                 }
 
                 const data = await response.json();
+                // const data = await response.text()
                 console.log('SPARQL response:', data);
+                
+                const resultDiv = document.getElementById('results');
+                resultDiv.innerHTML = '';
+          
+                data.results.bindings.forEach(binding => {
+                  const item = binding.item.value;
+                  const itemLabel = binding.itemLabel.value;
+              resultDiv.innerHTML += `<p>${itemLabel} (${item})</p>`;
+                })
 
-                displayResults(data.results.bindings);
+                // displayResults(data.results.bindings);
             } catch (error) {
                 console.error('Error during fetch:', error);
             }
