@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "AO7bZTm9sbt92zr19s+CnT1C73A3Zbaz4jU2WIc4bWQ=",
+  "Hash": "eGkZou1SJE3HP4idNrpAcM+kJDdD9gH0ZbwHLxgYTGM=",
   "Source": "Birt.App",
   "BasePath": "_content/Birt.App",
   "Mode": "Default",
@@ -1212,6 +1212,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/lib/jquery/LICENSE.txt"
+    },
+    {
+      "Identity": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/lib/properties_ontology.ttl",
+      "SourceId": "Birt.App",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/",
+      "BasePath": "_content/Birt.App",
+      "RelativePath": "lib/properties_ontology.ttl",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/lib/properties_ontology.ttl"
     }
   ]
 }

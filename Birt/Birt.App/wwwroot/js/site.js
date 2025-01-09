@@ -1,4 +1,26 @@
-﻿function getWorksOfArt() {
+﻿
+async function loadOntology() {
+    const store = $rdf.graph();
+    const fetcher = new $rdf.Fetcher(store);
+    const ontologyUrl =window.location.origin + '/lib/properties_ontology.ttl'; // Update with the correct path to your ontology file
+
+    await fetcher.load(ontologyUrl);
+    return store;
+}
+
+async function getPropertyLabel(propertyUri) {
+    const store = await loadOntology();
+    const property = $rdf.sym(propertyUri);
+    const label = store.any(property, $rdf.sym('http://www.w3.org/2000/01/rdf-schema#label'), undefined, undefined);
+
+    return label ? label.value : propertyUri;
+}
+
+// Example usage
+getPropertyLabel('http://example.org/P937').then(label => {
+    console.log(label); // Output: "Work location"
+});
+function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
 
@@ -167,7 +189,7 @@ async function compareArtists(artist1Id, artist2Id) {
                 ?artist2Value rdfs:label ?artist2ValueLabel.
             }
             # Filtru pe proprietăți relevante
-            FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570)) # Mișcare, profesie, naștere, deces
+            FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570, wdt:P27, wdt:P19, wdt:P20, wdt:P18, wdt:P800, wdt:P937)) # Mișcare, profesie, naștere, deces
         }
     `;
     const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
@@ -179,11 +201,7 @@ async function compareArtists(artist1Id, artist2Id) {
     const data = await response.json();
     displayComparison(data, artist1Id, artist2Id);
 }
-
-
-
-
-function displayComparison(data, artist1Id, artist2Id) {
+async function displayComparison(data, artist1Id, artist2Id) {
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = '<h2>Comparison</h2>';
     const table = document.createElement('table');
@@ -197,26 +215,27 @@ function displayComparison(data, artist1Id, artist2Id) {
 
     const groupedData = {};
 
-    data.results.bindings.forEach(item => {
-        const property = item.propertyLabel ? item.propertyLabel.value : "N/A";
+    for (const item of data.results.bindings) {
+        const propertyUri = item.property.value;
+        const propertyLabel = await getPropertyLabel(propertyUri);
         const artist1Value = item.artist1ValueLabel ? item.artist1ValueLabel.value :
             (item.artist1Value ? item.artist1Value.value : "N/A");
         const artist2Value = item.artist2ValueLabel ? item.artist2ValueLabel.value :
             (item.artist2Value ? item.artist2Value.value : "N/A");
 
-        if (!groupedData[property]) {
-            groupedData[property] = { artist1: new Set(), artist2: new Set() };
+        if (!groupedData[propertyLabel]) {
+            groupedData[propertyLabel] = { artist1: new Set(), artist2: new Set() };
         }
-        if (artist1Value !== "N/A") groupedData[property].artist1.add(artist1Value);
-        if (artist2Value !== "N/A") groupedData[property].artist2.add(artist2Value);
-    });
+        if (artist1Value !== "N/A") groupedData[propertyLabel].artist1.add(artist1Value);
+        if (artist2Value !== "N/A") groupedData[propertyLabel].artist2.add(artist2Value);
+    }
 
     for (const [property, values] of Object.entries(groupedData)) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${property}</td>
-            <td>${Array.from(values.artist1).join(", ")}</td>
-            <td>${Array.from(values.artist2).join(", ")}</td>
+            <td>${Array.from(values.artist1).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
+            <td>${Array.from(values.artist2).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
         `;
         table.appendChild(row);
     }

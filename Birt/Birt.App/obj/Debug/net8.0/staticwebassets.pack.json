@@ -249,6 +249,10 @@
       "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
     },
     {
+      "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/lib/properties_ontology.ttl",
+      "PackagePath": "staticwebassets/lib/properties_ontology.ttl"
+    },
+    {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Birt.App.Microsoft.AspNetCore.StaticWebAssets.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
     },
