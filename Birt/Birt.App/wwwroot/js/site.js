@@ -2,8 +2,7 @@
 async function loadOntology() {
     const store = $rdf.graph();
     const fetcher = new $rdf.Fetcher(store);
-    const ontologyUrl =window.location.origin + '/lib/properties_ontology.ttl'; // Update with the correct path to your ontology file
-
+    const ontologyUrl =window.location.origin + '/ontology/properties_ontology.ttl'; 
     await fetcher.load(ontologyUrl);
     return store;
 }
