@@ -1,31 +1,23 @@
-﻿// import rdf
-const $rdf = require('rdflib');
-async function loadOntology() {
-    const store = $rdf.graph();
-    const fetcher = new $rdf.Fetcher(store);
-    const ontologyUrl =window.location.origin + '/ontology/properties_ontology.ttl'; 
-    await fetcher.load(ontologyUrl);
-    return store;
+﻿async function fetchMessage(property) {
+    const response = await fetch('http://localhost:5242/rdf/' + property);
+    if (response.ok) {
+        const message = await response.text();
+        console.log(message); // Output the message to the console
+        return message;
+        // You can also update the DOM or perform other actions with the message
+    } else {
+        console.error('Failed to fetch message');
+    }
 }
 
-async function getPropertyLabel(propertyUri) {
-    const store = await loadOntology();
-    const property = $rdf.sym(propertyUri);
-    const label = store.any(property, $rdf.sym('http://www.w3.org/2000/01/rdf-schema#label'), undefined, undefined);
 
-    return label ? label.value : propertyUri;
-}
-
-// Example usage
-getPropertyLabel('https://www.wikidata.org/wiki/Property:P937').then(label => {
-    console.log(label); // Output: "Work location"
-});
 function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
 
     if (selectedArtist === "gogh") {
-        getWorksOfArtGogh(); 
+        getWorksOfArtGogh();
+        fetchMessage("P800").then(r => console.log('Message fetched'));
     } else if (selectedArtist === "vinci") {
         getWorksOfArtDaVinci(); 
     }else if (selectedArtist === "similar-gogh") {
@@ -217,17 +209,24 @@ async function displayComparison(data, artist1Id, artist2Id) {
 
     for (const item of data.results.bindings) {
         const propertyUri = item.property.value;
-        const propertyLabel = await getPropertyLabel(propertyUri);
+        console.log("Property URI: " + propertyUri);
+        const propertyItself = propertyUri.split('/').pop();
+        console.log("Property Itself: " + propertyItself);
+        const propertyLabel = await fetchMessage(propertyItself);
+        const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '')
+        console.log("Property Label: " + cleanProperty);
+        
+        
         const artist1Value = item.artist1ValueLabel ? item.artist1ValueLabel.value :
             (item.artist1Value ? item.artist1Value.value : "N/A");
         const artist2Value = item.artist2ValueLabel ? item.artist2ValueLabel.value :
             (item.artist2Value ? item.artist2Value.value : "N/A");
 
-        if (!groupedData[propertyLabel]) {
-            groupedData[propertyLabel] = { artist1: new Set(), artist2: new Set() };
+        if (!groupedData[cleanProperty]) {
+            groupedData[cleanProperty] = { artist1: new Set(), artist2: new Set() };
         }
-        if (artist1Value !== "N/A") groupedData[propertyLabel].artist1.add(artist1Value);
-        if (artist2Value !== "N/A") groupedData[propertyLabel].artist2.add(artist2Value);
+        if (artist1Value !== "N/A") groupedData[cleanProperty].artist1.add(artist1Value);
+        if (artist2Value !== "N/A") groupedData[cleanProperty].artist2.add(artist2Value);
     }
 
     for (const [property, values] of Object.entries(groupedData)) {
