@@ -1,10 +1,18 @@
 ﻿
+const fs = require('fs').promises;
+const $rdf = require('rdflib');
+
 async function loadOntology() {
     const store = $rdf.graph();
-    const fetcher = new $rdf.Fetcher(store);
-    const ontologyUrl =window.location.origin + '/lib/properties_ontology.ttl'; // Update with the correct path to your ontology file
+    const ontologyPath = 'lib/properties_ontology.ttl'; // Update with the correct path to your ontology file
 
-    await fetcher.load(ontologyUrl);
+    try {
+        const ontologyContent = await fs.readFile(ontologyPath, 'utf8');
+        $rdf.parse(ontologyContent, store, 'http://example.org/', 'text/turtle');
+    } catch (error) {
+        console.error('Error reading ontology file:', error);
+    }
+
     return store;
 }
 
@@ -15,6 +23,11 @@ async function getPropertyLabel(propertyUri) {
 
     return label ? label.value : propertyUri;
 }
+
+// Example usage
+getPropertyLabel('http://example.org/P937').then(label => {
+    console.log(label); // Output: "Work location"
+});
 
 // Example usage
 getPropertyLabel('http://example.org/P937').then(label => {
