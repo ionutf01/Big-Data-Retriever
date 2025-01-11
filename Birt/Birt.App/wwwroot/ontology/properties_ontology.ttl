@@ -1,4 +1,4 @@
-@prefix ex: <http://example.org/> .
+@prefix ex: <https://www.wikidata.org/wiki/Property> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 ex:P937 a rdfs:Property ;

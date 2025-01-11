@@ -1,18 +1,10 @@
-﻿
-const fs = require('fs').promises;
+﻿// import rdf
 const $rdf = require('rdflib');
-
 async function loadOntology() {
     const store = $rdf.graph();
-    const ontologyPath = 'lib/properties_ontology.ttl'; // Update with the correct path to your ontology file
-
-    try {
-        const ontologyContent = await fs.readFile(ontologyPath, 'utf8');
-        $rdf.parse(ontologyContent, store, 'http://example.org/', 'text/turtle');
-    } catch (error) {
-        console.error('Error reading ontology file:', error);
-    }
-
+    const fetcher = new $rdf.Fetcher(store);
+    const ontologyUrl =window.location.origin + '/ontology/properties_ontology.ttl'; 
+    await fetcher.load(ontologyUrl);
     return store;
 }
 
@@ -25,12 +17,7 @@ async function getPropertyLabel(propertyUri) {
 }
 
 // Example usage
-getPropertyLabel('http://example.org/P937').then(label => {
-    console.log(label); // Output: "Work location"
-});
-
-// Example usage
-getPropertyLabel('http://example.org/P937').then(label => {
+getPropertyLabel('https://www.wikidata.org/wiki/Property:P937').then(label => {
     console.log(label); // Output: "Work location"
 });
 function getWorksOfArt() {
