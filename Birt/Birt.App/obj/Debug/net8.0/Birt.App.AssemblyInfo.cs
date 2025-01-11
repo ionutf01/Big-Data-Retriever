@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Birt.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8f4f3c8c5df1f49a4918bca619eac8c61cb5557")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c6532cbe640bc2243dcda20cacc66b1ae003484")]
 [assembly: System.Reflection.AssemblyProductAttribute("Birt.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Birt.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

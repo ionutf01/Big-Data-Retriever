@@ -1,0 +1,32 @@
+@prefix ex: <https://www.wikidata.org/wiki/Property:> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:P937 a rdfs:Property ;
+    rdfs:label "Work location"@en .
+
+ex:P135 a rdfs:Property ;
+    rdfs:label "Movement"@en .
+
+ex:P106 a rdfs:Property ;
+    rdfs:label "Profession"@en .
+
+ex:P569 a rdfs:Property ;
+    rdfs:label "Date of birth"@en .
+
+ex:P570 a rdfs:Property ;
+    rdfs:label "Date of death"@en .
+
+ex:P27 a rdfs:Property ;
+    rdfs:label "Citizenship"@en .
+
+ex:P19 a rdfs:Property ;
+    rdfs:label "Place of birth"@en .
+
+ex:P20 a rdfs:Property ;
+    rdfs:label "Place of death"@en .
+
+ex:P18 a rdfs:Property ;
+    rdfs:label "Image"@en .
+
+ex:P800 a rdfs:Property ;
+    rdfs:label "Notable work"@en .

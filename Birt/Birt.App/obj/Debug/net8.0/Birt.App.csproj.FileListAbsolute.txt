@@ -737,3 +737,6 @@
 /home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/Debug/net8.0/Birt.App.pdb
 /home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/Debug/net8.0/Birt.App.genruntimeconfig.cache
 /home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/Debug/net8.0/ref/Birt.App.dll
+/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/bin/Debug/net8.0/Birt.App.staticwebassets.endpoints.json
+/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/Debug/net8.0/staticwebassets.build.endpoints.json
+/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/Debug/net8.0/staticwebassets/msbuild.Birt.App.Microsoft.AspNetCore.StaticWebAssetEndpoints.props

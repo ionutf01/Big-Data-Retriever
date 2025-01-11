@@ -2,7 +2,7 @@
   "Files": [
     {
       "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/Debug/net8.0/scopedcss/projectbundle/Birt.App.bundle.scp.css",
-      "PackagePath": "staticwebassets/Birt.App.bundle.scp.css"
+      "PackagePath": "staticwebassets/Birt.App.7bac7qxf5q.bundle.scp.css"
     },
     {
       "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/css/site.css",
@@ -11,6 +11,10 @@
     {
       "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/favicon.ico",
       "PackagePath": "staticwebassets/favicon.ico"
+    },
+    {
+      "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/fetch_rdf.js",
+      "PackagePath": "staticwebassets/js/fetch_rdf.js"
     },
     {
       "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
@@ -243,6 +247,14 @@
     {
       "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/lib/jquery/dist/jquery.min.map",
       "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
+    },
+    {
+      "Id": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/ontology/properties_ontology.ttl",
+      "PackagePath": "staticwebassets/ontology/properties_ontology.ttl"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Birt.App.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Birt.App.Microsoft.AspNetCore.StaticWebAssets.props",
