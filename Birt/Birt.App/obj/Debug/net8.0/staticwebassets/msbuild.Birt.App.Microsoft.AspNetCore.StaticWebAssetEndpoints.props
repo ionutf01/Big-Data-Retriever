@@ -51,14 +51,14 @@
     <StaticWebAssetEndpoint Include="_content/Birt.App/js/site.hvuprg6utr.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"hvuprg6utr"},{"Name":"integrity","Value":"sha256-c3xg722U9A2Ni6DVIPyE\u002BzQpBxEkZelyNPhnOIY1SD8="},{"Name":"label","Value":"_content/Birt.App/js/site.js"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"11757"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022c3xg722U9A2Ni6DVIPyE\u002BzQpBxEkZelyNPhnOIY1SD8=\u0022"},{"Name":"Last-Modified","Value":"Sat, 11 Jan 2025 15:43:15 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-mCbAcItzvIP8DtqO6myQLqACIjB3hnpn28/GPeZ6kuY="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"13497"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022mCbAcItzvIP8DtqO6myQLqACIjB3hnpn28/GPeZ6kuY=\u0022"},{"Name":"Last-Modified","Value":"Sat, 11 Jan 2025 15:22:09 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="_content/Birt.App/js/site.js">
+    <StaticWebAssetEndpoint Include="_content/Birt.App/js/site.ktw5wtj3a8.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-c3xg722U9A2Ni6DVIPyE\u002BzQpBxEkZelyNPhnOIY1SD8="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"11757"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022c3xg722U9A2Ni6DVIPyE\u002BzQpBxEkZelyNPhnOIY1SD8=\u0022"},{"Name":"Last-Modified","Value":"Sat, 11 Jan 2025 15:43:15 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"ktw5wtj3a8"},{"Name":"integrity","Value":"sha256-mCbAcItzvIP8DtqO6myQLqACIjB3hnpn28/GPeZ6kuY="},{"Name":"label","Value":"_content/Birt.App/js/site.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"13497"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022mCbAcItzvIP8DtqO6myQLqACIjB3hnpn28/GPeZ6kuY=\u0022"},{"Name":"Last-Modified","Value":"Sat, 11 Jan 2025 15:22:09 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/Birt.App/lib/bootstrap/dist/css/bootstrap-grid.agp80tu62r.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\bootstrap\dist\css\bootstrap-grid.css'))</AssetFile>

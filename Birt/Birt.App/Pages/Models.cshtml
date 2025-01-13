@@ -13,7 +13,7 @@
     <h1>Our Models</h1>
     <p>Our models are built using Wikidata’s SPARQL endpoint. This service allows you to query, compare, visualize, and share large sets of data and knowledge. The platform also provides recommendations for related information in different languages. Through the use of big data techniques, we offer insights and summaries on topics such as the influences of fine arts, dance, and music in specific regions over recent years.</p>
     <h2>Possible Queries</h2>
-    <select id="queryDropdown">
+    <select id="queryDropdown" onchange="toggleCriteriaForm()">
         <option value="gogh">Get works of art for Vincent van Gogh</option>
         <option value="vinci">Get works of art for Leonardo da Vinci</option>
         <option value="similar-gogh">Get similar artists to Vincent van Gogh</option>
@@ -23,6 +23,47 @@
         <option value="paintingsInfluencedByGogh">Get paintings influenced by Van Gogh</option>
     </select>
     <button class="btn btn-primary" onclick="getWorksOfArt()">Get Results</button>
+
+
+    <div id="criteria-form" style="display: none; margin-top: 20px;">
+        <h2>Select Criteria</h2>
+        <form>
+            <label>
+                Artistic Movement:
+                <select id="movement">
+                    <option value="">-- Select Movement --</option>
+                    <option value="Q166713">Post-Impressionism</option>
+                    <option value="Q5592">Impressionism</option>
+                    <option value="Q23489">Cubism</option>
+                    <option value="Q4692">Renaissance</option>    
+                    <option value="Q1474884">High Renaissance</option>
+                </select>
+            </label>
+            <br>
+            <label>
+                Occupation:
+                <select id="occupation">
+                    <option value="">-- Select Occupation --</option>
+                    <option value="Q1028181">Painter</option>
+                    <option value="Q1281618">Sculptor</option>
+                    <option value="Q33231">Photographer</option>
+                </select>
+            </label>
+            <br>
+            <label>
+                Country:
+                <select id="country">
+                    <option value="">-- Select Country --</option>
+                    <option value="Q30">United States</option>
+                    <option value="Q142">France</option>
+                    <option value="Q183">Germany</option>
+                </select>
+            </label>
+            <br>
+            <button type="button" class="btn btn-primary" onclick="handleQuery()">Search</button>
+        </form>
+    </div>
+
     <h2>Results</h2>
     <ul id="results"></ul>
     <div id="comparison"></div>
