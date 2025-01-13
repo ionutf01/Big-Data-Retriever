@@ -228,7 +228,7 @@ async function compareArtists(artist1Id, artist2Id) {
     displayComparison(data, artist1Name, artist2Name);
 }
 
-function displayComparison(data, artist1Name, artist2Name) {
+async function displayComparison(data, artist1Name, artist2Name) {
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
     const table = document.createElement('table');
@@ -250,15 +250,15 @@ function displayComparison(data, artist1Name, artist2Name) {
         const propertyLabel = await fetchMessage(propertyItself);
         const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '')
         console.log("Property Label: " + cleanProperty);
-        
-        
+
+
         const artist1Value = item.artist1ValueLabel ? item.artist1ValueLabel.value :
             (item.artist1Value ? item.artist1Value.value : "N/A");
         const artist2Value = item.artist2ValueLabel ? item.artist2ValueLabel.value :
             (item.artist2Value ? item.artist2Value.value : "N/A");
 
         if (!groupedData[cleanProperty]) {
-            groupedData[cleanProperty] = { artist1: new Set(), artist2: new Set() };
+            groupedData[cleanProperty] = {artist1: new Set(), artist2: new Set()};
         }
         if (artist1Value !== "N/A") groupedData[cleanProperty].artist1.add(artist1Value);
         if (artist2Value !== "N/A") groupedData[cleanProperty].artist2.add(artist2Value);
