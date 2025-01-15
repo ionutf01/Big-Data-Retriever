@@ -30,3 +30,15 @@ ex:P18 a rdfs:Property ;
 
 ex:P800 a rdfs:Property ;
     rdfs:label "Notable work"@en .
+    
+ex:Q1505471 a rdfs:Class ;
+    rdfs:label "General Art and Industrial Exposition of Stockholm"@en ;
+    rdfs:comment "An exposition held in Stockholm showcasing art and industry."@en .
+
+ex:Q5582 a rdfs:Class ;
+    rdfs:label "Vincent van Gogh"@en ;
+    rdfs:comment "A Dutch post-impressionist painter."@en .
+
+ex:Q762 a rdfs:Class ;
+    rdfs:label "Leonardo da Vinci"@en ;
+    rdfs:comment "An Italian polymath of the Renaissance."@en .

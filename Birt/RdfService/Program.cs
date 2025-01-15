@@ -79,30 +79,37 @@ app.MapGet("/rdf", () =>
     .WithOpenApi();
 
 app.MapGet("/rdf/{property}", (string property) =>
+{
+    var graph = new Graph();
+    try
     {
-        var graph = new Graph();
-        try
-        {
-            FileLoader.Load(graph, "./properties_ontology.ttl");
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem($"Error loading file: {ex.Message}");
-        }
-      
-        var ttlParser = new TurtleParser();
-        ttlParser.Load(graph, "./properties_ontology.ttl");
-        var uri = new Uri($"https://www.wikidata.org/wiki/Property:{property}");
-        var triples = graph.GetTriplesWithSubject(graph.CreateUriNode(uri));
-        var result = triples.Select(triple => new
-        {
-            Object = triple.Object.ToString()
-        });
-        var filteredResult = result.Where(r => r.Object.Contains("@en"));
-        return Results.Ok(filteredResult);
-    })
-    .WithName("GetRdfProperty")
-    .WithOpenApi();
+        FileLoader.Load(graph, "./properties_ontology.ttl");
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Error loading file: {ex.Message}");
+    }
+  
+    var ttlParser = new TurtleParser();
+    ttlParser.Load(graph, "./properties_ontology.ttl");
+    var uri = new Uri($"https://www.wikidata.org/wiki/Property:{property}");
+    var triples = graph.GetTriplesWithSubject(graph.CreateUriNode(uri)).ToList();
+
+    if (!triples.Any())
+    {
+        uri = new Uri($"https://www.wikidata.org/wiki/Class:{property}");
+        triples = graph.GetTriplesWithSubject(graph.CreateUriNode(uri)).ToList();
+    }
+
+    var result = triples.Select(triple => new
+    {
+        Object = triple.Object.ToString()
+    });
+    var filteredResult = result.Where(r => r.Object.Contains("@en"));
+    return Results.Ok(filteredResult);
+})
+.WithName("GetRdfProperty")
+.WithOpenApi();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

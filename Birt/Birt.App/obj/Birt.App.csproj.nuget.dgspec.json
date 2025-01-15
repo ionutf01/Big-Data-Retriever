@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/valentin/Desktop/master2024/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj": {}
+    "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj": {}
   },
   "projects": {
-    "/home/valentin/Desktop/master2024/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj": {
+    "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/valentin/Desktop/master2024/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj",
+        "projectUniqueName": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj",
         "projectName": "Birt.App",
-        "projectPath": "/home/valentin/Desktop/master2024/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj",
-        "packagesPath": "/home/valentin/.nuget/packages/",
-        "outputPath": "/home/valentin/Desktop/master2024/wade/Big-Data-Retriever/Birt/Birt.App/obj/",
+        "projectPath": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/Birt.App.csproj",
+        "packagesPath": "/home/ionutferaru/.nuget/packages/",
+        "outputPath": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/valentin/.nuget/NuGet/NuGet.Config"
+          "/home/ionutferaru/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -60,20 +60,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.11, 8.0.11]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[8.0.11, 8.0.11]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.11, 8.0.11]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -82,7 +68,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/home/ionutferaru/.dotnet/sdk/9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
