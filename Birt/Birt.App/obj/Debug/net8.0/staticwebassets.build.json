@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Oj/g6sFl5cE2jKOGINNBJHKU6f4SJwWTopSYYMfaqMY=",
+  "Hash": "geQoxOdasqrxmPi1SlAHiiK48QkOJCiWWLR5Jytz1zM=",
   "Source": "Birt.App",
   "BasePath": "_content/Birt.App",
   "Mode": "Default",
@@ -136,8 +136,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "roovurbg2x",
-      "Integrity": "RZfZkl61NtStGr7LXSZxY463OVD0VVRr0moi4yjdd3s=",
+      "Fingerprint": "z5f3npbyyw",
+      "Integrity": "hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/site.js"
@@ -1375,8 +1375,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "0ed6gddt31",
-      "Integrity": "SP2QQsay5fY2pueGz2dHDayJruY2xIx7t6rJmFR8Dy8=",
+      "Fingerprint": "6c962ezjeo",
+      "Integrity": "xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/ontology/properties_ontology.ttl"
@@ -1804,7 +1804,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "25666"
+          "Value": "24401"
         },
         {
           "Name": "Content-Type",
@@ -1812,11 +1812,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"RZfZkl61NtStGr7LXSZxY463OVD0VVRr0moi4yjdd3s=\""
+          "Value": "\"hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 15 Jan 2025 20:02:07 GMT"
+          "Value": "Mon, 20 Jan 2025 19:04:20 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1826,12 +1826,12 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-RZfZkl61NtStGr7LXSZxY463OVD0VVRr0moi4yjdd3s="
+          "Value": "sha256-hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k="
         }
       ]
     },
     {
-      "Route": "js/site.roovurbg2x.js",
+      "Route": "js/site.z5f3npbyyw.js",
       "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
       "Selectors": [],
       "ResponseHeaders": [
@@ -1841,7 +1841,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "25666"
+          "Value": "24401"
         },
         {
           "Name": "Content-Type",
@@ -1849,11 +1849,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"RZfZkl61NtStGr7LXSZxY463OVD0VVRr0moi4yjdd3s=\""
+          "Value": "\"hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 15 Jan 2025 20:02:07 GMT"
+          "Value": "Mon, 20 Jan 2025 19:04:20 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1863,7 +1863,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "roovurbg2x"
+          "Value": "z5f3npbyyw"
         },
         {
           "Name": "label",
@@ -1871,7 +1871,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-RZfZkl61NtStGr7LXSZxY463OVD0VVRr0moi4yjdd3s="
+          "Value": "sha256-hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k="
         }
       ]
     },
@@ -6632,7 +6632,7 @@
       ]
     },
     {
-      "Route": "ontology/properties_ontology.0ed6gddt31.ttl",
+      "Route": "ontology/properties_ontology.6c962ezjeo.ttl",
       "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/ontology/properties_ontology.ttl",
       "Selectors": [],
       "ResponseHeaders": [
@@ -6642,7 +6642,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1162"
+          "Value": "943"
         },
         {
           "Name": "Content-Type",
@@ -6650,11 +6650,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"SP2QQsay5fY2pueGz2dHDayJruY2xIx7t6rJmFR8Dy8=\""
+          "Value": "\"xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 15 Jan 2025 20:02:07 GMT"
+          "Value": "Mon, 20 Jan 2025 18:38:58 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6664,7 +6664,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "0ed6gddt31"
+          "Value": "6c962ezjeo"
         },
         {
           "Name": "label",
@@ -6672,7 +6672,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-SP2QQsay5fY2pueGz2dHDayJruY2xIx7t6rJmFR8Dy8="
+          "Value": "sha256-xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg="
         }
       ]
     },
@@ -6687,7 +6687,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1162"
+          "Value": "943"
         },
         {
           "Name": "Content-Type",
@@ -6695,11 +6695,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"SP2QQsay5fY2pueGz2dHDayJruY2xIx7t6rJmFR8Dy8=\""
+          "Value": "\"xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 15 Jan 2025 20:02:07 GMT"
+          "Value": "Mon, 20 Jan 2025 18:38:58 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6709,7 +6709,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-SP2QQsay5fY2pueGz2dHDayJruY2xIx7t6rJmFR8Dy8="
+          "Value": "sha256-xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg="
         }
       ]
     }
