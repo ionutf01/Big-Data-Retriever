@@ -1,8 +1,8 @@
 {
   "Version": 1,
-  "Hash": "SOwnQaRbYOGhWkmnAJKwdq79srT7hswqSxEp5hi48iY=",
-  "Source": "WebApplication1",
-  "BasePath": "_content/WebApplication1",
+  "Hash": "ZfSCTCTuLmgnvjsEUPeizPDSVopenLNkxlyImFVctis=",
+  "Source": "RdfService",
+  "BasePath": "_content/RdfService",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],

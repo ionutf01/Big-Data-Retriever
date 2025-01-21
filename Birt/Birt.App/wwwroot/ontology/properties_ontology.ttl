@@ -17,7 +17,7 @@ ex:P570 a rdfs:Property ;
     rdfs:label "Date of death"@en .
 
 ex:P27 a rdfs:Property ;
-    rdfs:label "Citizenship"@en .
+    rdfs:label "Citizenship"@en . // take them directly dor dbpedia
 
 ex:P19 a rdfs:Property ;
     rdfs:label "Place of birth"@en .
@@ -30,3 +30,7 @@ ex:P18 a rdfs:Property ;
 
 ex:P800 a rdfs:Property ;
     rdfs:label "Notable work"@en .
+    
+ex:Q1505471 a rdfs:Class ;
+    rdfs:label "General Art and Industrial Exposition of Stockholm"@en ;
+    rdfs:comment "An exposition held in Stockholm showcasing art and industry."@en .

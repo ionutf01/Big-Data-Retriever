@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RdfService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c6532cbe640bc2243dcda20cacc66b1ae003484")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+874747e979e89ac96d4d8192e7eb8d14bf997efc")]
 [assembly: System.Reflection.AssemblyProductAttribute("RdfService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RdfService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
