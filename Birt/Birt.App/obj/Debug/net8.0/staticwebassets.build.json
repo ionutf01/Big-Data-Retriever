@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "geQoxOdasqrxmPi1SlAHiiK48QkOJCiWWLR5Jytz1zM=",
+  "Hash": "dQmogMYsnjv9f/J2pCAs7M8GJQf/qxiYkglfsettLx8=",
   "Source": "Birt.App",
   "BasePath": "_content/Birt.App",
   "Mode": "Default",
@@ -73,8 +73,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "fosamezn9b",
-      "Integrity": "r22M7xOahcMheWCkoVof2Nt7pQmj7mMSFKTei+SfmQ0=",
+      "Fingerprint": "cpykpjd3fx",
+      "Integrity": "sGEbqoz/BPg4b2sJrwtNBnMA2LMpnkBe68PW9QyEPCU=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/site.css"
@@ -136,8 +136,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "z5f3npbyyw",
-      "Integrity": "hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k=",
+      "Fingerprint": "3w0ox31f69",
+      "Integrity": "fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/site.js"
@@ -1375,8 +1375,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "6c962ezjeo",
-      "Integrity": "xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg=",
+      "Fingerprint": "iizf76i36x",
+      "Integrity": "dn+dAE262he4Xqn5kVy/DuLVCqOy2FZLRWfBr3iUrdQ=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/ontology/properties_ontology.ttl"
@@ -1548,6 +1548,51 @@
       ]
     },
     {
+      "Route": "css/site.cpykpjd3fx.css",
+      "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/css/site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "777"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sGEbqoz/BPg4b2sJrwtNBnMA2LMpnkBe68PW9QyEPCU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 22 Jan 2025 20:01:57 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "cpykpjd3fx"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sGEbqoz/BPg4b2sJrwtNBnMA2LMpnkBe68PW9QyEPCU="
+        }
+      ]
+    },
+    {
       "Route": "css/site.css",
       "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/css/site.css",
       "Selectors": [],
@@ -1558,7 +1603,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "341"
+          "Value": "777"
         },
         {
           "Name": "Content-Type",
@@ -1566,11 +1611,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"r22M7xOahcMheWCkoVof2Nt7pQmj7mMSFKTei+SfmQ0=\""
+          "Value": "\"sGEbqoz/BPg4b2sJrwtNBnMA2LMpnkBe68PW9QyEPCU=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Dec 2024 18:00:43 GMT"
+          "Value": "Wed, 22 Jan 2025 20:01:57 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1580,52 +1625,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-r22M7xOahcMheWCkoVof2Nt7pQmj7mMSFKTei+SfmQ0="
-        }
-      ]
-    },
-    {
-      "Route": "css/site.fosamezn9b.css",
-      "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/css/site.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "341"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"r22M7xOahcMheWCkoVof2Nt7pQmj7mMSFKTei+SfmQ0=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 15 Dec 2024 18:00:43 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "fosamezn9b"
-        },
-        {
-          "Name": "label",
-          "Value": "css/site.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-r22M7xOahcMheWCkoVof2Nt7pQmj7mMSFKTei+SfmQ0="
+          "Value": "sha256-sGEbqoz/BPg4b2sJrwtNBnMA2LMpnkBe68PW9QyEPCU="
         }
       ]
     },
@@ -1734,7 +1734,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 11 Jan 2025 17:35:54 GMT"
+          "Value": "Wed, 22 Jan 2025 16:45:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1779,7 +1779,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sat, 11 Jan 2025 17:35:54 GMT"
+          "Value": "Wed, 22 Jan 2025 16:45:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1794,6 +1794,51 @@
       ]
     },
     {
+      "Route": "js/site.3w0ox31f69.js",
+      "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "28115"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 24 Jan 2025 07:02:17 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "3w0ox31f69"
+        },
+        {
+          "Name": "label",
+          "Value": "js/site.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw="
+        }
+      ]
+    },
+    {
       "Route": "js/site.js",
       "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
       "Selectors": [],
@@ -1804,7 +1849,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "24401"
+          "Value": "28115"
         },
         {
           "Name": "Content-Type",
@@ -1812,11 +1857,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k=\""
+          "Value": "\"fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Jan 2025 19:04:20 GMT"
+          "Value": "Fri, 24 Jan 2025 07:02:17 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1826,52 +1871,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k="
-        }
-      ]
-    },
-    {
-      "Route": "js/site.z5f3npbyyw.js",
-      "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "24401"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Mon, 20 Jan 2025 19:04:20 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "z5f3npbyyw"
-        },
-        {
-          "Name": "label",
-          "Value": "js/site.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-hxrG9FWBH7BPL9oWKx53MwFEy8wQVwCd6x/aiAR3A7k="
+          "Value": "sha256-fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw="
         }
       ]
     },
@@ -6632,7 +6632,7 @@
       ]
     },
     {
-      "Route": "ontology/properties_ontology.6c962ezjeo.ttl",
+      "Route": "ontology/properties_ontology.iizf76i36x.ttl",
       "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/ontology/properties_ontology.ttl",
       "Selectors": [],
       "ResponseHeaders": [
@@ -6642,7 +6642,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "943"
+          "Value": "2426"
         },
         {
           "Name": "Content-Type",
@@ -6650,11 +6650,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg=\""
+          "Value": "\"dn+dAE262he4Xqn5kVy/DuLVCqOy2FZLRWfBr3iUrdQ=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Jan 2025 18:38:58 GMT"
+          "Value": "Wed, 22 Jan 2025 19:39:24 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6664,7 +6664,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "6c962ezjeo"
+          "Value": "iizf76i36x"
         },
         {
           "Name": "label",
@@ -6672,7 +6672,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg="
+          "Value": "sha256-dn+dAE262he4Xqn5kVy/DuLVCqOy2FZLRWfBr3iUrdQ="
         }
       ]
     },
@@ -6687,7 +6687,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "943"
+          "Value": "2426"
         },
         {
           "Name": "Content-Type",
@@ -6695,11 +6695,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg=\""
+          "Value": "\"dn+dAE262he4Xqn5kVy/DuLVCqOy2FZLRWfBr3iUrdQ=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 20 Jan 2025 18:38:58 GMT"
+          "Value": "Wed, 22 Jan 2025 19:39:24 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6709,7 +6709,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-xp6Yi3YcmGhGivZ2E7qXRVGI4YsI4KdXzt7mNUrv1pg="
+          "Value": "sha256-dn+dAE262he4Xqn5kVy/DuLVCqOy2FZLRWfBr3iUrdQ="
         }
       ]
     }

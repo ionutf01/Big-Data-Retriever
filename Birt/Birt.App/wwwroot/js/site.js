@@ -9,8 +9,6 @@
         console.error('Failed to fetch message');
     }
 }
-
-
 function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
@@ -25,7 +23,7 @@ function getWorksOfArt() {
     else if (selectedArtist === "similar-vinci") {
         fetchSimilarArtists('Q762'); 
     }else if (selectedArtist === "influencedByGogh") {
-        displayInfluencedByGogh();
+        fetchArtistsInfluencedByVanGogh();
     } else if (selectedArtist === "paintingInfluencesbetween1850and1900") {
         displayPaintingInfluencesBetween1850And1900();
     } else if (selectedArtist === "paintingsInfluencedByGogh") {
@@ -33,7 +31,6 @@ function getWorksOfArt() {
     }
     
 }
-
 async function getWorksOfArtGogh() {
     const query = `
         SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel WHERE {
@@ -67,7 +64,6 @@ async function fetchLabel(wikidataId) {
     const data = await response.json();
     return data.results.bindings[0]?.label?.value || wikidataId;
 }
-
 async function displayPaintingInfluences(data, title = 'Top Painting Influences Between 1850 and 1900') {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = `<h2>${title}</h2>`; // Clear previous results and set title
@@ -144,7 +140,8 @@ async function displayPaintingInfluences(data, title = 'Top Painting Influences 
     }
 
     resultsContainer.appendChild(table);
-}function displayResults(data) {
+}
+function displayResults(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Clear previous results
 
@@ -232,7 +229,6 @@ async function getWorksOfArtDaVinci() {
     const data = await response.json();
     displayResults(data);
 }
-
 function displaySimilarArtistsVinci(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
@@ -249,7 +245,6 @@ function displaySimilarArtistsVinci(data) {
     });
     resultsContainer.appendChild(list);
 }
-
 function displaySimilarArtistsGogh(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
@@ -292,6 +287,7 @@ async function fetchSimilarArtists(artistId) {
         }
         LIMIT 15
     `;
+    console.log("Query for similar artists: " + query);
 
     const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
     const response = await fetch(url, {
@@ -307,7 +303,6 @@ async function fetchSimilarArtists(artistId) {
         displaySimilarArtistsGogh(data);
     }
 }
-
 async function compareArtists(artist1Id, artist2Id) {
     const getArtistNameQuery = artistId => `
         SELECT ?artistLabel WHERE {
@@ -359,7 +354,6 @@ async function compareArtists(artist1Id, artist2Id) {
     const data = await response.json();
     displayComparison(data, artist1Name, artist2Name);
 }
-
 async function displayComparison(data, artist1Name, artist2Name) {
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
@@ -408,12 +402,6 @@ async function displayComparison(data, artist1Name, artist2Name) {
 
     comparisonContainer.appendChild(table);
 }
-
-
-/*
-* Influences
-* */
-
 async function displayInfluencedByGogh() {
     const artistsQuery = `
         SELECT DISTINCT ?artist ?artistLabel WHERE {
@@ -473,21 +461,19 @@ async function displayInfluencedByGogh() {
         console.error('Failed to fetch data:', error);
     }
 }
-
-
 async function displayPaintingInfluencesBetween1850And1900() {
     const query = `
        SELECT DISTINCT ?artist ?artistLabel ?influenceDescription WHERE {
-  ?artist wdt:P106 wd:Q1028181.
-  ?artist wdt:P569 ?birthDate.
-  FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
-  FILTER(?birthDate <= "1900-12-31"^^xsd:dateTime)
-  ?influenced wdt:P737 ?artist.
-  OPTIONAL { ?influenced wdt:P1344 ?influenceDescription. }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-}
-ORDER BY ?artistLabel
-LIMIT 1000
+          ?artist wdt:P106 wd:Q1028181.
+          ?artist wdt:P569 ?birthDate.
+          FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
+          FILTER(?birthDate <= "1900-12-31"^^xsd:dateTime)
+          ?influenced wdt:P737 ?artist.
+          OPTIONAL { ?influenced wdt:P1344 ?influenceDescription. }
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        ORDER BY ?artistLabel
+        LIMIT 250
     `;
     const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
     const response = await fetch(url, {
@@ -579,8 +565,6 @@ async function displayTopPaintingsInfluencedByGogh() {
 
     displayResults(allPaintingsData);
 }
-
-
 function toggleCriteriaForm() {
     const queryValue = document.getElementById('queryDropdown').value;
     const criteriaForm = document.getElementById('criteria-form');
@@ -592,6 +576,7 @@ function toggleCriteriaForm() {
 }
 function handleQuery() {
     const queryValue = document.getElementById('queryDropdown').value;
+    const notableWork = document.getElementById('notable-work').value;
     console.log(queryValue);
     if (!queryValue) {
         alert("Please select a query before searching.");
@@ -605,4 +590,96 @@ function handleQuery() {
         fetchSimilarArtists('Q762');
         return;
     }
+}
+async function fetchArtistsInfluencedByVanGogh(notableWork = '') {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
+
+    let query = `
+        PREFIX icon: <http://www.iconontology.org/ontology#>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        SELECT DISTINCT ?artist ?artistLabel ?work ?workLabel ?workImage WHERE {
+            ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
+            ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
+            OPTIONAL {
+                ?work wdt:P170 ?artist.
+                ?work rdfs:label ?workLabel.
+                OPTIONAL { ?work wdt:P18 ?workImage. }
+            }
+            OPTIONAL {
+                ?artist icon:hasInfluence ?influence.
+                ?influence rdfs:label ?influenceLabel.
+            }
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+    `;
+
+    if (notableWork) {
+        query += `FILTER(CONTAINS(LCASE(?workLabel), LCASE("${notableWork}")))`;
+    }
+
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    displayArtistsInfluencedByVanGogh(data);
+
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
+}
+function displayArtistsInfluencedByVanGogh(data) {
+    const container = document.getElementById('results');
+    container.innerHTML = '';
+
+    const displayedWorks = new Set();
+
+    data.results.bindings.forEach(item => {
+        if (!item.workImage || !item.work || displayedWorks.has(item.work.value)) {
+            return; // Skip items without a work image, work, or already displayed works
+        }
+
+        displayedWorks.add(item.work.value);
+
+        const artist = document.createElement('div');
+        artist.className = 'artist';
+        artist.style.border = '1px solid #ddd';
+        artist.style.padding = '10px';
+        artist.style.margin = '10px 0';
+        artist.style.borderRadius = '5px';
+        artist.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+        artist.style.display = 'flex';
+        artist.style.alignItems = 'center';
+
+        const artistInfo = document.createElement('div');
+        artistInfo.style.flex = '1';
+
+        const artistName = document.createElement('h3');
+        artistName.textContent = item.artistLabel.value;
+        artistName.style.marginBottom = '5px';
+        artistInfo.appendChild(artistName);
+
+        if (item.workLabel) {
+            const notableWork = document.createElement('p');
+            notableWork.textContent = `${item.workLabel.value}`;
+            notableWork.style.marginBottom = '5px';
+            artistInfo.appendChild(notableWork);
+        }
+
+        artist.appendChild(artistInfo);
+
+        const workImage = document.createElement('img');
+        workImage.src = item.workImage.value;
+        workImage.alt = item.workLabel ? item.workLabel.value : 'Work Image';
+        workImage.style.maxWidth = '150px';
+        workImage.style.marginLeft = '10px';
+        workImage.style.borderRadius = '5px';
+        artist.appendChild(workImage);
+
+        container.appendChild(artist);
+    });
 }

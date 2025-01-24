@@ -1,36 +1,65 @@
-@prefix ex: <https://www.wikidata.org/wiki/Property> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
 
-ex:P937 a rdfs:Property ;
-    rdfs:label "Work location"@en .
+wdt:P737 a owl:ObjectProperty ;
+    owl:sameAs <http://www.wikidata.org/prop/direct/P737> .
 
-ex:P135 a rdfs:Property ;
-    rdfs:label "Movement"@en .
+wdt:P106 a owl:ObjectProperty ;
+    owl:sameAs <http://www.wikidata.org/prop/direct/P106> .
 
-ex:P106 a rdfs:Property ;
-    rdfs:label "Profession"@en .
+wdt:P937 a rdfs:Property ;
+    rdfs:label "Work location"@en ;
+    owl:sameAs dbpedia:workLocation .
 
-ex:P569 a rdfs:Property ;
-    rdfs:label "Date of birth"@en .
+wdt:P135 a rdfs:Property ;
+    rdfs:label "Movement"@en ;
+    owl:sameAs dbpedia:movement .
 
-ex:P570 a rdfs:Property ;
-    rdfs:label "Date of death"@en .
+wdt:P569 a rdfs:Property ;
+    rdfs:label "Date of birth"@en ;
+    owl:sameAs dbpedia:birthDate .
 
-ex:P27 a rdfs:Property ;
-    rdfs:label "Citizenship"@en . // take them directly dor dbpedia
+wdt:P570 a rdfs:Property ;
+    rdfs:label "Date of death"@en ;
+    owl:sameAs dbpedia:deathDate .
 
-ex:P19 a rdfs:Property ;
-    rdfs:label "Place of birth"@en .
+wdt:P27 a rdfs:Property ;
+    rdfs:label "Citizenship"@en ;
+    owl:sameAs dbpedia:citizenship .
 
-ex:P20 a rdfs:Property ;
-    rdfs:label "Place of death"@en .
+wdt:P19 a rdfs:Property ;
+    rdfs:label "Place of birth"@en ;
+    owl:sameAs dbpedia:birthPlace .
 
-ex:P18 a rdfs:Property ;
-    rdfs:label "Image"@en .
+wdt:P20 a rdfs:Property ;
+    rdfs:label "Place of death"@en ;
+    owl:sameAs dbpedia:deathPlace .
 
-ex:P800 a rdfs:Property ;
-    rdfs:label "Notable work"@en .
-    
-ex:Q1505471 a rdfs:Class ;
+wdt:P18 a rdfs:Property ;
+    rdfs:label "Image"@en ;
+    owl:sameAs dbpedia:thumbnail .
+
+wdt:P800 a rdfs:Property ;
+    rdfs:label "Notable work"@en ;
+    owl:sameAs dbpedia:notableWork .
+
+wdt:Q1505471 a rdfs:Class ;
     rdfs:label "General Art and Industrial Exposition of Stockholm"@en ;
     rdfs:comment "An exposition held in Stockholm showcasing art and industry."@en .
+
+<http://example.org/artist/vanGogh> a foaf:Person ;
+    foaf:name "Vincent van Gogh" ;
+    wdt:P106 <http://www.wikidata.org/entity/Q1028181> ;  # Profession: Painter
+    wdt:P569 "1853-03-30"^^xsd:date ;
+    wdt:P570 "1890-07-29"^^xsd:date ;
+    wdt:P19 <http://www.wikidata.org/entity/Q1842> ;  # Place of birth: Zundert
+    wdt:P20 <http://www.wikidata.org/entity/Q12418> ;  # Place of death: Auvers-sur-Oise
+    wdt:P27 <http://www.wikidata.org/entity/Q55> ;  # Citizenship: Netherlands
+    wdt:P135 <http://www.wikidata.org/entity/Q166713> ;  # Movement: Post-Impressionism
+    wdt:P937 <http://www.wikidata.org/entity/Q90> ;  # Work location: Paris
+    wdt:P18 <http://commons.wikimedia.org/wiki/Special:FilePath/Vincent_van_Gogh_-_Self-portrait_with_bandaged_ear.jpg> ;  # Image
+    wdt:P800 <http://www.wikidata.org/entity/Q219831> .  # Notable work: Starry Night
