@@ -1,14 +1,6 @@
-﻿async function fetchMessage(property) {
-    const response = await fetch('http://localhost:5242/rdf/' + property);
-    if (response.ok) {
-        const message = await response.text();
-        console.log(message); // Output the message to the console
-        return message;
-        // You can also update the DOM or perform other actions with the message
-    } else {
-        console.error('Failed to fetch message');
-    }
-}
+﻿/*
+* Main display function
+* */
 function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
@@ -17,20 +9,23 @@ function getWorksOfArt() {
         getWorksOfArtGogh();
     } else if (selectedArtist === "vinci") {
         getWorksOfArtDaVinci(); 
-    }else if (selectedArtist === "similar-gogh") {
+    } else if (selectedArtist === "similar-gogh") {
         fetchSimilarArtists('Q5582'); 
-    }
-    else if (selectedArtist === "similar-vinci") {
+    } else if (selectedArtist === "similar-vinci") {
         fetchSimilarArtists('Q762'); 
-    }else if (selectedArtist === "influencedByGogh") {
+    } else if (selectedArtist === "influencedByGogh") {
         fetchArtistsInfluencedByVanGogh();
     } else if (selectedArtist === "paintingInfluencesbetween1850and1900") {
         displayPaintingInfluencesBetween1850And1900();
     } else if (selectedArtist === "paintingsInfluencedByGogh") {
         displayTopPaintingsInfluencedByGogh();
     }
-    
 }
+
+/*
+* Works of art by Vincent van Gogh (Q5582)
+* */
+
 async function getWorksOfArtGogh() {
     const query = `
         SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel WHERE {
@@ -50,97 +45,92 @@ async function getWorksOfArtGogh() {
     const data = await response.json();
     displayResults(data);
 }
-async function fetchLabel(wikidataId) {
+
+/*
+* Works of art by Leonardo da Vinci (Q762)
+* */
+
+async function getWorksOfArtDaVinci() {
     const query = `
-        SELECT ?label WHERE {
-            wd:${wikidataId} rdfs:label ?label.
-            FILTER(LANG(?label) = "en").
+        SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel WHERE {
+          ?work wdt:P170 wd:Q762.
+          OPTIONAL { ?work wdt:P18 ?workImage. }
+          OPTIONAL { ?work wdt:P170 ?artist. }
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
+        LIMIT 20
     `;
     const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
     const response = await fetch(url, {
-        headers: {'Accept': 'application/sparql-results+json'}
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
     });
     const data = await response.json();
-    return data.results.bindings[0]?.label?.value || wikidataId;
+    displayResults(data);
 }
-async function displayPaintingInfluences(data, title = 'Top Painting Influences Between 1850 and 1900') {
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = `<h2>${title}</h2>`; // Clear previous results and set title
 
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+/*
+* Paintings influenced by Gogh
+* */
 
-    const headerRow = document.createElement('tr');
-    const headers = ['Artist', 'Influence Description', 'Painting'];
-    headers.forEach(headerText => {
-        const header = document.createElement('th');
-        header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
-        headerRow.appendChild(header);
-    });
-    table.appendChild(headerRow);
-
-    const addedArtists = new Set();
-
-    for (const item of data.results.bindings) {
-        const artistId = item.artist ? item.artist.value.split('/').pop() : '';
-        const artistLabel = item.artistLabel ? item.artistLabel.value : 'Unknown';
-        const influenceDescriptionId = item.influenceDescription ? item.influenceDescription.value.split('/').pop() : 'N/A';
-        const influenceDescription = influenceDescriptionId !== 'N/A' ? `<a href="https://www.wikidata.org/wiki/${influenceDescriptionId}" target="_blank" rel="noopener noreferrer">${await fetchLabel(influenceDescriptionId)}</a>` : 'N/A';
-
-        if (influenceDescription !== 'N/A' && !addedArtists.has(artistId)) {
-            addedArtists.add(artistId);
-
-            const row = document.createElement('tr');
-
-            const artistCell = document.createElement('td');
-            artistCell.style.border = '1px solid #ddd';
-            artistCell.style.padding = '8px';
-            const artistLink = document.createElement('a');
-            artistLink.href = `https://www.wikidata.org/wiki/${artistId}`;
-            artistLink.target = '_blank';
-            artistLink.rel = 'noopener noreferrer';
-            artistLink.textContent = artistLabel;
-            artistCell.appendChild(artistLink);
-            row.appendChild(artistCell);
-
-            const influenceCell = document.createElement('td');
-            influenceCell.style.border = '1px solid #ddd';
-            influenceCell.style.padding = '8px';
-            influenceCell.innerHTML = influenceDescription;
-            row.appendChild(influenceCell);
-
-            const paintingCell = document.createElement('td');
-            paintingCell.style.border = '1px solid #ddd';
-            paintingCell.style.padding = '8px';
-            if (item.workImage && item.workImage.value) {
-                const paintingLink = document.createElement('a');
-                paintingLink.href = `https://www.wikidata.org/wiki/${item.work.value.split('/').pop()}`;
-                paintingLink.target = '_blank';
-                paintingLink.rel = 'noopener noreferrer';
-                const paintingImg = document.createElement('img');
-                paintingImg.src = item.workImage.value;
-                paintingImg.alt = item.workLabel.value;
-                paintingImg.width = 100;
-                paintingImg.height = 100;
-                paintingLink.appendChild(paintingImg);
-                paintingCell.appendChild(paintingLink);
-            } else {
-                continue; // Skip rows where the painting is not available
-            }
-            row.appendChild(paintingCell);
-
-            table.appendChild(row);
+async function displayTopPaintingsInfluencedByGogh() {
+    const paintersQuery = `
+        SELECT ?artist ?artistLabel WHERE {
+            ?artist wdt:P737 wd:Q5582.  # Influenced by Vincent van Gogh (Q5582)
+            ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
+            ?artist wdt:P31 wd:Q5.         # Instance of: human
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
+    `;
+    const paintersUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintersQuery);
+    const paintersResponse = await fetch(paintersUrl, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const paintersData = await paintersResponse.json();
+
+    let allPaintingsData = { results: { bindings: [] } };
+
+    for (const painter of paintersData.results.bindings) {
+        const painterId = painter.artist.value.split('/').pop();
+        const paintingsQuery = `
+            SELECT ?work ?workLabel ?workImage WHERE {
+                ?work wdt:P170 wd:${painterId}.  # Created by the painter
+                ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
+                OPTIONAL { ?work wdt:P18 ?workImage. }
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            }
+            LIMIT 3
+        `;
+        const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
+        const paintingsResponse = await fetch(paintingsUrl, {
+            headers: {
+                'Accept': 'application/sparql-results+json'
+            }
+        });
+        const paintingsData = await paintingsResponse.json();
+
+        // Add artistLabel to each painting
+        paintingsData.results.bindings.forEach(painting => {
+            painting.artistLabel = painter.artistLabel;
+            painting.artist = painter.artist;
+        });
+
+        allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
     }
 
-    resultsContainer.appendChild(table);
+    displayResults(allPaintingsData);
 }
+
+/*
+* Display results for:
+* - Works of art of Vincent van Gogh
+* - Works of art of Leonardo da Vinci
+* - Paintings influenced by Vincent van Gogh
+* */
+
 function displayResults(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Clear previous results
@@ -210,25 +200,11 @@ function displayResults(data) {
 
     resultsContainer.appendChild(table);
 }
-async function getWorksOfArtDaVinci() {
-    const query = `
-        SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel WHERE {
-          ?work wdt:P170 wd:Q762.
-          OPTIONAL { ?work wdt:P18 ?workImage. }
-          OPTIONAL { ?work wdt:P170 ?artist. }
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-        }
-        LIMIT 20
-    `;
-    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
-    const response = await fetch(url, {
-        headers: {
-            'Accept': 'application/sparql-results+json'
-        }
-    });
-    const data = await response.json();
-    displayResults(data);
-}
+
+/*
+* Similar artists' logic
+* */
+
 function displaySimilarArtistsVinci(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
@@ -236,7 +212,7 @@ function displaySimilarArtistsVinci(data) {
     data.results.bindings.forEach(item => {
         const listItem = document.createElement('li');
         const artistName = item.artistLabel.value;
-        const artistId = item.artist.value.split('/').pop(); 
+        const artistId = item.artist.value.split('/').pop();
         listItem.innerHTML = `
             ${artistName} 
             <button onclick="compareArtists('Q762', '${artistId}')">Compare</button>
@@ -252,7 +228,7 @@ function displaySimilarArtistsGogh(data) {
     data.results.bindings.forEach(item => {
         const listItem = document.createElement('li');
         const artistName = item.artistLabel.value;
-        const artistId = item.artist.value.split('/').pop(); 
+        const artistId = item.artist.value.split('/').pop();
         listItem.innerHTML = `
             ${artistName} 
             <button onclick="compareArtists('Q5582', '${artistId}')">Compare</button>
@@ -271,7 +247,7 @@ async function fetchSimilarArtists(artistId) {
     if (occupation) filters.push(`?artist wdt:P106 wd:${occupation}.`);
     if (country) filters.push(`?artist wdt:P27 wd:${country}.`);
 
-    filters.push(`FILTER(?artist != wd:${artistId}).`); 
+    filters.push(`FILTER(?artist != wd:${artistId}).`);
 
     if (filters.length === 0) {
         alert("Please select at least one criterion.");
@@ -402,169 +378,6 @@ async function displayComparison(data, artist1Name, artist2Name) {
 
     comparisonContainer.appendChild(table);
 }
-async function displayInfluencedByGogh() {
-    const artistsQuery = `
-        SELECT DISTINCT ?artist ?artistLabel WHERE {
-            ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
-            ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-        }
-    `;
-    const artistsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(artistsQuery);
-    try {
-        const artistsResponse = await fetch(artistsUrl, {
-            headers: {
-                'Accept': 'application/sparql-results+json'
-            }
-        });
-        if (!artistsResponse.ok) {
-            throw new Error(`Network response was not ok: ${artistsResponse.statusText}`);
-        }
-        const artistsData = await artistsResponse.json();
-        if (artistsData.results.bindings.length === 0) {
-            console.warn('No artists found for the query.');
-            return;
-        }
-
-        let allPaintingsData = { results: { bindings: [] } };
-
-        for (const artist of artistsData.results.bindings) {
-            const artistId = artist.artist.value.split('/').pop();
-            const paintingsQuery = `
-                SELECT ?work ?workLabel ?workImage WHERE {
-                    ?work wdt:P170 wd:${artistId}.  # Created by the artist
-                    ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
-                    OPTIONAL { ?work wdt:P18 ?workImage. }
-                    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-                }
-                LIMIT 1
-            `;
-            const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
-            const paintingsResponse = await fetch(paintingsUrl, {
-                headers: {
-                    'Accept': 'application/sparql-results+json'
-                }
-            });
-            const paintingsData = await paintingsResponse.json();
-
-            // Add artistLabel to each painting
-            paintingsData.results.bindings.forEach(painting => {
-                painting.artistLabel = artist.artistLabel;
-                painting.artist = artist.artist;
-            });
-
-            allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
-        }
-
-        displayResults(allPaintingsData);
-    } catch (error) {
-        console.error('Failed to fetch data:', error);
-    }
-}
-async function displayPaintingInfluencesBetween1850And1900() {
-    const query = `
-       SELECT DISTINCT ?artist ?artistLabel ?influenceDescription WHERE {
-          ?artist wdt:P106 wd:Q1028181.
-          ?artist wdt:P569 ?birthDate.
-          FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
-          FILTER(?birthDate <= "1900-12-31"^^xsd:dateTime)
-          ?influenced wdt:P737 ?artist.
-          OPTIONAL { ?influenced wdt:P1344 ?influenceDescription. }
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-        }
-        ORDER BY ?artistLabel
-        LIMIT 250
-    `;
-    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
-    const response = await fetch(url, {
-        headers: {
-            'Accept': 'application/sparql-results+json'
-        }
-    });
-    const data = await response.json();
-
-    let allPaintingsData = { results: { bindings: [] } };
-
-    for (const item of data.results.bindings) {
-        const artistId = item.artist.value.split('/').pop();
-        const paintingsQuery = `
-            SELECT ?work ?workLabel ?workImage WHERE {
-                ?work wdt:P170 wd:${artistId}.  # Created by the artist
-                ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
-                OPTIONAL { ?work wdt:P18 ?workImage. }
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-            }
-            LIMIT 2
-        `;
-        const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
-        const paintingsResponse = await fetch(paintingsUrl, {
-            headers: {
-                'Accept': 'application/sparql-results+json'
-            }
-        });
-        const paintingsData = await paintingsResponse.json();
-
-        // Add artistLabel and influenceDescription to each painting
-        paintingsData.results.bindings.forEach(painting => {
-            painting.artistLabel = item.artistLabel;
-            painting.artist = item.artist;
-            painting.influenceDescription = item.influenceDescription;
-        });
-
-        allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
-    }
-
-    displayPaintingInfluences(allPaintingsData, 'Paintings Influences Between 1850 and 1900');
-}
-async function displayTopPaintingsInfluencedByGogh() {
-    const paintersQuery = `
-        SELECT ?artist ?artistLabel WHERE {
-            ?artist wdt:P737 wd:Q5582.  # Influenced by Vincent van Gogh (Q5582)
-            ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
-            ?artist wdt:P31 wd:Q5.         # Instance of: human
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-        }
-    `;
-    const paintersUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintersQuery);
-    const paintersResponse = await fetch(paintersUrl, {
-        headers: {
-            'Accept': 'application/sparql-results+json'
-        }
-    });
-    const paintersData = await paintersResponse.json();
-
-    let allPaintingsData = { results: { bindings: [] } };
-
-    for (const painter of paintersData.results.bindings) {
-        const painterId = painter.artist.value.split('/').pop();
-        const paintingsQuery = `
-            SELECT ?work ?workLabel ?workImage WHERE {
-                ?work wdt:P170 wd:${painterId}.  # Created by the painter
-                ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
-                OPTIONAL { ?work wdt:P18 ?workImage. }
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-            }
-            LIMIT 3
-        `;
-        const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
-        const paintingsResponse = await fetch(paintingsUrl, {
-            headers: {
-                'Accept': 'application/sparql-results+json'
-            }
-        });
-        const paintingsData = await paintingsResponse.json();
-
-        // Add artistLabel to each painting
-        paintingsData.results.bindings.forEach(painting => {
-            painting.artistLabel = painter.artistLabel;
-            painting.artist = painter.artist;
-        });
-
-        allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
-    }
-
-    displayResults(allPaintingsData);
-}
 function toggleCriteriaForm() {
     const queryValue = document.getElementById('queryDropdown').value;
     const criteriaForm = document.getElementById('criteria-form');
@@ -591,6 +404,11 @@ function handleQuery() {
         return;
     }
 }
+
+/*
+* Artists influenced by Van Gogh
+* */
+
 async function fetchArtistsInfluencedByVanGogh(notableWork = '') {
     const loadingIndicator = document.getElementById('loading');
     loadingIndicator.style.display = 'block'; // Show loading indicator
@@ -682,4 +500,166 @@ function displayArtistsInfluencedByVanGogh(data) {
 
         container.appendChild(artist);
     });
+}
+
+/*
+* Painting influences between 1850 and 1900
+* */
+
+async function fetchLabel(wikidataId) {
+    const query = `
+        SELECT ?label WHERE {
+            wd:${wikidataId} rdfs:label ?label.
+            FILTER(LANG(?label) = "en").
+        }
+    `;
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {'Accept': 'application/sparql-results+json'}
+    });
+    const data = await response.json();
+    return data.results.bindings[0]?.label?.value || wikidataId;
+}
+async function displayPaintingInfluences(data, title = 'Top Painting Influences Between 1850 and 1900') {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = `<h2>${title}</h2>`; // Clear previous results and set title
+
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    const headerRow = document.createElement('tr');
+    const headers = ['Artist', 'Influence Description', 'Painting'];
+    headers.forEach(headerText => {
+        const header = document.createElement('th');
+        header.textContent = headerText;
+        header.style.border = '1px solid #ddd';
+        header.style.padding = '8px';
+        header.style.textAlign = 'left';
+        header.style.backgroundColor = '#f2f2f2';
+        headerRow.appendChild(header);
+    });
+    table.appendChild(headerRow);
+
+    const addedArtists = new Set();
+
+    for (const item of data.results.bindings) {
+        const artistId = item.artist ? item.artist.value.split('/').pop() : '';
+        const artistLabel = item.artistLabel ? item.artistLabel.value : 'Unknown';
+        const influenceDescriptionId = item.influenceDescription ? item.influenceDescription.value.split('/').pop() : 'N/A';
+        const influenceDescription = influenceDescriptionId !== 'N/A' ? `<a href="https://www.wikidata.org/wiki/${influenceDescriptionId}" target="_blank" rel="noopener noreferrer">${await fetchLabel(influenceDescriptionId)}</a>` : 'N/A';
+
+        if (influenceDescription !== 'N/A' && !addedArtists.has(artistId)) {
+            addedArtists.add(artistId);
+
+            const row = document.createElement('tr');
+
+            const artistCell = document.createElement('td');
+            artistCell.style.border = '1px solid #ddd';
+            artistCell.style.padding = '8px';
+            const artistLink = document.createElement('a');
+            artistLink.href = `https://www.wikidata.org/wiki/${artistId}`;
+            artistLink.target = '_blank';
+            artistLink.rel = 'noopener noreferrer';
+            artistLink.textContent = artistLabel;
+            artistCell.appendChild(artistLink);
+            row.appendChild(artistCell);
+
+            const influenceCell = document.createElement('td');
+            influenceCell.style.border = '1px solid #ddd';
+            influenceCell.style.padding = '8px';
+            influenceCell.innerHTML = influenceDescription;
+            row.appendChild(influenceCell);
+
+            const paintingCell = document.createElement('td');
+            paintingCell.style.border = '1px solid #ddd';
+            paintingCell.style.padding = '8px';
+            if (item.workImage && item.workImage.value) {
+                const paintingLink = document.createElement('a');
+                paintingLink.href = `https://www.wikidata.org/wiki/${item.work.value.split('/').pop()}`;
+                paintingLink.target = '_blank';
+                paintingLink.rel = 'noopener noreferrer';
+                const paintingImg = document.createElement('img');
+                paintingImg.src = item.workImage.value;
+                paintingImg.alt = item.workLabel.value;
+                paintingImg.width = 100;
+                paintingImg.height = 100;
+                paintingLink.appendChild(paintingImg);
+                paintingCell.appendChild(paintingLink);
+            } else {
+                continue; // Skip rows where the painting is not available
+            }
+            row.appendChild(paintingCell);
+
+            table.appendChild(row);
+        }
+    }
+
+    resultsContainer.appendChild(table);
+}
+async function displayPaintingInfluencesBetween1850And1900() {
+    const query = `
+       SELECT DISTINCT ?artist ?artistLabel ?influenceDescription WHERE {
+          ?artist wdt:P106 wd:Q1028181.
+          ?artist wdt:P569 ?birthDate.
+          FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
+          FILTER(?birthDate <= "1900-12-31"^^xsd:dateTime)
+          ?influenced wdt:P737 ?artist.
+          OPTIONAL { ?influenced wdt:P1344 ?influenceDescription. }
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        ORDER BY ?artistLabel
+        LIMIT 250
+    `;
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+
+    let allPaintingsData = { results: { bindings: [] } };
+
+    for (const item of data.results.bindings) {
+        const artistId = item.artist.value.split('/').pop();
+        const paintingsQuery = `
+            SELECT ?work ?workLabel ?workImage WHERE {
+                ?work wdt:P170 wd:${artistId}.  # Created by the artist
+                ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
+                OPTIONAL { ?work wdt:P18 ?workImage. }
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            }
+            LIMIT 2
+        `;
+        const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
+        const paintingsResponse = await fetch(paintingsUrl, {
+            headers: {
+                'Accept': 'application/sparql-results+json'
+            }
+        });
+        const paintingsData = await paintingsResponse.json();
+
+        // Add artistLabel and influenceDescription to each painting
+        paintingsData.results.bindings.forEach(painting => {
+            painting.artistLabel = item.artistLabel;
+            painting.artist = item.artist;
+            painting.influenceDescription = item.influenceDescription;
+        });
+
+        allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
+    }
+
+    displayPaintingInfluences(allPaintingsData, 'Paintings Influences Between 1850 and 1900');
+}
+async function fetchMessage(property) {
+    const response = await fetch('http://localhost:5242/rdf/' + property);
+    if (response.ok) {
+        const message = await response.text();
+        console.log(message); // Output the message to the console
+        return message;
+        // You can also update the DOM or perform other actions with the message
+    } else {
+        console.error('Failed to fetch message');
+    }
 }
