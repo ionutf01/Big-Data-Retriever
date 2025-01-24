@@ -138,82 +138,7 @@ async function displayTopPaintingsInfluencedByGogh() {
 * - Paintings influenced by Vincent van Gogh
 * */
 
-function displayResults(data) {
-    const loadingIndicator = document.getElementById('loading');
-    loadingIndicator.style.display = 'block'; // Show loading indicator
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = ''; // Clear previous results
 
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-
-    const headerRow = document.createElement('tr');
-    const headers = ['Image', 'Title', 'Painter'];
-    headers.forEach(headerText => {
-        const header = document.createElement('th');
-        header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
-        headerRow.appendChild(header);
-    });
-    table.appendChild(headerRow);
-
-    data.results.bindings.forEach(item => {
-        if (item.workLabel && item.workLabel.value.includes("Q") || !item.workImage || !item.workImage.value) {
-            return; // Skip results containing "Q<some_number>" or without an image
-        }
-
-        const row = document.createElement('tr');
-
-        const imgCell = document.createElement('td');
-        imgCell.style.border = '1px solid #ddd';
-        imgCell.style.padding = '8px';
-        const img = document.createElement('img');
-        img.src = item.workImage.value;
-        img.alt = item.workLabel ? item.workLabel.value : 'Image';
-        img.width = 100;
-        img.height = 100;
-        img.loading = 'lazy';
-        img.onload = () => {
-            const loadingIndicator = document.getElementById('loading');
-            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
-        };
-        imgCell.appendChild(img);
-        row.appendChild(imgCell);
-
-        const titleCell = document.createElement('td');
-        titleCell.style.border = '1px solid #ddd';
-        titleCell.style.padding = '8px';
-        const link = document.createElement('a');
-        const workId = item.work.value.split('/').pop();
-        link.href = `https://www.wikidata.org/wiki/${workId}`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = item.workLabel ? item.workLabel.value : 'Unknown';
-        titleCell.appendChild(link);
-        row.appendChild(titleCell);
-
-        const painterCell = document.createElement('td');
-        painterCell.style.border = '1px solid #ddd';
-        painterCell.style.padding = '8px';
-        const painterLink = document.createElement('a');
-        const painterId = item.artist.value.split('/').pop();
-        painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
-        painterLink.target = '_blank';
-        painterLink.rel = 'noopener noreferrer';
-        painterLink.textContent = item.artistLabel ? item.artistLabel.value : 'Unknown';
-        painterCell.appendChild(painterLink);
-        row.appendChild(painterCell);
-
-        table.appendChild(row);
-    });
-
-    loadingIndicator.style.display = 'none'; // Hide loading indicator
-    resultsContainer.appendChild(table);
-}
 
 /*
 * Similar artists' logic
@@ -621,8 +546,9 @@ async function displayPaintingInfluences(data, title = 'Top Painting Influences 
     loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
-
 function displayResults(data) {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Clear previous results
 
@@ -659,6 +585,10 @@ function displayResults(data) {
         img.width = 100;
         img.height = 100;
         img.loading = 'lazy';
+        img.onload = () => {
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
+        };
         imgCell.appendChild(img);
         row.appendChild(imgCell);
 
@@ -689,8 +619,10 @@ function displayResults(data) {
         table.appendChild(row);
     });
 
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
+
 async function getWorksOfArtDaVinci() {
     const query = `
         SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel ?museum ?museumLabel WHERE {
@@ -1031,7 +963,7 @@ async function displayTopPaintingsInfluencedByGogh() {
         ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
         ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
     SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
-
+}
     `;
     const artistsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(artistsQuery);
     try {
