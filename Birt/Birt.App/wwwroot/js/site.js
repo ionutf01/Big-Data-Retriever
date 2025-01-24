@@ -76,10 +76,17 @@ async function getWorksOfArtDaVinci() {
 
 async function displayTopPaintingsInfluencedByGogh() {
     const paintersQuery = `
+        PREFIX icon: <http://www.iconontology.org/ontology#>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
         SELECT ?artist ?artistLabel WHERE {
             ?artist wdt:P737 wd:Q5582.  # Influenced by Vincent van Gogh (Q5582)
             ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
             ?artist wdt:P31 wd:Q5.         # Instance of: human
+            OPTIONAL { ?artist icon:hasInfluence ?influenceDescription. }
             SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
     `;
@@ -112,10 +119,11 @@ async function displayTopPaintingsInfluencedByGogh() {
         });
         const paintingsData = await paintingsResponse.json();
 
-        // Add artistLabel to each painting
+        // Add artistLabel and influenceDescription to each painting
         paintingsData.results.bindings.forEach(painting => {
             painting.artistLabel = painter.artistLabel;
             painting.artist = painter.artist;
+            painting.influenceDescription = painter.influenceDescription;
         });
 
         allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
@@ -123,7 +131,6 @@ async function displayTopPaintingsInfluencedByGogh() {
 
     displayResults(allPaintingsData);
 }
-
 /*
 * Display results for:
 * - Works of art of Vincent van Gogh
@@ -205,7 +212,7 @@ function displayResults(data) {
 * Similar artists' logic
 * */
 
-function displaySimilarArtistsVinci(data) {
+function displaySimilarArtistsVinci(data)   {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
     const list = document.createElement('ul');
@@ -599,14 +606,21 @@ async function displayPaintingInfluences(data, title = 'Top Painting Influences 
 }
 async function displayPaintingInfluencesBetween1850And1900() {
     const query = `
-       SELECT DISTINCT ?artist ?artistLabel ?influenceDescription WHERE {
-          ?artist wdt:P106 wd:Q1028181.
-          ?artist wdt:P569 ?birthDate.
-          FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
-          FILTER(?birthDate <= "1900-12-31"^^xsd:dateTime)
-          ?influenced wdt:P737 ?artist.
-          OPTIONAL { ?influenced wdt:P1344 ?influenceDescription. }
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        PREFIX icon: <http://www.iconontology.org/ontology#>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        
+        SELECT DISTINCT ?artist ?artistLabel ?influenceDescription WHERE {
+            ?artist wdt:P106 wd:Q1028181.
+            ?artist wdt:P569 ?birthDate.
+            FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
+            FILTER(?birthDate <= "1900-12-31"^^xsd:dateTime)
+            ?influenced wdt:P737 ?artist.
+            OPTIONAL { ?influenced wdt:P1344 ?influenceDescription. }
+            OPTIONAL { ?artist icon:hasInfluence ?influenceDescription. }
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
         ORDER BY ?artistLabel
         LIMIT 250

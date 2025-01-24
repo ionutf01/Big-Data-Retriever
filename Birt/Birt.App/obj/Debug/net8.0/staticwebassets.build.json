@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "dQmogMYsnjv9f/J2pCAs7M8GJQf/qxiYkglfsettLx8=",
+  "Hash": "cE/O4nrU1ZHx2NVsrtud4ZY7jmmGdgfq5uYH6t2nEj8=",
   "Source": "Birt.App",
   "BasePath": "_content/Birt.App",
   "Mode": "Default",
@@ -136,8 +136,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "3w0ox31f69",
-      "Integrity": "fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw=",
+      "Fingerprint": "w26a6e9wi4",
+      "Integrity": "SItXfOG96ldgR+KAYi3COwiN9GEUluMN4brc8sgFGpg=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/js/site.js"
@@ -1794,51 +1794,6 @@
       ]
     },
     {
-      "Route": "js/site.3w0ox31f69.js",
-      "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "28115"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 24 Jan 2025 07:02:17 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "3w0ox31f69"
-        },
-        {
-          "Name": "label",
-          "Value": "js/site.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw="
-        }
-      ]
-    },
-    {
       "Route": "js/site.js",
       "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
       "Selectors": [],
@@ -1849,7 +1804,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "28115"
+          "Value": "26923"
         },
         {
           "Name": "Content-Type",
@@ -1857,11 +1812,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw=\""
+          "Value": "\"SItXfOG96ldgR+KAYi3COwiN9GEUluMN4brc8sgFGpg=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 24 Jan 2025 07:02:17 GMT"
+          "Value": "Fri, 24 Jan 2025 08:15:18 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1871,7 +1826,52 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-fWjyAACbS6ft0NrFFBj4E6oZGBSfay8SgdnjQlWNeSw="
+          "Value": "sha256-SItXfOG96ldgR+KAYi3COwiN9GEUluMN4brc8sgFGpg="
+        }
+      ]
+    },
+    {
+      "Route": "js/site.w26a6e9wi4.js",
+      "AssetFile": "/home/ionutferaru/Documents/REPO/Masters/wade/Big-Data-Retriever/Birt/Birt.App/wwwroot/js/site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "26923"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"SItXfOG96ldgR+KAYi3COwiN9GEUluMN4brc8sgFGpg=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 24 Jan 2025 08:15:18 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "w26a6e9wi4"
+        },
+        {
+          "Name": "label",
+          "Value": "js/site.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-SItXfOG96ldgR+KAYi3COwiN9GEUluMN4brc8sgFGpg="
         }
       ]
     },
