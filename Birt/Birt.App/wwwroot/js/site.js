@@ -4,7 +4,6 @@
 function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
-
     if (selectedArtist === "gogh") {
         getWorksOfArtGogh();
     } else if (selectedArtist === "vinci") {
@@ -139,6 +138,8 @@ async function displayTopPaintingsInfluencedByGogh() {
 * */
 
 function displayResults(data) {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Clear previous results
 
@@ -175,6 +176,10 @@ function displayResults(data) {
         img.width = 100;
         img.height = 100;
         img.loading = 'lazy';
+        img.onload = () => {
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
+        };
         imgCell.appendChild(img);
         row.appendChild(imgCell);
 
@@ -205,6 +210,7 @@ function displayResults(data) {
         table.appendChild(row);
     });
 
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
 
@@ -458,6 +464,8 @@ async function fetchArtistsInfluencedByVanGogh(notableWork = '') {
     loadingIndicator.style.display = 'none'; // Hide loading indicator
 }
 function displayArtistsInfluencedByVanGogh(data) {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     const container = document.getElementById('results');
     container.innerHTML = '';
 
@@ -503,8 +511,13 @@ function displayArtistsInfluencedByVanGogh(data) {
         workImage.style.maxWidth = '150px';
         workImage.style.marginLeft = '10px';
         workImage.style.borderRadius = '5px';
+        workImage.onload = () => {
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
+        };
         artist.appendChild(workImage);
 
+        loadingIndicator.style.display = 'none'; // Hide loading indicator
         container.appendChild(artist);
     });
 }
@@ -528,6 +541,8 @@ async function fetchLabel(wikidataId) {
     return data.results.bindings[0]?.label?.value || wikidataId;
 }
 async function displayPaintingInfluences(data, title = 'Top Painting Influences Between 1850 and 1900') {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = `<h2>${title}</h2>`; // Clear previous results and set title
 
@@ -602,6 +617,7 @@ async function displayPaintingInfluences(data, title = 'Top Painting Influences 
         }
     }
 
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
 async function displayPaintingInfluencesBetween1850And1900() {
