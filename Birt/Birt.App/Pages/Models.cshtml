@@ -5,15 +5,23 @@
 <html lang="en">
 <head>
     <title>Our Models</title>
-    <script src="https://cdn.jsdelivr.net/npm/rdflib@2.2.0/dist/rdflib.min.js"></script>
-    <script type="module" src="js/site.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/rdflib@2.2.0/dist/rdflib.min.js"></script> *@
+
+    <script type="module">
+        // Import the functions from file1.js
+        import { toggleCriteriaForm, getWorksOfArt, handleQuery } from '/js/main.js';
+        document.getElementById("allworksofart").addEventListener("click", getWorksOfArt);
+        document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
+        document.getElementById("handlequery").addEventListener("click", handleQuery);
+        
+    </script>
 </head>
 <body>
 <div>
     <h1>Our Models</h1>
     <p>Our models are built using Wikidata’s SPARQL endpoint. This service allows you to query, compare, visualize, and share large sets of data and knowledge. The platform also provides recommendations for related information in different languages. Through the use of big data techniques, we offer insights and summaries on topics such as the influences of fine arts, dance, and music in specific regions over recent years.</p>
     <h2>Possible Queries</h2>
-    <select id="queryDropdown" onchange="toggleCriteriaForm()">
+    <select id="queryDropdown">
         <option value="gogh">Get works of art for Vincent van Gogh</option>
         <option value="vinci">Get works of art for Leonardo da Vinci</option>
         <option value="similar-gogh">Get similar artists to Vincent van Gogh</option>
@@ -22,10 +30,10 @@
         <option value="paintingInfluencesbetween1850and1900">Get artists influences between 1850 and 1900</option>
         <option value="paintingsInfluencedByGogh">Get paintings influenced by Van Gogh</option>
     </select>
-    <button class="btn btn-primary" onclick="getWorksOfArt()">Get Results</button>
+    <button id="allworksofart" class="btn btn-primary">Get Results</button>
     <div id="loading" style="display: none;">
         <div class="spinner"></div>
-        Loading...
+        Loading data...
     </div>
 
     <div id="criteria-form" style="display: none; margin-top: 20px;">
@@ -63,7 +71,7 @@
                 </select>
             </label>
             <br>
-            <button type="button" class="btn btn-primary" onclick="handleQuery()">Search</button>
+            <button id="handlequery" type="button" class="btn btn-primary">Search</button>
         </form>
     </div>
 
@@ -73,3 +81,4 @@
 </div>
 </body>
 </html>
+
