@@ -1,19 +1,19 @@
-import { getWorksOfArtGogh, getWorksOfArtDaVinci, fetchSimilarArtists, fetchArtistsInfluencedByVanGogh, displayTopPaintingsInfluencedByGogh } from './site.js';
+import { getWorksOfArtGogh, getWorksOfArtDaVinci, fetchSimilarArtists, fetchArtistsInfluencedByVanGogh, displayTopPaintingsInfluencedByGogh, displayComparison } from './site.js';
 import { displayPaintingInfluencesBetween1850And1900 } from './1850-1900.js';
 
 function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
     if (selectedArtist === "gogh") {
-        getWorksOfArtGogh();
+        getWorksOfArtGogh(); // done
     } else if (selectedArtist === "vinci") {
-        getWorksOfArtDaVinci();
+        getWorksOfArtDaVinci(); // done
     } else if (selectedArtist === "similar-gogh") {
-        fetchSimilarArtists('Q5582');
+        fetchSimilarArtists('Q5582'); // done
     } else if (selectedArtist === "similar-vinci") {
-        fetchSimilarArtists('Q762');
+        fetchSimilarArtists('Q762'); // done
     } else if (selectedArtist === "influencedByGogh") {
-        fetchArtistsInfluencedByVanGogh();
+        fetchArtistsInfluencedByVanGogh(); // done
     } else if (selectedArtist === "paintingInfluencesbetween1850and1900") {
         displayPaintingInfluencesBetween1850And1900();
     } else if (selectedArtist === "paintingsInfluencedByGogh") {
@@ -34,7 +34,6 @@ function toggleCriteriaForm() {
 function handleQuery() {
     console.log('handleQuery');
     const queryValue = document.getElementById('queryDropdown').value;
-    const notableWork = document.getElementById('notable-work').value;
     console.log(queryValue);
     if (!queryValue) {
         alert("Please select a query before searching.");
@@ -49,6 +48,7 @@ function handleQuery() {
         return;
     }
 }
+
 
 
 export { getWorksOfArt, toggleCriteriaForm, handleQuery };

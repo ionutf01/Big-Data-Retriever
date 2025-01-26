@@ -6,15 +6,8 @@
 <head>
     <title>Our Models</title>
     @* <script src="https://cdn.jsdelivr.net/npm/rdflib@2.2.0/dist/rdflib.min.js"></script> *@
-
-    <script type="module">
-        // Import the functions from file1.js
-        import { toggleCriteriaForm, getWorksOfArt, handleQuery } from '/js/main.js';
-        document.getElementById("allworksofart").addEventListener("click", getWorksOfArt);
-        document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
-        document.getElementById("handlequery").addEventListener("click", handleQuery);
-        
-    </script>
+    @* <script src="~/wwwroot/js/site.js"></script> *@
+    
 </head>
 <body>
 <div>
@@ -78,6 +71,15 @@
     <h2>Results</h2>
     <ul id="results"></ul>
     <div id="comparison"></div>
+    <script type="module">
+        // Import the functions from file1.js
+        import { toggleCriteriaForm, getWorksOfArt, handleQuery, compareArtists } from '/js/main.js';
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById("allworksofart").addEventListener("click", getWorksOfArt);
+            document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
+            document.getElementById("handlequery").addEventListener("click", handleQuery);
+        });
+    </script>
 </div>
 </body>
 </html>

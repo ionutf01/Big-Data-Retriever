@@ -106,33 +106,87 @@ async function displayTopPaintingsInfluencedByGogh() {
 
     displayResults(allPaintingsData);
 }
-/*
-* Display results for:
-* - Works of art of Vincent van Gogh
-* - Works of art of Leonardo da Vinci
-* - Paintings influenced by Vincent van Gogh
-* */
-
-
 
 /*
 * Similar artists' logic
 * */
+async function compareArtists(artist1Id, artist2Id) {
+    console.log("compare artists")
+    const getArtistNameQuery = artistId => `
+        SELECT ?artistLabel WHERE {
+            wd:${artistId} rdfs:label ?artistLabel.
+            FILTER(LANG(?artistLabel) = "en").
+        }
+    `;
+    const fetchArtistName = async artistId => {
+        const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(getArtistNameQuery(artistId));
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/sparql-results+json' }
+        });
+        const data = await response.json();
+        return data.results.bindings[0]?.artistLabel?.value || "Unknown Artist";
+    };
+
+    const artist1Name = await fetchArtistName(artist1Id);
+    const artist2Name = await fetchArtistName(artist2Id);
+
+    const query = `
+        SELECT DISTINCT ?property ?propertyLabel ?artist1Value ?artist1ValueLabel ?artist2Value ?artist2ValueLabel WHERE {
+            # Proprietăți și valori pentru artistul 1
+            OPTIONAL {
+                wd:${artist1Id} ?property ?artist1Value.
+                FILTER(?artist1Value != "" && ?artist1Value != "N/A").
+            }
+            # Proprietăți și valori pentru artistul 2
+            OPTIONAL {
+                wd:${artist2Id} ?property ?artist2Value.
+                FILTER(?artist2Value != "" && ?artist2Value != "N/A").
+            }
+            # Adăugare etichete pentru proprietăți și valori
+            SERVICE wikibase:label { 
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".
+                ?property rdfs:label ?propertyLabel.
+                ?artist1Value rdfs:label ?artist1ValueLabel.
+                ?artist2Value rdfs:label ?artist2ValueLabel.
+            }
+            # Filtru pe proprietăți relevante
+            FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570, wdt:P27, wdt:P19, wdt:P20, wdt:P18, wdt:P800, wdt:P937)) # Mișcare, profesie, naștere, deces
+        }
+    `;
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    displayComparison(data, artist1Name, artist2Name);
+}
 function displaySimilarArtistsVinci(data) {
+    console.log("DATA IN SIMILAR VINCI", data)
     const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
-    const list = document.createElement('ul');
+    let list = resultsContainer.querySelector('ul');
+    
+    if (!list) {
+        list = document.createElement('ul');
+        resultsContainer.appendChild(list);
+    } else {
+        list.innerHTML = ''; // Clear existing list items
+    }
+
     data.results.bindings.forEach(item => {
         const listItem = document.createElement('li');
         const artistName = item.artistLabel.value;
         const artistId = item.artist.value.split('/').pop();
-        listItem.innerHTML = `
-            ${artistName} 
-            <button onclick="compareArtists('Q762', '${artistId}')">Compare</button>
-        `;
+
+        const compareButton = document.createElement('button');
+        compareButton.textContent = 'Compare';
+        compareButton.onclick = () => compareArtists('Q762', artistId);
+
+        listItem.textContent = artistName;
+        listItem.appendChild(compareButton);
         list.appendChild(listItem);
     });
-    resultsContainer.appendChild(list);
 }
 function displaySimilarArtistsGogh(data) {
     const resultsContainer = document.getElementById('results');
@@ -144,7 +198,7 @@ function displaySimilarArtistsGogh(data) {
         const artistId = item.artist.value.split('/').pop();
         listItem.innerHTML = `
             ${artistName} 
-            <button onclick="compareArtists('Q5582', '${artistId}')">Compare</button>
+            <button id="compare" onclick="compareArtists('Q5582', '${artistId}')">Compare</button>
         `;
         list.appendChild(listItem);
     });
@@ -191,7 +245,7 @@ async function fetchSimilarArtists(artistId) {
         displaySimilarArtistsGogh(data);
     }
 }
-async function displayComparison(data, artist1Name, artist2Name) {
+export async function displayComparison(data, artist1Name, artist2Name) {
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
     const table = document.createElement('table');
@@ -438,57 +492,7 @@ function displayResults(data) {
     loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
-async function compareArtists(artist1Id, artist2Id) {
-    const getArtistNameQuery = artistId => `
-        SELECT ?artistLabel WHERE {
-            wd:${artistId} rdfs:label ?artistLabel.
-            FILTER(LANG(?artistLabel) = "en").
-        }
-    `;
-    const fetchArtistName = async artistId => {
-        const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(getArtistNameQuery(artistId));
-        const response = await fetch(url, {
-            headers: {'Accept': 'application/sparql-results+json'}
-        });
-        const data = await response.json();
-        return data.results.bindings[0]?.artistLabel?.value || "Unknown Artist";
-    };
 
-    const artist1Name = await fetchArtistName(artist1Id);
-    const artist2Name = await fetchArtistName(artist2Id);
-
-    const query = `
-        SELECT DISTINCT ?property ?propertyLabel ?artist1Value ?artist1ValueLabel ?artist2Value ?artist2ValueLabel WHERE {
-            # Proprietăți și valori pentru artistul 1
-            OPTIONAL {
-                wd:${artist1Id} ?property ?artist1Value.
-                FILTER(?artist1Value != "" && ?artist1Value != "N/A").
-            }
-            # Proprietăți și valori pentru artistul 2
-            OPTIONAL {
-                wd:${artist2Id} ?property ?artist2Value.
-                FILTER(?artist2Value != "" && ?artist2Value != "N/A").
-            }
-            # Adăugare etichete pentru proprietăți și valori
-            SERVICE wikibase:label { 
-                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".
-                ?property rdfs:label ?propertyLabel.
-                ?artist1Value rdfs:label ?artist1ValueLabel.
-                ?artist2Value rdfs:label ?artist2ValueLabel.
-            }
-            # Filtru pe proprietăți relevante
-            FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570, wdt:P27, wdt:P19, wdt:P20, wdt:P18, wdt:P800, wdt:P937)) # Mișcare, profesie, naștere, deces
-        }
-    `;
-    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
-    const response = await fetch(url, {
-        headers: {
-            'Accept': 'application/sparql-results+json'
-        }
-    });
-    const data = await response.json();
-    displayComparison(data, artist1Name, artist2Name);
-}
 async function displayInfluencedByGogh() {
     const artistsQuery = `
         SELECT DISTINCT ?artist ?artistLabel WHERE {
