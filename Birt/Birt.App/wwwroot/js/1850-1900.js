@@ -1,3 +1,6 @@
+/*
+* Painting influences between 1850 and 1900
+* */
 async function fetchLabel(wikidataId) {
     const query = `
         SELECT ?label WHERE {
