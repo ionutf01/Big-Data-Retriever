@@ -7,11 +7,11 @@ function getWorksOfArt() {
     if (selectedArtist === "gogh") {
         getWorksOfArtGogh();
     } else if (selectedArtist === "vinci") {
-        getWorksOfArtDaVinci(); 
+        getWorksOfArtDaVinci();
     } else if (selectedArtist === "similar-gogh") {
-        fetchSimilarArtists('Q5582'); 
+        fetchSimilarArtists('Q5582');
     } else if (selectedArtist === "similar-vinci") {
-        fetchSimilarArtists('Q762'); 
+        fetchSimilarArtists('Q762');
     } else if (selectedArtist === "influencedByGogh") {
         fetchArtistsInfluencedByVanGogh();
     } else if (selectedArtist === "paintingInfluencesbetween1850and1900") {
@@ -27,10 +27,11 @@ function getWorksOfArt() {
 
 async function getWorksOfArtGogh() {
     const query = `
-        SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel WHERE {
+        SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel ?museum ?museumLabel WHERE {
           ?work wdt:P170 wd:Q5582.  
           OPTIONAL { ?work wdt:P18 ?workImage. }
           OPTIONAL { ?work wdt:P170 ?artist. }
+          OPTIONAL { ?work wdt:P276 ?museum. }
           SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
         LIMIT 20
@@ -42,7 +43,7 @@ async function getWorksOfArtGogh() {
         }
     });
     const data = await response.json();
-    displayResults(data);
+    displayResultsPaintings(data);
 }
 
 /*
@@ -137,88 +138,13 @@ async function displayTopPaintingsInfluencedByGogh() {
 * - Paintings influenced by Vincent van Gogh
 * */
 
-function displayResults(data) {
-    const loadingIndicator = document.getElementById('loading');
-    loadingIndicator.style.display = 'block'; // Show loading indicator
-    const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = ''; // Clear previous results
 
-    const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-
-    const headerRow = document.createElement('tr');
-    const headers = ['Image', 'Title', 'Painter'];
-    headers.forEach(headerText => {
-        const header = document.createElement('th');
-        header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
-        headerRow.appendChild(header);
-    });
-    table.appendChild(headerRow);
-
-    data.results.bindings.forEach(item => {
-        if (item.workLabel && item.workLabel.value.includes("Q") || !item.workImage || !item.workImage.value) {
-            return; // Skip results containing "Q<some_number>" or without an image
-        }
-
-        const row = document.createElement('tr');
-
-        const imgCell = document.createElement('td');
-        imgCell.style.border = '1px solid #ddd';
-        imgCell.style.padding = '8px';
-        const img = document.createElement('img');
-        img.src = item.workImage.value;
-        img.alt = item.workLabel ? item.workLabel.value : 'Image';
-        img.width = 100;
-        img.height = 100;
-        img.loading = 'lazy';
-        img.onload = () => {
-            const loadingIndicator = document.getElementById('loading');
-            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
-        };
-        imgCell.appendChild(img);
-        row.appendChild(imgCell);
-
-        const titleCell = document.createElement('td');
-        titleCell.style.border = '1px solid #ddd';
-        titleCell.style.padding = '8px';
-        const link = document.createElement('a');
-        const workId = item.work.value.split('/').pop();
-        link.href = `https://www.wikidata.org/wiki/${workId}`;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.textContent = item.workLabel ? item.workLabel.value : 'Unknown';
-        titleCell.appendChild(link);
-        row.appendChild(titleCell);
-
-        const painterCell = document.createElement('td');
-        painterCell.style.border = '1px solid #ddd';
-        painterCell.style.padding = '8px';
-        const painterLink = document.createElement('a');
-        const painterId = item.artist.value.split('/').pop();
-        painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
-        painterLink.target = '_blank';
-        painterLink.rel = 'noopener noreferrer';
-        painterLink.textContent = item.artistLabel ? item.artistLabel.value : 'Unknown';
-        painterCell.appendChild(painterLink);
-        row.appendChild(painterCell);
-
-        table.appendChild(row);
-    });
-
-    loadingIndicator.style.display = 'none'; // Hide loading indicator
-    resultsContainer.appendChild(table);
-}
 
 /*
 * Similar artists' logic
 * */
 
-function displaySimilarArtistsVinci(data)   {
+function displaySimilarArtistsVinci(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
     const list = document.createElement('ul');
@@ -373,7 +299,7 @@ async function displayComparison(data, artist1Name, artist2Name) {
             (item.artist2Value ? item.artist2Value.value : "N/A");
 
         if (!groupedData[cleanProperty]) {
-            groupedData[cleanProperty] = {artist1: new Set(), artist2: new Set()};
+            groupedData[cleanProperty] = { artist1: new Set(), artist2: new Set() };
         }
         if (artist1Value !== "N/A") groupedData[cleanProperty].artist1.add(artist1Value);
         if (artist2Value !== "N/A") groupedData[cleanProperty].artist2.add(artist2Value);
@@ -535,7 +461,7 @@ async function fetchLabel(wikidataId) {
     `;
     const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
     const response = await fetch(url, {
-        headers: {'Accept': 'application/sparql-results+json'}
+        headers: { 'Accept': 'application/sparql-results+json' }
     });
     const data = await response.json();
     return data.results.bindings[0]?.label?.value || wikidataId;
@@ -620,6 +546,346 @@ async function displayPaintingInfluences(data, title = 'Top Painting Influences 
     loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
+function displayResults(data) {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    const headerRow = document.createElement('tr');
+    const headers = ['Image', 'Title', 'Painter'];
+    headers.forEach(headerText => {
+        const header = document.createElement('th');
+        header.textContent = headerText;
+        header.style.border = '1px solid #ddd';
+        header.style.padding = '8px';
+        header.style.textAlign = 'left';
+        header.style.backgroundColor = '#f2f2f2';
+        headerRow.appendChild(header);
+    });
+    table.appendChild(headerRow);
+
+    data.results.bindings.forEach(item => {
+        if (item.workLabel && item.workLabel.value.includes("Q") || !item.workImage || !item.workImage.value) {
+            return; // Skip results containing "Q<some_number>" or without an image
+        }
+
+        const row = document.createElement('tr');
+
+        const imgCell = document.createElement('td');
+        imgCell.style.border = '1px solid #ddd';
+        imgCell.style.padding = '8px';
+        const img = document.createElement('img');
+        img.src = item.workImage.value;
+        img.alt = item.workLabel ? item.workLabel.value : 'Image';
+        img.width = 100;
+        img.height = 100;
+        img.loading = 'lazy';
+        img.onload = () => {
+            const loadingIndicator = document.getElementById('loading');
+            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
+        };
+        imgCell.appendChild(img);
+        row.appendChild(imgCell);
+
+        const titleCell = document.createElement('td');
+        titleCell.style.border = '1px solid #ddd';
+        titleCell.style.padding = '8px';
+        const link = document.createElement('a');
+        const workId = item.work.value.split('/').pop();
+        link.href = `https://www.wikidata.org/wiki/${workId}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = item.workLabel ? item.workLabel.value : 'Unknown';
+        titleCell.appendChild(link);
+        row.appendChild(titleCell);
+
+        const painterCell = document.createElement('td');
+        painterCell.style.border = '1px solid #ddd';
+        painterCell.style.padding = '8px';
+        const painterLink = document.createElement('a');
+        const painterId = item.artist.value.split('/').pop();
+        painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
+        painterLink.target = '_blank';
+        painterLink.rel = 'noopener noreferrer';
+        painterLink.textContent = item.artistLabel ? item.artistLabel.value : 'Unknown';
+        painterCell.appendChild(painterLink);
+        row.appendChild(painterCell);
+
+        table.appendChild(row);
+    });
+
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
+    resultsContainer.appendChild(table);
+}
+
+async function getWorksOfArtDaVinci() {
+    const query = `
+        SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel ?museum ?museumLabel WHERE {
+            ?work wdt:P170 wd:Q762.  # Created by Claude Monet (Q762)
+            OPTIONAL { ?work wdt:P18 ?workImage. }  # Optional: image of the painting
+            OPTIONAL { ?work wdt:P170 ?artist. }    # Optional: artist of the painting
+            OPTIONAL { ?work wdt:P276 ?museum. }    # Optional: museum where the painting is located
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        LIMIT 20
+    `;
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    displayResultsPaintings(data);
+}
+
+function displaySimilarArtistsVinci(data) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
+    const list = document.createElement('ul');
+    data.results.bindings.forEach(item => {
+        const listItem = document.createElement('li');
+        const artistName = item.artistLabel.value;
+        const artistId = item.artist.value.split('/').pop();
+        listItem.innerHTML = `
+            ${artistName} 
+            <button onclick="compareArtists('Q762', '${artistId}')">Compare</button>
+        `;
+        list.appendChild(listItem);
+    });
+    resultsContainer.appendChild(list);
+}
+
+function displaySimilarArtistsGogh(data) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
+    const list = document.createElement('ul');
+    data.results.bindings.forEach(item => {
+        const listItem = document.createElement('li');
+        const artistName = item.artistLabel.value;
+        const artistId = item.artist.value.split('/').pop();
+        listItem.innerHTML = `
+            ${artistName} 
+            <button onclick="compareArtists('Q5582', '${artistId}')">Compare</button>
+        `;
+        list.appendChild(listItem);
+    });
+    resultsContainer.appendChild(list);
+}
+async function fetchSimilarArtists(artistId) {
+    const movement = document.getElementById('movement').value;
+    const occupation = document.getElementById('occupation').value;
+    const country = document.getElementById('country').value;
+
+    let filters = [];
+    if (movement) filters.push(`?artist wdt:P135 wd:${movement}.`);
+    if (occupation) filters.push(`?artist wdt:P106 wd:${occupation}.`);
+    if (country) filters.push(`?artist wdt:P27 wd:${country}.`);
+
+    filters.push(`FILTER(?artist != wd:${artistId}).`);
+
+    if (filters.length === 0) {
+        alert("Please select at least one criterion.");
+        return;
+    }
+
+    const query = `
+        SELECT ?artist ?artistLabel WHERE {
+            ${filters.join('\n')}
+            SERVICE wikibase:label { 
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". 
+            }
+        }
+        LIMIT 15
+    `;
+
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+
+    if (artistId === 'Q762') {
+        displaySimilarArtistsVinci(data);
+    } else if (artistId === 'Q5582') {
+        displaySimilarArtistsGogh(data);
+    }
+}
+
+async function compareArtists(artist1Id, artist2Id) {
+    const getArtistNameQuery = artistId => `
+        SELECT ?artistLabel WHERE {
+            wd:${artistId} rdfs:label ?artistLabel.
+            FILTER(LANG(?artistLabel) = "en").
+        }
+    `;
+    const fetchArtistName = async artistId => {
+        const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(getArtistNameQuery(artistId));
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/sparql-results+json' }
+        });
+        const data = await response.json();
+        return data.results.bindings[0]?.artistLabel?.value || "Unknown Artist";
+    };
+
+    const artist1Name = await fetchArtistName(artist1Id);
+    const artist2Name = await fetchArtistName(artist2Id);
+
+    const query = `
+        SELECT DISTINCT ?property ?propertyLabel ?artist1Value ?artist1ValueLabel ?artist2Value ?artist2ValueLabel WHERE {
+            # Proprietăți și valori pentru artistul 1
+            OPTIONAL {
+                wd:${artist1Id} ?property ?artist1Value.
+                FILTER(?artist1Value != "" && ?artist1Value != "N/A").
+            }
+            # Proprietăți și valori pentru artistul 2
+            OPTIONAL {
+                wd:${artist2Id} ?property ?artist2Value.
+                FILTER(?artist2Value != "" && ?artist2Value != "N/A").
+            }
+            # Adăugare etichete pentru proprietăți și valori
+            SERVICE wikibase:label { 
+                bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".
+                ?property rdfs:label ?propertyLabel.
+                ?artist1Value rdfs:label ?artist1ValueLabel.
+                ?artist2Value rdfs:label ?artist2ValueLabel.
+            }
+            # Filtru pe proprietăți relevante
+            FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570, wdt:P27, wdt:P19, wdt:P20, wdt:P18, wdt:P800, wdt:P937)) # Mișcare, profesie, naștere, deces
+        }
+    `;
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    displayComparison(data, artist1Name, artist2Name);
+}
+
+async function displayComparison(data, artist1Name, artist2Name) {
+    const comparisonContainer = document.getElementById('comparison');
+    comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
+    const table = document.createElement('table');
+    table.innerHTML = `
+        <tr>
+            <th>Property</th>
+            <th>${artist1Name}</th>
+            <th>${artist2Name}</th>
+        </tr>
+    `;
+
+    const groupedData = {};
+
+    for (const item of data.results.bindings) {
+        const propertyUri = item.property.value;
+        console.log("Property URI: " + propertyUri);
+        const propertyItself = propertyUri.split('/').pop();
+        console.log("Property Itself: " + propertyItself);
+        const propertyLabel = await fetchMessage(propertyItself);
+        const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '')
+        console.log("Property Label: " + cleanProperty);
+
+
+        const artist1Value = item.artist1ValueLabel ? item.artist1ValueLabel.value :
+            (item.artist1Value ? item.artist1Value.value : "N/A");
+        const artist2Value = item.artist2ValueLabel ? item.artist2ValueLabel.value :
+            (item.artist2Value ? item.artist2Value.value : "N/A");
+
+        if (!groupedData[cleanProperty]) {
+            groupedData[cleanProperty] = { artist1: new Set(), artist2: new Set() };
+        }
+        if (artist1Value !== "N/A") groupedData[cleanProperty].artist1.add(artist1Value);
+        if (artist2Value !== "N/A") groupedData[cleanProperty].artist2.add(artist2Value);
+    }
+
+    for (const [property, values] of Object.entries(groupedData)) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${property}</td>
+            <td>${Array.from(values.artist1).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
+            <td>${Array.from(values.artist2).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
+        `;
+        table.appendChild(row);
+    }
+
+    comparisonContainer.appendChild(table);
+}
+
+
+/*
+* Influences
+* */
+
+async function displayInfluencedByGogh() {
+    const artistsQuery = `
+        SELECT DISTINCT ?artist ?artistLabel WHERE {
+            ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
+            ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+    `;
+    const artistsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(artistsQuery);
+    try {
+        const artistsResponse = await fetch(artistsUrl, {
+            headers: {
+                'Accept': 'application/sparql-results+json'
+            }
+        });
+        if (!artistsResponse.ok) {
+            throw new Error(`Network response was not ok: ${artistsResponse.statusText}`);
+        }
+        const artistsData = await artistsResponse.json();
+        if (artistsData.results.bindings.length === 0) {
+            console.warn('No artists found for the query.');
+            return;
+        }
+
+        let allPaintingsData = { results: { bindings: [] } };
+
+        for (const artist of artistsData.results.bindings) {
+            const artistId = artist.artist.value.split('/').pop();
+            const paintingsQuery = `
+                SELECT ?work ?workLabel ?workImage WHERE {
+                    ?work wdt:P170 wd:${artistId}.  # Created by the artist
+                    ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
+                    OPTIONAL { ?work wdt:P18 ?workImage. }
+                    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+                }
+                LIMIT 1
+            `;
+            const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
+            const paintingsResponse = await fetch(paintingsUrl, {
+                headers: {
+                    'Accept': 'application/sparql-results+json'
+                }
+            });
+            const paintingsData = await paintingsResponse.json();
+
+            // Add artistLabel to each painting
+            paintingsData.results.bindings.forEach(painting => {
+                painting.artistLabel = artist.artistLabel;
+                painting.artist = artist.artist;
+            });
+
+            allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
+        }
+
+        displayResults(allPaintingsData);
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+    }
+}
+
+
 async function displayPaintingInfluencesBetween1850And1900() {
     const query = `
         PREFIX icon: <http://www.iconontology.org/ontology#>
@@ -689,6 +955,165 @@ async function fetchMessage(property) {
         console.log(message); // Output the message to the console
         return message;
         // You can also update the DOM or perform other actions with the message
+    }
+}
+async function displayTopPaintingsInfluencedByGogh() {
+    const artistsQuery = `
+        SELECT DISTINCT ?artist ?artistLabel WHERE {
+        ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
+        ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+    `;
+    const artistsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(artistsQuery);
+    try {
+        const artistsResponse = await fetch(artistsUrl, {
+            headers: {
+                'Accept': 'application/sparql-results+json'
+            }
+        });
+        if (!artistsResponse.ok) {
+            throw new Error(`Network response was not ok: ${artistsResponse.statusText}`);
+        }
+        const artistsData = await artistsResponse.json();
+        if (artistsData.results.bindings.length === 0) {
+            console.warn('No artists found for the query.');
+            return;
+        }
+
+        let allPaintingsData = { results: { bindings: [] } };
+
+        for (const artist of artistsData.results.bindings) {
+            const artistId = artist.artist.value.split('/').pop();
+            const paintingsQuery = `
+                SELECT ?work ?workLabel ?workImage ?museum ?museumLabel WHERE {
+                    ?work wdt:P170 wd:${artistId}.  # Created by the artist
+                ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)
+            OPTIONAL { ?work wdt:P18 ?workImage. }  # Optional: image of the painting
+            OPTIONAL { ?work wdt:P276 ?museum. } # Museum where the painting is located
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+            LIMIT 3
+            `;
+            const paintingsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(paintingsQuery);
+            const paintingsResponse = await fetch(paintingsUrl, {
+                headers: {
+                    'Accept': 'application/sparql-results+json'
+                }
+            });
+            const paintingsData = await paintingsResponse.json();
+
+            // Add artistLabel to each painting
+            paintingsData.results.bindings.forEach(painting => {
+                painting.artistLabel = artist.artistLabel;
+                painting.artist = artist.artist;
+            });
+
+            allPaintingsData.results.bindings.push(...paintingsData.results.bindings);
+        }
+
+        displayResultsPaintings(allPaintingsData);
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+    }
+}
+
+function displayResultsPaintings(data) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    // Add headers for the table
+    const headerRow = document.createElement('tr');
+    const headers = ['Image', 'Title', 'Painter', 'Museum']; // Added "Museum" column
+    headers.forEach(headerText => {
+        const header = document.createElement('th');
+        header.textContent = headerText;
+        header.style.border = '1px solid #ddd';
+        header.style.padding = '8px';
+        header.style.textAlign = 'left';
+        header.style.backgroundColor = '#f2f2f2';
+        headerRow.appendChild(header);
+    });
+    table.appendChild(headerRow);
+
+    data.results.bindings.forEach(item => {
+        if (item.workLabel && item.workLabel.value.includes("Q") || !item.workImage || !item.workImage.value) {
+            return; // Skip results containing "Q<some_number>" or without an image
+        }
+
+        const row = document.createElement('tr');
+
+        // Image column
+        const imgCell = document.createElement('td');
+        imgCell.style.border = '1px solid #ddd';
+        imgCell.style.padding = '8px';
+        const img = document.createElement('img');
+        img.src = item.workImage.value;
+        img.alt = item.workLabel ? item.workLabel.value : 'Image';
+        img.width = 100;
+        img.height = 100;
+        img.loading = 'lazy';
+        imgCell.appendChild(img);
+        row.appendChild(imgCell);
+
+        // Title column
+        const titleCell = document.createElement('td');
+        titleCell.style.border = '1px solid #ddd';
+        titleCell.style.padding = '8px';
+        const link = document.createElement('a');
+        const workId = item.work.value.split('/').pop();
+        link.href = `https://www.wikidata.org/wiki/${workId}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = item.workLabel ? item.workLabel.value : 'Unknown';
+        titleCell.appendChild(link);
+        row.appendChild(titleCell);
+
+        // Painter column
+        const painterCell = document.createElement('td');
+        painterCell.style.border = '1px solid #ddd';
+        painterCell.style.padding = '8px';
+        const painterLink = document.createElement('a');
+        const painterId = item.artist.value.split('/').pop();
+        painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
+        painterLink.target = '_blank';
+        painterLink.rel = 'noopener noreferrer';
+        painterLink.textContent = item.artistLabel ? item.artistLabel.value : 'Unknown';
+        painterCell.appendChild(painterLink);
+        row.appendChild(painterCell);
+
+        // Museum column
+        const museumCell = document.createElement('td');
+        museumCell.style.border = '1px solid #ddd';
+        museumCell.style.padding = '8px';
+        if (item.museum && item.museumLabel) {
+            const museumLink = document.createElement('a');
+            const museumId = item.museum.value.split('/').pop();
+            museumLink.href = `https://www.wikidata.org/wiki/${museumId}`;
+            museumLink.target = '_blank';
+            museumLink.rel = 'noopener noreferrer';
+            museumLink.textContent = item.museumLabel.value;
+            museumCell.appendChild(museumLink);
+        } else {
+            museumCell.textContent = 'N/A';
+        }
+        row.appendChild(museumCell);
+
+        table.appendChild(row);
+    });
+
+    resultsContainer.appendChild(table);
+}
+
+function toggleCriteriaForm() {
+    const queryValue = document.getElementById('queryDropdown').value;
+    const criteriaForm = document.getElementById('criteria-form');
+    if (queryValue === 'similar-gogh' || queryValue === 'similar-vinci') {
+        criteriaForm.style.display = 'block';
     } else {
         console.error('Failed to fetch message');
     }
