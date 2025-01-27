@@ -72,14 +72,14 @@
     <ul id="results"></ul>
     <div id="comparison"></div>
     <script type="module">
-        // Import the functions from file1.js
-        import { toggleCriteriaForm, getWorksOfArt, handleQuery, compareArtists } from '/js/main.js';
-        document.addEventListener('DOMContentLoaded', (event) => {
+        import { toggleCriteriaForm, getWorksOfArt, handleQuery } from '/js/main.js';
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById("allworksofart").addEventListener("click", getWorksOfArt);
             document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
             document.getElementById("handlequery").addEventListener("click", handleQuery);
         });
     </script>
+
 </div>
 </body>
 </html>

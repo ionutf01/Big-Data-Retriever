@@ -110,7 +110,7 @@ async function displayTopPaintingsInfluencedByGogh() {
 /*
 * Similar artists' logic
 * */
-async function compareArtists(artist1Id, artist2Id) {
+export async function compareArtists(artist1Id, artist2Id) {
     console.log("compare artists")
     const getArtistNameQuery = artistId => `
         SELECT ?artistLabel WHERE {
@@ -162,11 +162,11 @@ async function compareArtists(artist1Id, artist2Id) {
     const data = await response.json();
     displayComparison(data, artist1Name, artist2Name);
 }
-function displaySimilarArtistsVinci(data) {
-    console.log("DATA IN SIMILAR VINCI", data)
+export function displaySimilarArtistsVinci(data) {
+    console.log("DATA IN SIMILAR VINCI", data);
     const resultsContainer = document.getElementById('results');
+
     let list = resultsContainer.querySelector('ul');
-    
     if (!list) {
         list = document.createElement('ul');
         resultsContainer.appendChild(list);
@@ -181,29 +181,45 @@ function displaySimilarArtistsVinci(data) {
 
         const compareButton = document.createElement('button');
         compareButton.textContent = 'Compare';
-        compareButton.onclick = () => compareArtists('Q762', artistId);
+
+        compareButton.addEventListener('click', () => {
+            compareArtists('Q762', artistId); // Dynamically attach compareArtists call
+        });
 
         listItem.textContent = artistName;
         listItem.appendChild(compareButton);
+
         list.appendChild(listItem);
     });
 }
-function displaySimilarArtistsGogh(data) {
+
+export function displaySimilarArtistsGogh(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = '<h2>Similar Artists</h2>';
+
     const list = document.createElement('ul');
+
     data.results.bindings.forEach(item => {
         const listItem = document.createElement('li');
         const artistName = item.artistLabel.value;
         const artistId = item.artist.value.split('/').pop();
-        listItem.innerHTML = `
-            ${artistName} 
-            <button id="compare" onclick="compareArtists('Q5582', '${artistId}')">Compare</button>
-        `;
+
+        const compareButton = document.createElement('button');
+        compareButton.textContent = 'Compare';
+
+        compareButton.addEventListener('click', () => {
+            compareArtists('Q5582', artistId); 
+        });
+
+        listItem.textContent = artistName;
+        listItem.appendChild(compareButton);
+
         list.appendChild(listItem);
     });
+
     resultsContainer.appendChild(list);
 }
+
 async function fetchSimilarArtists(artistId) {
     const movement = document.getElementById('movement').value;
     const occupation = document.getElementById('occupation').value;
