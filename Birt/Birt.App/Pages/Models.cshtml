@@ -7,7 +7,52 @@
     <title>Our Models</title>
     @* <script src="https://cdn.jsdelivr.net/npm/rdflib@2.2.0/dist/rdflib.min.js"></script> *@
     @* <script src="~/wwwroot/js/site.js"></script> *@
-    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.6;
+            stroke-width: 1.5;
+        }
+        .link.hasPredicate {
+            stroke: green;
+        }
+        .link.hasObject {
+            stroke: orange;
+        }
+        .node circle {
+            stroke: #fff;
+            stroke-width: 1.5px;
+        }
+        .node.subject circle {
+            fill: blue;
+        }
+        .node.predicate circle {
+            fill: green;
+        }
+        .node.object circle {
+            fill: red;
+        }
+        .node:hover circle {
+            stroke: #000;
+            stroke-width: 2.5px;
+        }
+        .node text {
+            fill: #333;
+        }
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: auto;
+            height: auto;
+            padding: 5px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
 <div>
@@ -28,6 +73,10 @@
         <div class="spinner"></div>
         Loading data...
     </div>
+
+    <button id="showVisualization" class="btn btn-primary" style="display: none;">Show Visualization</button>
+    <button id="closeVisualization" class="btn btn-secondary" style="display: none;" onclick="closeVisualization()">Close Visualization</button>
+    <svg id="visualization" width="960" height="600" style="display: none;"></svg>
 
     <div id="criteria-form" style="display: none; margin-top: 20px;">
         <h2>Select Criteria</h2>
@@ -72,13 +121,24 @@
     <ul id="results"></ul>
     <div id="comparison"></div>
     <script type="module">
-        import { toggleCriteriaForm, getWorksOfArt, handleQuery } from '/js/main.js';
+        import { toggleCriteriaForm, getWorksOfArt, handleQuery, visualizeRDFDataImproved, closeVisualization } from '/js/main.js';
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById("allworksofart").addEventListener("click", getWorksOfArt);
             document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
             document.getElementById("handlequery").addEventListener("click", handleQuery);
+
+            document.getElementById('showVisualization').addEventListener('click', () => {
+                document.getElementById('visualization').style.display = 'block';
+                document.getElementById('closeVisualization').style.display = 'block';
+                visualizeRDFDataImproved();
+            });
+            document.getElementById('closeVisualization').addEventListener('click', () => {
+                closeVisualization();
+            });
         });
     </script>
+    
+    
 
 </div>
 </body>

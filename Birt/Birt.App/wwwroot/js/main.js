@@ -48,6 +48,126 @@ function handleQuery() {
     }
 }
 
+async function fetchRDFData() {
+    const response = await fetch('http://localhost:5242/rdf/visualize');
+    if (!response.ok) {
+        throw new Error(`Failed to fetch RDF data: ${response.statusText}`);
+    }
+    const data = await response.json();
+    console.log('Fetched RDF Data:', data); // Log the fetched data
+    return data;
+}
 
+async function visualizeRDFDataImproved() {
+    const { nodes, links } = await fetchRDFData();
 
-export { getWorksOfArt, toggleCriteriaForm, handleQuery };
+    console.log('Nodes:', nodes); // Log nodes
+    console.log('Links:', links); // Log links
+
+    const svg = d3.select("#visualization");
+    svg.selectAll("*").remove(); // Clear existing visualization
+
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0)
+        .style("background-color", "white")
+        .style("border", "1px solid black")
+        .style("padding", "5px");
+
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            svg.attr("transform", event.transform);
+        });
+
+    svg.call(zoom);
+
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody().strength(-400))
+        .force("center", d3.forceCenter(width / 2, height / 2));
+
+    const link = svg.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(links)
+        .enter().append("line")
+        .attr("class", d => `link ${d.label}`)
+        .style("stroke-width", 2);
+
+    const node = svg.append("g")
+        .attr("class", "nodes")
+        .selectAll("g")
+        .data(nodes)
+        .enter().append("g")
+        .attr("class", d => `node ${d.group}`)
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    node.append("circle")
+        .attr("r", 12)
+        .style("fill", d => color(d.group))
+        .on("mouseover", function(event, d) {
+            tooltip.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltip.html(`${d.label} (${d.group})`)
+                .style("left", (event.pageX + 5) + "px")
+                .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(d) {
+            tooltip.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
+
+    node.append("text")
+        .attr("x", 15)
+        .attr("y", 3)
+        .style("font-size", "12px")
+        .text(d => `${d.label} (${d.group})`);
+
+    simulation.on("tick", () => {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node
+            .attr("transform", d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event, d) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+}
+
+function closeVisualization() {
+    const svg = document.getElementById("visualization");
+    svg.style.display = "none";
+    const closeButton = document.getElementById("closeVisualization");
+    closeButton.style.display = "none";
+}
+
+export { getWorksOfArt, toggleCriteriaForm, handleQuery, visualizeRDFDataImproved,closeVisualization };
