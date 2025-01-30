@@ -144,17 +144,21 @@
             });
         
             document.getElementById("exportCsv").addEventListener("click", () => {
-                const dropdown = document.getElementById("queryDropdown");
-                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
-                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.csv`;
-                exportTableToCSV(filename);
+                if (confirm("Do you want to download the results as CSV?")) {
+                    const dropdown = document.getElementById("queryDropdown");
+                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                    const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.csv`;
+                    exportTableToCSV(filename);
+                }
             });
         
             document.getElementById("exportHtml").addEventListener("click", () => {
-                const dropdown = document.getElementById("queryDropdown");
-                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
-                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.html`;
-                exportTableToHTML(filename);
+                if (confirm("Do you want to download the results as CSV?")) {
+                    const dropdown = document.getElementById("queryDropdown");
+                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                    const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.html`;
+                    exportTableToHTML(filename);
+                }
             });
         });
     </script>

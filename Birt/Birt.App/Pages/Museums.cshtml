@@ -80,6 +80,8 @@
 
 <div id="museumResults">
     <h2>Museum and Other Artists</h2>
+    <button id="exportMuseumCsv" class="export-button" style="display: none;">Export CSV</button>
+    <button id="exportMuseumHtml" class="export-button" style="display: none;">Export HTML</button>
     <table class="table" id="museumResultsTable" style="display: none;">
         <thead>
         <tr>
@@ -91,6 +93,15 @@
         </tbody>
     </table>
     <p id="noMuseumResults" style="display: none;">No results found.</p>
+</div>
+
+<div id="previewModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Preview Export</h2>
+        <pre id="previewContent"></pre>
+        <button id="confirmDownload" class="btn btn-primary">Download</button>
+    </div>
 </div>
 
 <script type="module">
@@ -106,7 +117,13 @@
     });
     document.getElementById('artist').addEventListener("change", updateMessage);
     document.getElementById('museum').addEventListener("change", updateMessage);
-    document.getElementById('artistMuseumForm').addEventListener('submit', fetchMuseumAndArtists);
+    document.getElementById('artistMuseumForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetchMuseumAndArtists(event).then(() => {
+            document.getElementById("exportMuseumCsv").style.display = 'inline-block';
+            document.getElementById("exportMuseumHtml").style.display = 'inline-block';
+        });
+    });
 
     const exportCsvBtn = document.getElementById("exportCsv");
     const exportHtmlBtn = document.getElementById("exportHtml");
@@ -128,14 +145,43 @@
     };
 
     document.getElementById("exportCsv").addEventListener("click", () => {
-        const filename = 'comparison_results.csv';
-        exportTableToCSV(filename);
+        if (confirm("Do you want to download the results as CSV?")) {
+            const artistSelect = document.getElementById("artist");
+            const museumSelect = document.getElementById("museum");
+            const artistName = artistSelect.options[artistSelect.selectedIndex].text;
+            const museumName = museumSelect.options[museumSelect.selectedIndex].text;
+            const filename = `${artistName}_paintings_not_from_${museumName}.csv`;
+            exportTableToCSV(filename);
+        }
     });
 
     document.getElementById("exportHtml").addEventListener("click", () => {
-        const filename = 'comparison_results.html';
-        exportTableToHTML(filename);
+        if (confirm("Do you want to download the results as HTML?")) {
+            const artistSelect = document.getElementById("artist");
+            const museumSelect = document.getElementById("museum");
+            const artistName = artistSelect.options[artistSelect.selectedIndex].text;
+            const museumName = museumSelect.options[museumSelect.selectedIndex].text;
+            const filename = `${artistName}_paintings_not_from_${museumName}.html`;
+            exportTableToHTML(filename);
+        }
     });
 
+    document.getElementById("exportMuseumCsv").addEventListener("click", () => {
+        if (confirm("Do you want to download the museum results as CSV?")) {
+            const selectedArtist = document.getElementById("selectedArtist");
+            const artistName = selectedArtist.options[selectedArtist.selectedIndex].text;
+            const filename = `${artistName}_museum_results.csv`;
+            exportTableToCSV(filename, "museumResultsTable");
+        }
+    });
+
+    document.getElementById("exportMuseumHtml").addEventListener("click", () => {
+        if (confirm("Do you want to download the museum results as HTML?")) {
+            const selectedArtist = document.getElementById("selectedArtist");
+            const artistName = selectedArtist.options[selectedArtist.selectedIndex].text;
+            const filename = `${artistName}_museum_results.html`;
+            exportTableToHTML(filename, "museumResultsTable");
+        }
+    });
 
 </script>

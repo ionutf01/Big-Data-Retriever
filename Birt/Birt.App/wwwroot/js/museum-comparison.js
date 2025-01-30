@@ -331,9 +331,9 @@ function populateTable(results) {
     }
 }
 
-export function exportTableToCSV(filename) {
+export function exportTableToCSV(filename, tableId = "resultsTable") {
     const csv = [];
-    const rows = document.querySelectorAll("#results table tr");
+    const rows = document.querySelectorAll(`#${tableId} tr`);
 
     for (const row of rows) {
         const cols = row.querySelectorAll("td, th");
@@ -354,8 +354,8 @@ export function exportTableToCSV(filename) {
     document.body.removeChild(downloadLink);
 }
 
-export function exportTableToHTML(filename) {
-    const table = document.querySelector("#results table").outerHTML;
+export function exportTableToHTML(filename, tableId = "resultsTable") {
+    const table = document.querySelector(`#${tableId}`).outerHTML;
     const htmlFile = new Blob([table], { type: "text/html" });
     const downloadLink = document.createElement("a");
     downloadLink.download = filename;
@@ -365,4 +365,3 @@ export function exportTableToHTML(filename) {
     downloadLink.click();
     document.body.removeChild(downloadLink);
 }
-
