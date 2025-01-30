@@ -84,7 +84,7 @@ export async function fetchComparisonResults(event) {
     }
 }
 
-function updateMessage() {
+export function updateMessage() {
     const artistSelect = document.getElementById('artist');
     const museumSelect = document.getElementById('museum');
     const messageElement = document.getElementById('dynamicMessage');
