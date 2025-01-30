@@ -1,0 +1,280 @@
+@prefix art: <http://art.org/ontology#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# Define the influenceDescription property
+art:influenceDescription a rdf:Property ;
+    rdfs:label "Influence Description"@en ;
+    rdfs:comment "Describes the influence of an event or person."@en ;
+    owl:sameAs <https://www.wikidata.org/wiki/Property:P737> .
+    
+# Define the Event class
+art:Event a rdfs:Class ;
+    rdfs:label "Event"@en ;
+    rdfs:comment "An event related to art."@en .
+
+art:Q356644 a art:Event ;
+    rdfs:label "Albert Edelfelt"@en ;
+    art:influenceDescription art:Q1505471 ;
+    rdfs:comment "General Art and Industrial Exposition of Stockholm"@en .
+
+art:Q151580 a art:Event ;
+    rdfs:label "Alexander Calder"@en ;
+    art:influenceDescription art:Q100743007 ;
+    rdfs:comment "Jewelry by Contemporary Painters and Sculptors"@en .
+
+art:Q2847587 a art:Event ;
+    rdfs:label "André Dauchez"@en ;
+    art:influenceDescription art:Q1520847 ;
+    rdfs:comment "Louisiana Purchase Expos ition"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q205751 ;
+    rdfs:comment "Venice Biennale"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q688909 ;
+    rdfs:comment "Armory Show"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q910743 ;
+    rdfs:comment "Free Secession"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q1121146 ;
+    rdfs:comment "Swiss National Exhibition Bern 1914"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q1165755 ;
+    rdfs:comment "Exposition Internationale des Arts et Techniques dans la Vie Moderne (1937)"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q1362126 ;
+    rdfs:comment "Les Joueurs de football"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q18624764 ;
+    rdfs:comment "Grosse Berliner Kunstausstellung"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q19721109 ;
+    rdfs:comment "Swiss National Exhibition 1939"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q55367178 ;
+    rdfs:comment "Q55367178"@en .
+
+art:Q156272 a art:Event ;
+    rdfs:label "André Derain"@en ;
+    art:influenceDescription art:Q81686670 ;
+    rdfs:comment "Internationale Kunstausstellung des Sonderbundes Westdeutscher Kunstfreunde und Kunstler zu Coeln 1912"@en .
+
+art:Q314350 a art:Event ;
+    rdfs:label "Antoine Bourdelle"@en ;
+    art:influenceDescription art:Q653360 ;
+    rdfs:comment "São Paulo Art Biennial"@en .
+
+art:Q314350 a art:Event ;
+    rdfs:label "Antoine Bourdelle"@en ;
+    art:influenceDescription art:Q23790596 ;
+    rdfs:comment "25th Venice Biennale"@en .
+
+art:Q153920 a art:Event ;
+    rdfs:label "Aristide Maillol"@en ;
+    art:influenceDescription art:Q8150 ;
+    rdfs:comment "1936 Summer Olympics"@en .
+
+art:Q153920 a art:Event ;
+    rdfs:label "Aristide Maillol"@en ;
+    art:influenceDescription art:Q5682852 ;
+    rdfs:comment "Academia Breve de Crítica de Arte"@en .
+
+art:Q153920 a art:Event ;
+    rdfs:label "Aristide Maillol"@en ;
+    art:influenceDescription art:Q5822523 ;
+    rdfs:comment "El Mono Azul"@en .
+
+art:Q272566 a art:Event ;
+    rdfs:label "Aubrey Beardsley"@en ;
+    art:influenceDescription art:Q109246980 ;
+    rdfs:comment "International Exhibition of Modern Jewelry, 1890-1961"@en .
+
+art:Q153048 a art:Event ;
+    rdfs:label "Constantin Brâncuși"@en ;
+    art:influenceDescription art:Q265378 ;
+    rdfs:comment "documenta"@en .
+
+art:Q34970 a art:Event ;
+    rdfs:label "D. H. Lawrence"@en ;
+    art:influenceDescription art:Q104713350 ;
+    rdfs:comment "Dialogue for Catalonia"@en .
+
+art:Q3047490 a art:Event ;
+    rdfs:label "Edgar Scauflaire"@en ;
+    art:influenceDescription art:Q653360 ;
+    rdfs:comment "São Paulo Art Biennial"@en .
+
+art:Q44032 a art:Event ;
+    rdfs:label "Egon Schiele"@en ;
+    art:influenceDescription art:Q120175453 ;
+    rdfs:comment "IdeaFest 2022"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q205751 ;
+    rdfs:comment "Venice Biennale"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q910743 ;
+    rdfs:comment "Free Secession"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q1121146 ;
+    rdfs:comment "Swiss National Exhibition Bern 1914"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q1165755 ;
+    rdfs:comment "Exposition Internationale des Arts et Techniques dans la Vie Moderne (1937)"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q1362126 ;
+    rdfs:comment "Les Joueurs de football"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q18624764 ;
+    rdfs:comment "Grosse Berliner Kunstausstellung"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q19721109 ;
+    rdfs:comment "Swiss National Exhibition 1939"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q55367178 ;
+    rdfs:comment "Q55367178"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q81686670 ;
+    rdfs:comment "Internationale Kunstausstellung des Sonderbundes Westdeutscher Kunstfreunde und Kunstler zu Coeln 1912"@en .
+
+art:Q214564 a art:Event ;
+    rdfs:label "Ferdinand Hodler"@en ;
+    art:influenceDescription art:Q124054123 ;
+    rdfs:comment "Gold + Silber Schmuck + Gerät von Albrecht Dürer bis zur Gegenwart"@en .
+
+art:Q5461886 a art:Event ;
+    rdfs:label "Florine Stettheimer"@en ;
+    art:influenceDescription art:Q51402 ;
+    rdfs:comment "Stonewall riots"@en .
+
+art:Q4980157 a art:Event ;
+    rdfs:label "Frida Stéenhoff"@en ;
+    art:influenceDescription art:Q101222053 ;
+    rdfs:comment "Q101222053"@en .
+
+art:Q4980157 a art:Event ;
+    rdfs:label "Frida Stéenhoff"@en ;
+    art:influenceDescription art:Q124000059 ;
+    rdfs:comment "Q124000059"@en .
+
+art:Q4980157 a art:Event ;
+    rdfs:label "Frida Stéenhoff"@en ;
+    art:influenceDescription art:Q124000209 ;
+    rdfs:comment "Q124000209"@en .
+
+art:Q107194 a art:Event ;
+    rdfs:label "George Grosz"@en ;
+    art:influenceDescription art:Q63766006 ;
+    rdfs:comment "58th Venice Biennale"@en .
+
+art:Q289441 a art:Event ;
+    rdfs:label "George Hendrik Breitner"@en ;
+    art:influenceDescription art:Q8138 ;
+    rdfs:comment "1928 Summer Olympics"@en .
+    
+art:Q34013 a art:Event ;
+    rdfs:label "Georges Seurat"@en ;
+    art:influenceDescription art:Q7196500 ;
+    rdfs:comment "Pinta Art Show"@en .
+
+art:Q34013 a art:Event ;
+    rdfs:label "Georges Seurat"@en ;
+    art:influenceDescription art:Q98783111 ;
+    rdfs:comment "De Calder à Koons, Bijoux d'Artistes, La Collection Idéale de Diane Venet"@en .
+
+art:Q34013 a art:Event ;
+    rdfs:label "Georges Seurat"@en ;
+    art:influenceDescription art:Q98960394 ;
+    rdfs:comment "Von Picasso bis Warhol Künstlerschmuck der Avantgarde"@en .
+
+art:Q34013 a art:Event ;
+    rdfs:label "Georges Seurat"@en ;
+    art:influenceDescription art:Q101585775 ;
+    rdfs:comment "Scultura Aurea"@en .
+
+art:Q34661 a art:Event ;
+    rdfs:label "Gustav Klimt"@en ;
+    art:influenceDescription art:Q265533 ;
+    rdfs:comment "Documenta III"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q205751 ;
+    rdfs:comment "Venice Biennale"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q688909 ;
+    rdfs:comment "Armory Show"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q910743 ;
+    rdfs:comment "Free Secession"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q1121146 ;
+    rdfs:comment "Swiss National Exhibition Bern 1914"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q1165755 ;
+    rdfs:comment "Exposition Internationale des Arts et Techniques dans la Vie Moderne (1937)"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q1362126 ;
+    rdfs:comment "Les Joueurs de football"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q7196500 ;
+    rdfs:comment "Pinta Art Show"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q18624764 ;
+    rdfs:comment "Grosse Berliner Kunstausstellung"@en .
+
+art:Q5589 a art:Event ;
+    rdfs:label "Henri Matisse"@en ;
+    art:influenceDescription art:Q19721109 ;
+    rdfs:comment "Swiss National Exhibition 1939"@en .

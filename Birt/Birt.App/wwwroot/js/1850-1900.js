@@ -108,6 +108,10 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoff = 300) {
         }
         return response;
     } catch (error) {
+        if (error.message.includes('Cookie “GeoIP” has been rejected')) {
+            console.warn('Suppressed cookie error:', error.message);
+            return new Response(); // Return an empty response to suppress the error
+        }
         if (retries > 0) {
             await new Promise(resolve => setTimeout(resolve, backoff));
             return fetchWithRetry(url, options, retries - 1, backoff * 2);
@@ -176,7 +180,7 @@ async function displayPaintingInfluencesBetween1850And1900() {
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-        SELECT DISTINCT ?artist ?artistLabel ?influenceDescription WHERE {
+        SELECT DISTINCT ?artist ?artistLabel ?influenceDescription ?influenceDescriptionLabel WHERE {
             ?artist wdt:P106 wd:Q1028181.
             ?artist wdt:P569 ?birthDate.
             FILTER(?birthDate >= "1850-01-01"^^xsd:dateTime)
@@ -198,17 +202,17 @@ async function displayPaintingInfluencesBetween1850And1900() {
             }
         });
         const data = await response.json();
-        console.log('SPARQL endpoint data:', data);
+        // console.log('SPARQL endpoint data:', data);
 
         const allPaintingsData = { results: { bindings: [] } };
 
         const fetchPaintingsPromises = data.results.bindings.map(async (item) => {
             const artistId = item.artist.value.split('/').pop();
             const cachedData = await getCachedData(db, artistId);
-            console.log(`Cached data for artist ${artistId}:`, cachedData);
+            // console.log(`Cached data for artist ${artistId}:`, cachedData);
 
             if (cachedData && new Date().getTime() - cachedData.timestamp < cacheExpiryTime) {
-                console.log(`Taking data for artist ${artistId} from cache`);
+                // console.log(`Taking data for artist ${artistId} from cache`);
                 cachedData.data.results.bindings.forEach(painting => {
                     painting.artistLabel = item.artistLabel;
                     painting.artist = item.artist;
@@ -234,7 +238,7 @@ async function displayPaintingInfluencesBetween1850And1900() {
                 }
             });
             const paintingsData = await paintingsResponse.json();
-            console.log(`Paintings data for artist ${artistId}:`, paintingsData);
+            // console.log(`Paintings data for artist ${artistId}:`, paintingsData);
 
             paintingsData.results.bindings.forEach(painting => {
                 painting.artistLabel = item.artistLabel;
@@ -252,13 +256,63 @@ async function displayPaintingInfluencesBetween1850And1900() {
         // Display the data after all promises are resolved
         console.log('All paintings data:', allPaintingsData);
         displayPaintingInfluences(allPaintingsData, 'Paintings Influences Between 1850 and 1900');
+
+        // Show the visualization button
+        document.getElementById('showVisualization').style.display = 'block';
+
     } catch (error) {
         console.error('Failed to fetch data:', error);
     } finally {
         loadingIndicator.style.display = 'none'; // Hide loading indicator
     }
 }
+async function prepareData() {
+    try {
+        const response = await fetch('../ontology/Influence_description_ontology.ttl');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ontology data: ${response.statusText}`);
+        }
+        const text = await response.text();
+        const lines = text.split('\n').slice(4); // Skip the first 4 lines containing prefixes
+        const nodes = new Map();
+        const links = [];
 
+        console.log("Ontology data fetched successfully:", text);
+
+        let currentNode = null;
+        lines.forEach(line => {
+            line = line.trim();
+            if (line.startsWith('ex:Q')) {
+                const parts = line.split(' ');
+                currentNode = parts[0].replace('ex:', '');
+                const labelMatch = line.match(/rdfs:label\s+"([^"]+)"@en/);
+                if (labelMatch) {
+                    const label = labelMatch[1];
+                    nodes.set(currentNode, { id: currentNode, label: label, group: 'artist' });
+                    console.log(`Node added: ${currentNode} - ${label}`);
+                } else {
+                    console.log(`No label found for node: ${currentNode}`);
+                }
+            } else if (line.includes('ex:influenceDescription')) {
+                const parts = line.split(' ');
+                const influenceId = parts[2].replace('ex:', '').replace(';', '');
+                links.push({ source: currentNode, target: influenceId });
+                if (!nodes.has(influenceId)) {
+                    nodes.set(influenceId, { id: influenceId, label: influenceId, group: 'event' });
+                }
+                console.log(`Link added: ${currentNode} -> ${influenceId}`);
+            }
+        });
+
+        console.log("Nodes inside the function:", Array.from(nodes.values()));
+        console.log("Links inside the function:", links);
+
+        return { nodes: Array.from(nodes.values()), links };
+    } catch (error) {
+        console.error("Error in prepareData:", error);
+        return { nodes: [], links: [] };
+    }
+}
 
 
 export { displayPaintingInfluencesBetween1850And1900 };
