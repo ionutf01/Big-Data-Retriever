@@ -4,7 +4,6 @@
 <h1>Compare Paintings</h1>
 
 <form id="comparisonForm" method="get">
-
     <div class="form-group">
         <label for="artist">Select Artist:</label>
         <select id="artist" name="artist" class="form-control" onchange="updateMessage()">
@@ -35,15 +34,13 @@
     <p id="dynamicMessage" style="font-style: italic; color: #555;">
         Select an artist and a museum to see paintings from the artist that are not in the museum.
     </p>
-
-
-
-
+    
     <button type="submit" class="btn btn-primary">Compare</button>
 </form>
 
 <div id="results">
     <h2>Results</h2>
+    <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
     <table class="table" id="resultsTable" style="display: none;">
         <thead>
         <tr>
@@ -58,10 +55,61 @@
     <p id="noResults" style="display: none;">No results found.</p>
 </div>
 
+<hr />
+
+<h1>Find Museums and Other Artists</h1>
+
+<form id="artistMuseumForm" method="get">
+    <div class="form-group">
+        <label for="selectedArtist">Select Artist:</label>
+        <select id="selectedArtist" name="selectedArtist" class="form-control">
+            <option value="">-- Select Artist --</option>
+            <option value="Q762">Leonardo da Vinci</option>
+            <option value="Q5582">Vincent van Gogh</option>
+            <option value="Q5593">Pablo Picasso</option>
+            <option value="Q5592">Michelangelo</option>
+            <option value="Q296">Claude Monet</option>
+            <option value="Q5598">Rembrandt</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Find Museums</button>
+</form>
+
+<div id="museumResults">
+    <h2>Museum and Other Artists</h2>
+    <table class="table" id="museumResultsTable" style="display: none;">
+        <thead>
+        <tr>
+            <th>Museum</th>
+            <th>Other Artists</th>
+        </tr>
+        </thead>
+        <tbody id="museumResultsBody">
+        </tbody>
+    </table>
+    <p id="noMuseumResults" style="display: none;">No results found.</p>
+</div>
+
 <script type="module">
-    import { fetchComparisonResults, updateMessage } from '/js/museum-comparison.js';
+    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists } from '/js/museum-comparison.js';
 
     document.getElementById('comparisonForm').addEventListener('submit', fetchComparisonResults);
     document.getElementById('artist').addEventListener("change", updateMessage);
     document.getElementById('museum').addEventListener("change", updateMessage);
+    document.getElementById('artistMuseumForm').addEventListener('submit', fetchMuseumAndArtists);
+    window.toggleResultsTable = function () {
+        const resultsTable = document.getElementById("resultsTable");
+        const hideTableBtn = document.getElementById("hideTableBtn");
+
+        if (resultsTable.style.display === "none") {
+            resultsTable.style.display = "table";
+            hideTableBtn.textContent = "Hide Table";
+        } else {
+            resultsTable.style.display = "none";
+            hideTableBtn.textContent = "Show Table";
+        }
+    };
+
+
 </script>
