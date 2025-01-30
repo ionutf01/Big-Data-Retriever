@@ -1,3 +1,4 @@
+import { openModal } from './site.js';
 /*
 * Painting influences between 1850 and 1900
 * */
@@ -73,17 +74,16 @@ async function displayPaintingInfluences(data, title = 'Top Painting Influences 
             paintingCell.style.border = '1px solid #ddd';
             paintingCell.style.padding = '8px';
             if (item.workImage && item.workImage.value) {
-                const paintingLink = document.createElement('a');
-                paintingLink.href = `https://www.wikidata.org/wiki/${item.work.value.split('/').pop()}`;
-                paintingLink.target = '_blank';
-                paintingLink.rel = 'noopener noreferrer';
                 const paintingImg = document.createElement('img');
                 paintingImg.src = item.workImage.value;
                 paintingImg.alt = item.workLabel.value;
                 paintingImg.width = 100;
                 paintingImg.height = 100;
-                paintingLink.appendChild(paintingImg);
-                paintingCell.appendChild(paintingLink);
+                paintingImg.style.cursor = 'pointer'; // Change cursor to pointer
+                paintingImg.addEventListener('click', () => {
+                    openModal(paintingImg.src, paintingImg.alt); // Open the modal with the clicked image
+                });
+                paintingCell.appendChild(paintingImg);
             } else {
                 continue; // Skip rows where the painting is not available
             }
@@ -209,7 +209,6 @@ async function displayPaintingInfluencesBetween1850And1900() {
         const fetchPaintingsPromises = data.results.bindings.map(async (item) => {
             const artistId = item.artist.value.split('/').pop();
             const cachedData = await getCachedData(db, artistId);
-            // console.log(`Cached data for artist ${artistId}:`, cachedData);
 
             if (cachedData && new Date().getTime() - cachedData.timestamp < cacheExpiryTime) {
                 // console.log(`Taking data for artist ${artistId} from cache`);
@@ -244,6 +243,7 @@ async function displayPaintingInfluencesBetween1850And1900() {
                 painting.artistLabel = item.artistLabel;
                 painting.artist = item.artist;
                 painting.influenceDescription = item.influenceDescription;
+                painting.workImage = item.workImage;
             });
 
             await setCachedData(db, artistId, paintingsData);
@@ -255,7 +255,7 @@ async function displayPaintingInfluencesBetween1850And1900() {
 
         // Display the data after all promises are resolved
         console.log('All paintings data:', allPaintingsData);
-        displayPaintingInfluences(allPaintingsData, 'Paintings Influences Between 1850 and 1900');
+        await displayPaintingInfluences(allPaintingsData, 'Paintings Influences Between 1850 and 1900');
 
         // Show the visualization button
         document.getElementById('showVisualization').style.display = 'block';
