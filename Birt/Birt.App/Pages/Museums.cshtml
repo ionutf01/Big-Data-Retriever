@@ -41,6 +41,8 @@
 <div id="results">
     <h2>Results</h2>
     <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
+    <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
+    <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
     <table class="table" id="resultsTable" style="display: none;">
         <thead>
         <tr>
@@ -92,12 +94,22 @@
 </div>
 
 <script type="module">
-    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists } from '/js/museum-comparison.js';
+    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, exportTableToCSV,exportTableToHTML } from '/js/museum-comparison.js';
 
-    document.getElementById('comparisonForm').addEventListener('submit', fetchComparisonResults);
+    document.getElementById('comparisonForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetchComparisonResults(event).then(() => {
+            document.getElementById("exportCsv").style.display = 'inline-block';
+            document.getElementById("exportHtml").style.display = 'inline-block';
+            document.getElementById("hideTableBtn").style.display = 'inline-block';
+        });
+    });
     document.getElementById('artist').addEventListener("change", updateMessage);
     document.getElementById('museum').addEventListener("change", updateMessage);
     document.getElementById('artistMuseumForm').addEventListener('submit', fetchMuseumAndArtists);
+
+    const exportCsvBtn = document.getElementById("exportCsv");
+    const exportHtmlBtn = document.getElementById("exportHtml");
     window.toggleResultsTable = function () {
         const resultsTable = document.getElementById("resultsTable");
         const hideTableBtn = document.getElementById("hideTableBtn");
@@ -105,11 +117,25 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
+            exportCsvBtn.style.display = "inline-block";
+            exportHtmlBtn.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
+            exportCsvBtn.style.display = "none";
+            exportHtmlBtn.style.display = "none";
         }
     };
+
+    document.getElementById("exportCsv").addEventListener("click", () => {
+        const filename = 'comparison_results.csv';
+        exportTableToCSV(filename);
+    });
+
+    document.getElementById("exportHtml").addEventListener("click", () => {
+        const filename = 'comparison_results.html';
+        exportTableToHTML(filename);
+    });
 
 
 </script>
