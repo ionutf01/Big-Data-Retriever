@@ -1,6 +1,9 @@
 @prefix art: <http://art.org/ontology#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+art:influenceDescription owl:sameAs <https://www.wikidata.org/wiki/Property:P737> .
 
 art:Q356644 a art:Event ;
     rdfs:label "Albert Edelfelt"@en ;
