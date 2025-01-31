@@ -63,3 +63,122 @@ body {
 .export-button:hover {
     background-color: #45a049; /* Darker green on hover */
 }
+.expanded {
+    width: 300px; /* Adjust the size as needed */
+    height: 300px; /* Adjust the size as needed */
+    transition: width 0.3s ease, height 0.3s ease;
+}
+/* Add this CSS to your stylesheet */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+.modal-content {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal img {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    border: none;
+}
+.modal-content, #caption {
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@keyframes zoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Add this CSS to your stylesheet */
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.modal.fade-out {
+    animation-name: fadeOut;
+    animation-duration: 0.6s;
+    animation-fill-mode: forwards;
+}
+
+/* styles for visualization */
+.link {
+  stroke: #999;
+  stroke-opacity: 0.6;
+  stroke-width: 1.5;
+}
+.link.hasPredicate {
+  stroke: green;
+}
+.link.hasObject {
+  stroke: orange;
+}
+.node circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+.node.subject circle {
+  fill: blue;
+}
+.node.predicate circle {
+  fill: green;
+}
+.node.object circle {
+  fill: red;
+}
+.node:hover circle {
+  stroke: #000;
+  stroke-width: 2.5px;
+}
+.node text {
+  fill: #333;
+}
+.tooltip {
+  position: absolute;
+  text-align: center;
+  width: auto;
+  height: auto;
+  padding: 5px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+

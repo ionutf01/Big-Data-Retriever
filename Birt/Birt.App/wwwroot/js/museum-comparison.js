@@ -1,3 +1,4 @@
+import { openModal } from './site.js';
 export async function fetchComparisonResults(event) {
     event.preventDefault();
 
@@ -53,15 +54,19 @@ export async function fetchComparisonResults(event) {
             results.forEach(result => {
                 const row = document.createElement("tr");
 
-                const imageCell = document.createElement("td");
+               const imageCell = document.createElement("td");
                 if (result.image) {
                     const img = document.createElement("img");
                     img.src = result.image.value;
                     img.alt = result.title.value;
                     img.style.maxWidth = "100px";
+                    img.style.cursor = 'pointer'; // Change cursor to pointer
+                    img.addEventListener('click', () => {
+                        openModal(img.src, img.alt); // Open the modal with the clicked image
+                    });
                     imageCell.appendChild(img);
-                    row.appendChild(imageCell);
                 }
+                row.appendChild(imageCell);
 
                 const titleCell = document.createElement("td");
                 titleCell.textContent = result.title.value;
@@ -254,8 +259,6 @@ async function fetchAlternativePaintingImages(paintings, museumIds, artistIds) {
     return paintingsWithImages;
 }
 
-
-
 async function runSPARQLQuery(query) {
     const endpointUrl = "https://query.wikidata.org/sparql";
     const fullUrl = `${endpointUrl}?query=${encodeURIComponent(query)}`;
@@ -317,6 +320,10 @@ function populateTable(results) {
                 img.alt = result.otherPaintingLabel;
                 img.style.maxWidth = "100px";
                 img.style.height = "auto";
+                img.style.cursor = 'pointer'; // Change cursor to pointer
+                img.addEventListener('click', () => {
+                    openModal(img.src, img.alt); // Open the modal with the clicked image
+                });
                 imageCell.appendChild(img);
             }
             row.appendChild(imageCell);
