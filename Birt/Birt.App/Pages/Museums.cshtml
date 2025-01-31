@@ -40,9 +40,11 @@
 
 <div id="results">
     <h2>Results</h2>
-    <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
-    <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
-    <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
+    <div>
+        <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
+        <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
+        <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
+    </div>
     <table class="table" id="resultsTable" style="display: none;">
         <thead>
         <tr>
@@ -80,9 +82,11 @@
 
 <div id="museumResults">
     <h2>Museum and Other Artists</h2>
-    <button id="hideMuseumResultsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleMuseumResultsTable()">Hide Table</button>
-    <button id="exportMuseumCsv" class="export-button" style="display: none;">Export CSV</button>
-    <button id="exportMuseumHtml" class="export-button" style="display: none;">Export HTML</button>
+    <div>
+        <button id="hideMuseumResultsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleMuseumResultsTable()">Hide Table</button>
+        <button id="exportMuseumCsv" class="export-button" style="display: none;">Export CSV</button>
+        <button id="exportMuseumHtml" class="export-button" style="display: none;">Export HTML</button>
+    </div>
     <table class="table" id="museumResultsTable" style="display: none;">
         <thead>
         <tr>
@@ -141,7 +145,11 @@
 
 <div id="similarPaintingsResults">
     <h2>Similar Paintings</h2>
-    <button id="hideSimilarPaintingsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleSimilarPaintingsTable()">Hide Table</button>
+    <div>
+        <button id="hideSimilarPaintingsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleSimilarPaintingsTable()">Hide Table</button>
+        <button id="exportSimilarCsv" class="export-button" style="display: none;">Export CSV</button>
+        <button id="exportSimilarHtml" class="export-button" style="display: none;">Export HTML</button>
+    </div>
     <table class="table" id="similarPaintingsTable" style="display: none;">
         <thead>
         <tr>
@@ -195,9 +203,13 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
+            exportCsvBtn.style.display = "inline-block";
+            exportHtmlBtn.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
+            exportCsvBtn.style.display = "none";
+            exportHtmlBtn.style.display = "none";
         }
     };
     window.toggleMuseumResultsTable = function () {
@@ -207,9 +219,13 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
+            exportCsvBtn.style.display = "inline-block";
+            exportHtmlBtn.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
+            exportCsvBtn.style.display = "none";
+            exportHtmlBtn.style.display = "none";
         }
     };
 
