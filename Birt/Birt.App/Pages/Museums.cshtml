@@ -40,7 +40,11 @@
 
 <div id="results">
     <h2>Results</h2>
-    <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
+    <div>
+        <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
+        <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
+        <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
+    </div>
     <table class="table" id="resultsTable" style="display: none;">
         <thead>
         <tr>
@@ -78,7 +82,11 @@
 
 <div id="museumResults">
     <h2>Museum and Other Artists</h2>
-    <button id="hideMuseumResultsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleMuseumResultsTable()">Hide Table</button>
+    <div>
+        <button id="hideMuseumResultsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleMuseumResultsTable()">Hide Table</button>
+        <button id="exportMuseumCsv" class="export-button" style="display: none;">Export CSV</button>
+        <button id="exportMuseumHtml" class="export-button" style="display: none;">Export HTML</button>
+    </div>
     <table class="table" id="museumResultsTable" style="display: none;">
         <thead>
         <tr>
@@ -90,6 +98,15 @@
         </tbody>
     </table>
     <p id="noMuseumResults" style="display: none;">No results found.</p>
+</div>
+
+<div id="previewModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Preview Export</h2>
+        <pre id="previewContent"></pre>
+        <button id="confirmDownload" class="btn btn-primary">Download</button>
+    </div>
 </div>
 <hr />
 
@@ -128,7 +145,11 @@
 
 <div id="similarPaintingsResults">
     <h2>Similar Paintings</h2>
-    <button id="hideSimilarPaintingsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleSimilarPaintingsTable()">Hide Table</button>
+    <div>
+        <button id="hideSimilarPaintingsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleSimilarPaintingsTable()">Hide Table</button>
+        <button id="exportSimilarCsv" class="export-button" style="display: none;">Export CSV</button>
+        <button id="exportSimilarHtml" class="export-button" style="display: none;">Export HTML</button>
+    </div>
     <table class="table" id="similarPaintingsTable" style="display: none;">
         <thead>
         <tr>
@@ -151,13 +172,38 @@
 </div>
 
 <script type="module">
-    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, fetchSimilarPaintings } from '/js/museum-comparison.js';
+    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, fetchSimilarPaintings, exportTableToCSV,exportTableToHTML } from '/js/museum-comparison.js';
 
-    document.getElementById('comparisonForm').addEventListener('submit', fetchComparisonResults);
+    document.getElementById('comparisonForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetchComparisonResults(event).then(() => {
+            document.getElementById("exportCsv").style.display = 'inline-block';
+            document.getElementById("exportHtml").style.display = 'inline-block';
+            document.getElementById("hideTableBtn").style.display = 'inline-block';
+        });
+    });
     document.getElementById('artist').addEventListener("change", updateMessage);
     document.getElementById('museum').addEventListener("change", updateMessage);
     document.getElementById('artistMuseumForm').addEventListener('submit', fetchMuseumAndArtists);
-    document.getElementById('similarPaintingsForm').addEventListener('submit', fetchSimilarPaintings);
+    document.getElementById('similarPaintingsForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetchSimilarPaintings(event).then(() => {
+            document.getElementById("exportSimilarCsv").style.display = 'inline-block';
+            document.getElementById("exportSimilarHtml").style.display = 'inline-block';
+            document.getElementById("hideSimilarPaintingsBtn").style.display = 'inline-block';
+        });
+    });
+    document.getElementById('artistMuseumForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetchMuseumAndArtists(event).then(() => {
+            document.getElementById("exportMuseumCsv").style.display = 'inline-block';
+            document.getElementById("exportMuseumHtml").style.display = 'inline-block';
+            document.getElementById("hideTableBtn").style.display = 'inline-block';
+        });
+    });
+
+    const exportCsvBtnComparePaintings = document.getElementById("exportCsv");
+    const exportHtmlBtnComparePaintings = document.getElementById("exportHtml");
     window.toggleResultsTable = function () {
         const resultsTable = document.getElementById("resultsTable");
         const hideTableBtn = document.getElementById("hideTableBtn");
@@ -165,11 +211,18 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
+            exportCsvBtnComparePaintings.style.display = "inline-block";
+            exportHtmlBtnComparePaintings.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
+            exportCsvBtnComparePaintings.style.display = "none";
+            exportHtmlBtnComparePaintings.style.display = "none";
         }
     };
+
+    const exportCsvBtnFindMuseums = document.getElementById("exportMuseumCsv");
+    const exportHtmlBtnFindMuseums = document.getElementById("exportMuseumHtml");
     window.toggleMuseumResultsTable = function () {
         const resultsTable = document.getElementById("museumResultsTable");
         const hideTableBtn = document.getElementById("hideMuseumResultsBtn");
@@ -177,12 +230,18 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
+            exportCsvBtnFindMuseums.style.display = "inline-block";
+            exportHtmlBtnFindMuseums.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
+            exportCsvBtnFindMuseums.style.display = "none";
+            exportHtmlBtnFindMuseums.style.display = "none";
         }
     };
 
+    const exportCsvBtnSimilarPaintings = document.getElementById("exportSimilarCsv");
+    const exportHtmlBtnSimilarPaintings = document.getElementById("exportSimilarHtml");   
     window.toggleSimilarPaintingsTable = function () {
         const resultsTable = document.getElementById("similarPaintingsTable");
         const hideTableBtn = document.getElementById("hideSimilarPaintingsBtn");
@@ -190,11 +249,54 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
+            exportCsvBtnSimilarPaintings.style.display = "inline-block";
+            exportHtmlBtnSimilarPaintings.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
+            exportCsvBtnSimilarPaintings.style.display = "none";
+            exportHtmlBtnSimilarPaintings.style.display = "none";
         }
     };
 
+    document.getElementById("exportCsv").addEventListener("click", () => {
+        if (confirm("Do you want to download the results as CSV?")) {
+            const artistSelect = document.getElementById("artist");
+            const museumSelect = document.getElementById("museum");
+            const artistName = artistSelect.options[artistSelect.selectedIndex].text;
+            const museumName = museumSelect.options[museumSelect.selectedIndex].text;
+            const filename = `${artistName}_paintings_not_from_${museumName}.csv`;
+            exportTableToCSV(filename);
+        }
+    });
+
+    document.getElementById("exportHtml").addEventListener("click", () => {
+        if (confirm("Do you want to download the results as HTML?")) {
+            const artistSelect = document.getElementById("artist");
+            const museumSelect = document.getElementById("museum");
+            const artistName = artistSelect.options[artistSelect.selectedIndex].text;
+            const museumName = museumSelect.options[museumSelect.selectedIndex].text;
+            const filename = `${artistName}_paintings_not_from_${museumName}.html`;
+            exportTableToHTML(filename);
+        }
+    });
+
+    document.getElementById("exportMuseumCsv").addEventListener("click", () => {
+        if (confirm("Do you want to download the museum results as CSV?")) {
+            const selectedArtist = document.getElementById("selectedArtist");
+            const artistName = selectedArtist.options[selectedArtist.selectedIndex].text;
+            const filename = `${artistName}_museum_results.csv`;
+            exportTableToCSV(filename, "museumResultsTable");
+        }
+    });
+
+    document.getElementById("exportMuseumHtml").addEventListener("click", () => {
+        if (confirm("Do you want to download the museum results as HTML?")) {
+            const selectedArtist = document.getElementById("selectedArtist");
+            const artistName = selectedArtist.options[selectedArtist.selectedIndex].text;
+            const filename = `${artistName}_museum_results.html`;
+            exportTableToHTML(filename, "museumResultsTable");
+        }
+    });
 
 </script>

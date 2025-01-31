@@ -440,3 +440,38 @@ export async function fetchSimilarPaintings(event) {
     }
 }
 
+
+export function exportTableToCSV(filename, tableId = "resultsTable") {
+    const csv = [];
+    const rows = document.querySelectorAll(`#${tableId} tr`);
+
+    for (const row of rows) {
+        const cols = row.querySelectorAll("td, th");
+        const rowData = [];
+        for (const col of cols) {
+            rowData.push(col.innerText);
+        }
+        csv.push(rowData.join(","));
+    }
+
+    const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+    const downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+
+export function exportTableToHTML(filename, tableId = "resultsTable") {
+    const table = document.querySelector(`#${tableId}`).outerHTML;
+    const htmlFile = new Blob([table], { type: "text/html" });
+    const downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(htmlFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}

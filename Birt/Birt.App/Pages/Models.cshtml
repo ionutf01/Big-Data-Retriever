@@ -38,6 +38,9 @@
         <img class="modal-content" id="img01">
         <div id="caption"></div>
     </div>
+    
+    <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
+    <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
 
     <div id="criteria-form" style="display: none; margin-top: 20px;">
         <h2>Select Criteria</h2>
@@ -82,12 +85,16 @@
     <ul id="results"></ul>
     <div id="comparison"></div>
     <script type="module">
-        import { toggleCriteriaForm, getWorksOfArt, handleQuery, visualizeRDFDataImproved, closeVisualization } from '/js/main.js';
+        import { toggleCriteriaForm, getWorksOfArt, handleQuery, visualizeRDFDataImproved, closeVisualization, exportTableToCSV, exportTableToHTML} from '/js/main.js';
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById("allworksofart").addEventListener("click", getWorksOfArt);
+            document.getElementById("allworksofart").addEventListener("click", () => {
+                getWorksOfArt();
+                document.getElementById("exportCsv").style.display = 'inline-block';
+                document.getElementById("exportHtml").style.display = 'inline-block';
+            });
             document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
             document.getElementById("handlequery").addEventListener("click", handleQuery);
-
+        
             document.getElementById('showVisualization').addEventListener('click', () => {
                 document.getElementById('visualization').style.display = 'block';
                 document.getElementById('closeVisualization').style.display = 'block';
@@ -96,11 +103,26 @@
             document.getElementById('closeVisualization').addEventListener('click', () => {
                 closeVisualization();
             });
+        
+            document.getElementById("exportCsv").addEventListener("click", () => {
+                if (confirm("Do you want to download the results as CSV?")) {
+                    const dropdown = document.getElementById("queryDropdown");
+                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                    const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.csv`;
+                    exportTableToCSV(filename);
+                }
+            });
+        
+            document.getElementById("exportHtml").addEventListener("click", () => {
+                if (confirm("Do you want to download the results as HTML?")) {
+                    const dropdown = document.getElementById("queryDropdown");
+                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                    const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.html`;
+                    exportTableToHTML(filename);
+                }
+            });
         });
     </script>
-    
-    
-
 </div>
 </body>
 </html>

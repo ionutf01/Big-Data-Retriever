@@ -357,65 +357,95 @@ async function fetchArtistsInfluencedByVanGogh(notableWork = '') {
 }
 function displayArtistsInfluencedByVanGogh(data) {
     const loadingIndicator = document.getElementById('loading');
-    loadingIndicator.style.display = 'block'; // Show loading indicator
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
     const container = document.getElementById('results');
-    container.innerHTML = '';
+    container.innerHTML = ''; // Clear previous results
 
-    const displayedWorks = new Set();
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    // Add headers for the table
+    const headerRow = document.createElement('tr');
+    const headers = ['Artist', 'Work', 'Image'];
+    headers.forEach(headerText => {
+        const header = document.createElement('th');
+        header.textContent = headerText;
+        header.style.border = '1px solid #ddd';
+        header.style.padding = '8px';
+        header.style.textAlign = 'left';
+        header.style.backgroundColor = '#f2f2f2';
+        headerRow.appendChild(header);
+    });
+    table.appendChild(headerRow);
+
+    const addedArtists = new Set();
 
     data.results.bindings.forEach(item => {
-        if (!item.workImage || !item.work || displayedWorks.has(item.work.value)) {
-            return; // Skip items without a work image, work, or already displayed works
+        const artist = item.artistLabel.value;
+        const artistId = item.artist.value.split('/').pop();
+        const work = item.workLabel ? item.workLabel.value : 'N/A';
+        const workId = item.work ? item.work.value.split('/').pop() : null;
+        const workImage = item.workImage ? item.workImage.value : 'N/A';
+
+        // Skip rows with any column containing "N/A" or duplicate artists
+        if (artist === 'N/A' || work === 'N/A' || workImage === 'N/A' || addedArtists.has(artist)) {
+            return;
         }
 
-        displayedWorks.add(item.work.value);
+        addedArtists.add(artist);
 
-        const artist = document.createElement('div');
-        artist.className = 'artist';
-        artist.style.border = '1px solid #ddd';
-        artist.style.padding = '10px';
-        artist.style.margin = '10px 0';
-        artist.style.borderRadius = '5px';
-        artist.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-        artist.style.display = 'flex';
-        artist.style.alignItems = 'center';
+        const row = document.createElement('tr');
 
-        const artistInfo = document.createElement('div');
-        artistInfo.style.flex = '1';
+        // Artist column
+        const artistCell = document.createElement('td');
+        artistCell.style.border = '1px solid #ddd';
+        artistCell.style.padding = '8px';
+        const artistLink = document.createElement('a');
+        artistLink.href = `https://www.wikidata.org/wiki/${artistId}`;
+        artistLink.target = '_blank';
+        artistLink.rel = 'noopener noreferrer';
+        artistLink.textContent = artist;
+        artistCell.appendChild(artistLink);
+        row.appendChild(artistCell);
 
-        const artistName = document.createElement('h3');
-        artistName.textContent = item.artistLabel.value;
-        artistName.style.marginBottom = '5px';
-        artistInfo.appendChild(artistName);
-
-        if (item.workLabel) {
-            const notableWork = document.createElement('p');
-            notableWork.textContent = `${item.workLabel.value}`;
-            notableWork.style.marginBottom = '5px';
-            artistInfo.appendChild(notableWork);
+        // Work column
+        const workCell = document.createElement('td');
+        workCell.style.border = '1px solid #ddd';
+        workCell.style.padding = '8px';
+        if (workId) {
+            const workLink = document.createElement('a');
+            workLink.href = `https://www.wikidata.org/wiki/${workId}`;
+            workLink.target = '_blank';
+            workLink.rel = 'noopener noreferrer';
+            workLink.textContent = work;
+            workCell.appendChild(workLink);
+        } else {
+            workCell.textContent = work;
         }
+        row.appendChild(workCell);
 
-        artist.appendChild(artistInfo);
-
-        const workImage = document.createElement('img');
-        workImage.src = item.workImage.value;
-        workImage.alt = item.workLabel ? item.workLabel.value : 'Work Image';
-        workImage.style.maxWidth = '150px';
-        workImage.style.marginLeft = '10px';
-        workImage.style.borderRadius = '5px';
-        workImage.style.cursor = 'pointer'; // Change cursor to pointer
-        workImage.addEventListener('click', () => {
-            openModal(workImage.src, workImage.alt); // Open the modal with the clicked image
+        // Image column
+        const imgCell = document.createElement('td');
+        imgCell.style.border = '1px solid #ddd';
+        imgCell.style.padding = '8px';
+        const img = document.createElement('img');
+        img.src = workImage;
+        img.alt = work;
+        img.width = 100;
+        img.height = 100;
+        img.loading = 'lazy';
+        img.style.cursor = 'pointer'; // Change cursor to pointer
+        img.addEventListener('click', () => {
+            openModal(img.src, img.alt); // Open the modal with the clicked image
         });
-        workImage.onload = () => {
-            const loadingIndicator = document.getElementById('loading');
-            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
-        };
-        artist.appendChild(workImage);
+        imgCell.appendChild(img);
+        row.appendChild(imgCell);
 
-        loadingIndicator.style.display = 'none'; // Hide loading indicator
-        container.appendChild(artist);
+        table.appendChild(row);
     });
+
+    container.appendChild(table);
 }
 
 /*
