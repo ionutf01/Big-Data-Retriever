@@ -403,6 +403,10 @@ function displayArtistsInfluencedByVanGogh(data) {
         workImage.style.maxWidth = '150px';
         workImage.style.marginLeft = '10px';
         workImage.style.borderRadius = '5px';
+        workImage.style.cursor = 'pointer'; // Change cursor to pointer
+        workImage.addEventListener('click', () => {
+            openModal(workImage.src, workImage.alt); // Open the modal with the clicked image
+        });
         workImage.onload = () => {
             const loadingIndicator = document.getElementById('loading');
             loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
@@ -471,10 +475,10 @@ function displayResults(data) {
         img.width = 100;
         img.height = 100;
         img.loading = 'lazy';
-        img.onload = () => {
-            const loadingIndicator = document.getElementById('loading');
-            loadingIndicator.style.display = 'none'; // Hide loading indicator when image is loaded
-        };
+        img.style.cursor = 'pointer'; // Change cursor to pointer
+        img.addEventListener('click', () => {
+            openModal(img.src, img.alt); // Open the modal with the clicked image
+        });
         imgCell.appendChild(img);
         row.appendChild(imgCell);
 
@@ -508,7 +512,6 @@ function displayResults(data) {
     loadingIndicator.style.display = 'none'; // Hide loading indicator
     resultsContainer.appendChild(table);
 }
-
 async function displayInfluencedByGogh() {
     const artistsQuery = `
         SELECT DISTINCT ?artist ?artistLabel WHERE {
@@ -616,6 +619,10 @@ function displayResultsPaintings(data) {
         img.width = 100;
         img.height = 100;
         img.loading = 'lazy';
+        img.style.cursor = 'pointer'; // Change cursor to pointer
+        img.addEventListener('click', () => {
+            openModal(img.src, img.alt); // Open the modal with the clicked image
+        });
         imgCell.appendChild(img);
         row.appendChild(imgCell);
 
@@ -666,5 +673,34 @@ function displayResultsPaintings(data) {
     });
 
     resultsContainer.appendChild(table);
+}
+
+export function openModal(src, alt) {
+    const modal = document.getElementById('myModal');
+    const modalImg = document.getElementById('img01');
+    const captionText = document.getElementById('caption');
+    modal.style.display = 'block';
+    modalImg.src = src;
+    captionText.innerHTML = alt;
+
+    const span = document.getElementsByClassName('close')[0];
+    span.onclick = function() {
+        closeModal();
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+}
+
+function closeModal() {
+    const modal = document.getElementById('myModal');
+    modal.classList.add('fade-out');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        modal.classList.remove('fade-out');
+    }, 600); // Match the duration of the fade-out animation
 }
 export { getWorksOfArtGogh, getWorksOfArtDaVinci, fetchSimilarArtists, fetchArtistsInfluencedByVanGogh, displayTopPaintingsInfluencedByGogh };
