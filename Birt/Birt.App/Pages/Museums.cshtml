@@ -80,6 +80,7 @@
 
 <div id="museumResults">
     <h2>Museum and Other Artists</h2>
+    <button id="hideMuseumResultsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleMuseumResultsTable()">Hide Table</button>
     <button id="exportMuseumCsv" class="export-button" style="display: none;">Export CSV</button>
     <button id="exportMuseumHtml" class="export-button" style="display: none;">Export HTML</button>
     <table class="table" id="museumResultsTable" style="display: none;">
@@ -103,6 +104,58 @@
         <button id="confirmDownload" class="btn btn-primary">Download</button>
     </div>
 </div>
+<hr />
+
+<h1>Find Similar Paintings</h1>
+
+<form id="similarPaintingsForm" method="get">
+    <div class="form-group">
+        <label for="similarArtist">Select Artist:</label>
+        <select id="similarArtist" name="similarArtist" class="form-control">
+            <option value="">-- Select Artist --</option>
+            <option value="Q762">Leonardo da Vinci</option>
+            <option value="Q5582">Vincent van Gogh</option>
+            <option value="Q5593">Pablo Picasso</option>
+            <option value="Q5592">Michelangelo</option>
+            <option value="Q296">Claude Monet</option>
+            <option value="Q5598">Rembrandt</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="similarMuseum">Select Museum:</label>
+        <select id="similarMuseum" name="similarMuseum" class="form-control">
+            <option value="">-- Select Museum --</option>
+            <option value="Q19675">Louvre Museum</option>
+            <option value="Q6373">British Museum</option>
+            <option value="Q160236">Metropolitan Museum of Art</option>
+            <option value="Q190804">Rijksmuseum</option>
+            <option value="Q160112">Prado Museum</option>
+            <option value="Q51252">Uffizi Gallery</option>
+            <option value="Q224124">Van Gogh Museum</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Find Similar Paintings</button>
+</form>
+
+<div id="similarPaintingsResults">
+    <h2>Similar Paintings</h2>
+    <button id="hideSimilarPaintingsBtn" class="btn btn-secondary" style="display: none;" onclick="toggleSimilarPaintingsTable()">Hide Table</button>
+    <table class="table" id="similarPaintingsTable" style="display: none;">
+        <thead>
+        <tr>
+            <th>Painting</th>
+            <th>Artist</th>
+            <th>Museum</th>
+            <th>Image</th>
+        </tr>
+        </thead>
+        <tbody id="similarPaintingsBody">
+        </tbody>
+    </table>
+    <p id="noSimilarResults" style="display: none;">No results found.</p>
+</div>
 
 <div id="myModal" class="modal">
     <span class="close">&times;</span>
@@ -111,7 +164,7 @@
 </div>
 
 <script type="module">
-    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, exportTableToCSV,exportTableToHTML } from '/js/museum-comparison.js';
+    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, fetchSimilarPaintings, exportTableToCSV,exportTableToHTML } from '/js/museum-comparison.js';
 
     document.getElementById('comparisonForm').addEventListener('submit', (event) => {
         event.preventDefault();
@@ -123,6 +176,8 @@
     });
     document.getElementById('artist').addEventListener("change", updateMessage);
     document.getElementById('museum').addEventListener("change", updateMessage);
+    document.getElementById('artistMuseumForm').addEventListener('submit', fetchMuseumAndArtists);
+    document.getElementById('similarPaintingsForm').addEventListener('submit', fetchSimilarPaintings);
     document.getElementById('artistMuseumForm').addEventListener('submit', (event) => {
         event.preventDefault();
         fetchMuseumAndArtists(event).then(() => {
@@ -136,6 +191,31 @@
     window.toggleResultsTable = function () {
         const resultsTable = document.getElementById("resultsTable");
         const hideTableBtn = document.getElementById("hideTableBtn");
+
+        if (resultsTable.style.display === "none") {
+            resultsTable.style.display = "table";
+            hideTableBtn.textContent = "Hide Table";
+        } else {
+            resultsTable.style.display = "none";
+            hideTableBtn.textContent = "Show Table";
+        }
+    };
+    window.toggleMuseumResultsTable = function () {
+        const resultsTable = document.getElementById("museumResultsTable");
+        const hideTableBtn = document.getElementById("hideMuseumResultsBtn");
+
+        if (resultsTable.style.display === "none") {
+            resultsTable.style.display = "table";
+            hideTableBtn.textContent = "Hide Table";
+        } else {
+            resultsTable.style.display = "none";
+            hideTableBtn.textContent = "Show Table";
+        }
+    };
+
+    window.toggleSimilarPaintingsTable = function () {
+        const resultsTable = document.getElementById("similarPaintingsTable");
+        const hideTableBtn = document.getElementById("hideSimilarPaintingsBtn");
 
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
