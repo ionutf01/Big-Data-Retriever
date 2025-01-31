@@ -81,7 +81,7 @@ export async function fetchComparisonResults(event) {
         } else {
             resultsTable.style.display = "none";
             noResults.style.display = "block";
-            hideTableBtn.style.display = "none"; // Hide button if no results
+            hideTableBtn.style.display = "none"; 
         }
     } catch (error) {
         console.error("Error fetching SPARQL data:", error);
@@ -297,7 +297,7 @@ function populateTable(results) {
     if (results.length > 0) {
         resultsTable.style.display = "table";
         noResults.style.display = "none";
-
+        document.getElementById("hideMuseumResultsBtn").style.display = "inline-block";
         results.forEach(result => {
             const row = document.createElement("tr");
 
@@ -337,3 +337,106 @@ function populateTable(results) {
         noResults.style.display = "block";
     }
 }
+
+export async function fetchSimilarPaintings(event) {
+    event.preventDefault();
+
+    const artistId = document.getElementById("similarArtist").value;
+    const museumId = document.getElementById("similarMuseum").value;
+
+    if (!artistId || !museumId) {
+        alert("Please select both an artist and a museum.");
+        return;
+    }
+
+    const sparqlQuery = `
+        PREFIX wd: <http://www.wikidata.org/entity/>
+        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+        PREFIX schema: <http://schema.org/>
+
+        SELECT DISTINCT ?painting ?paintingLabel ?image ?artist ?artistLabel ?museum ?museumLabel WHERE {
+            ?originalPainting wdt:P170 wd:${artistId} .  
+            ?originalPainting wdt:P135 ?movement .       
+
+            ?painting wdt:P135 ?movement .               
+            ?painting wdt:P31 wd:Q3305213 .              
+            ?painting wdt:P170 ?artist .                 
+            ?painting wdt:P276 ?museum .                 
+            ?museum wdt:P31 wd:Q33506 .                  
+
+            ?painting wdt:P18 ?image.                    
+
+            FILTER (?museum != wd:${museumId})           
+            FILTER (?artist != wd:${artistId})           
+
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        LIMIT 50
+    `;
+
+    const endpointUrl = "https://query.wikidata.org/sparql";
+    const fullUrl = `${endpointUrl}?query=${encodeURIComponent(sparqlQuery)}`;
+
+    try {
+        const response = await fetch(fullUrl, {
+            headers: { "Accept": "application/sparql-results+json" }
+        });
+
+        if (!response.ok) {
+            throw new Error("SPARQL query failed.");
+        }
+
+        const data = await response.json();
+        const results = data.results.bindings;
+        const resultsTable = document.getElementById("similarPaintingsTable");
+        const resultsBody = document.getElementById("similarPaintingsBody");
+        const noResults = document.getElementById("noSimilarResults");
+
+        resultsBody.innerHTML = "";
+
+        if (results.length > 0) {
+            resultsTable.style.display = "table";
+            noResults.style.display = "none";
+            console.log("done")
+            document.getElementById("hideSimilarPaintingsBtn").style.display = "inline-block";
+            results.forEach(result => {
+                const row = document.createElement("tr");
+
+                const paintingCell = document.createElement("td");
+                paintingCell.textContent = result.paintingLabel.value;
+                row.appendChild(paintingCell);
+
+                const artistCell = document.createElement("td");
+                artistCell.textContent = result.artistLabel.value;
+                row.appendChild(artistCell);
+
+                const museumCell = document.createElement("td");
+                museumCell.textContent = result.museumLabel.value;
+                row.appendChild(museumCell);
+
+                const imageCell = document.createElement("td");
+                if (result.image) {
+                    const img = document.createElement("img");
+                    img.src = result.image.value;
+                    img.alt = result.paintingLabel.value;
+                    img.style.maxWidth = "100px";
+                    img.style.cursor = "pointer";
+                    img.addEventListener("click", () => {
+                        openModal(img.src, img.alt);
+                    });
+                    imageCell.appendChild(img);
+                }
+                row.appendChild(imageCell);
+
+                resultsBody.appendChild(row);
+            });
+        } else {
+            resultsTable.style.display = "none";
+            noResults.style.display = "block";
+        }
+    } catch (error) {
+        console.error("Error fetching SPARQL data:", error);
+        alert("An error occurred while fetching the results.");
+    }
+}
+
