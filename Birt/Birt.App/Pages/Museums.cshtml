@@ -185,17 +185,25 @@
     document.getElementById('artist').addEventListener("change", updateMessage);
     document.getElementById('museum').addEventListener("change", updateMessage);
     document.getElementById('artistMuseumForm').addEventListener('submit', fetchMuseumAndArtists);
-    document.getElementById('similarPaintingsForm').addEventListener('submit', fetchSimilarPaintings);
+    document.getElementById('similarPaintingsForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        fetchSimilarPaintings(event).then(() => {
+            document.getElementById("exportSimilarCsv").style.display = 'inline-block';
+            document.getElementById("exportSimilarHtml").style.display = 'inline-block';
+            document.getElementById("hideSimilarPaintingsBtn").style.display = 'inline-block';
+        });
+    });
     document.getElementById('artistMuseumForm').addEventListener('submit', (event) => {
         event.preventDefault();
         fetchMuseumAndArtists(event).then(() => {
             document.getElementById("exportMuseumCsv").style.display = 'inline-block';
             document.getElementById("exportMuseumHtml").style.display = 'inline-block';
+            document.getElementById("hideTableBtn").style.display = 'inline-block';
         });
     });
 
-    const exportCsvBtn = document.getElementById("exportCsv");
-    const exportHtmlBtn = document.getElementById("exportHtml");
+    const exportCsvBtnComparePaintings = document.getElementById("exportCsv");
+    const exportHtmlBtnComparePaintings = document.getElementById("exportHtml");
     window.toggleResultsTable = function () {
         const resultsTable = document.getElementById("resultsTable");
         const hideTableBtn = document.getElementById("hideTableBtn");
@@ -203,15 +211,18 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
-            exportCsvBtn.style.display = "inline-block";
-            exportHtmlBtn.style.display = "inline-block";
+            exportCsvBtnComparePaintings.style.display = "inline-block";
+            exportHtmlBtnComparePaintings.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
-            exportCsvBtn.style.display = "none";
-            exportHtmlBtn.style.display = "none";
+            exportCsvBtnComparePaintings.style.display = "none";
+            exportHtmlBtnComparePaintings.style.display = "none";
         }
     };
+
+    const exportCsvBtnFindMuseums = document.getElementById("exportMuseumCsv");
+    const exportHtmlBtnFindMuseums = document.getElementById("exportMuseumHtml");
     window.toggleMuseumResultsTable = function () {
         const resultsTable = document.getElementById("museumResultsTable");
         const hideTableBtn = document.getElementById("hideMuseumResultsBtn");
@@ -219,16 +230,18 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
-            exportCsvBtn.style.display = "inline-block";
-            exportHtmlBtn.style.display = "inline-block";
+            exportCsvBtnFindMuseums.style.display = "inline-block";
+            exportHtmlBtnFindMuseums.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
-            exportCsvBtn.style.display = "none";
-            exportHtmlBtn.style.display = "none";
+            exportCsvBtnFindMuseums.style.display = "none";
+            exportHtmlBtnFindMuseums.style.display = "none";
         }
     };
 
+    const exportCsvBtnSimilarPaintings = document.getElementById("exportSimilarCsv");
+    const exportHtmlBtnSimilarPaintings = document.getElementById("exportSimilarHtml");   
     window.toggleSimilarPaintingsTable = function () {
         const resultsTable = document.getElementById("similarPaintingsTable");
         const hideTableBtn = document.getElementById("hideSimilarPaintingsBtn");
@@ -236,13 +249,13 @@
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
-            exportCsvBtn.style.display = "inline-block";
-            exportHtmlBtn.style.display = "inline-block";
+            exportCsvBtnSimilarPaintings.style.display = "inline-block";
+            exportHtmlBtnSimilarPaintings.style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
-            exportCsvBtn.style.display = "none";
-            exportHtmlBtn.style.display = "none";
+            exportCsvBtnSimilarPaintings.style.display = "none";
+            exportHtmlBtnSimilarPaintings.style.display = "none";
         }
     };
 
