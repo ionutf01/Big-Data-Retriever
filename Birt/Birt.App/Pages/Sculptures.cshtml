@@ -1,0 +1,43 @@
+@page "/Sculptures"
+    @model Birt.App.Pages.Sculptures
+    
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Sculptures</title>
+        <style>
+            .city-container {
+                display: inline-block;
+                width: 45%;
+                vertical-align: top;
+                margin: 2%;
+            }
+        </style>
+    </head>
+    <body>
+    <div>
+        <h1>Possible Queries about sculptures</h1>
+        <select id="queryDropdown">
+            <option value="sculptors">Get all sculptors from Romania</option></select>
+        <button id="allsculptures" class="btn btn-primary">Get Results</button>
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+            Loading data...
+        </div>
+        
+        <h2>Results</h2>
+        <label>
+            Location Label:
+            <input type="text" id="locationLabel" placeholder="Enter location label">
+        </label>
+        <div id="results"></div>
+        <script type="module">
+            import { getAllSculpturesOptions, toggleCriteriaForm, handleQuery } from '/js/sculptures.js';
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById("allsculptures").addEventListener("click", getAllSculpturesOptions);
+                document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
+            });
+        </script>
+    </div>
+    </body>
+    </html>
