@@ -276,11 +276,20 @@ async function fetchSimilarArtists(artistId) {
             'Accept': 'application/sparql-results+json'
         }
     });
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = "";
     const data = await response.json();
     data.results.bindings = data.results.bindings.filter(artist => {
         const label = artist.artistLabel ? artist.artistLabel.value : "";
         return !/\d/.test(label);  
     });
+    console.log(data);
+    if (data.results.bindings.length === 0) {
+        resultsContainer.innerHTML = "<li>No similar artists found.</li>";
+        console.log("No similar artists found");
+        return;
+    }
+
     if (artistId === 'Q762') {
         displaySimilarArtistsVinci(data);
     } else if (artistId === 'Q5582') {
