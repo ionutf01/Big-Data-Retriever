@@ -2,6 +2,8 @@
 bin/
 obj/
 Debug/
+Birt/Birt.App/obj/
+Birt/Birt.App/bin/
 
 # Exclude user-specific files for Visual Studio, Rider, or other IDEs
 .vs/
