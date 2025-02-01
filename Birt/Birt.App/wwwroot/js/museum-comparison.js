@@ -1,4 +1,14 @@
 import { openModal } from './site.js';
+export let notMode = true;
+
+export function toggleNotMode() {
+    notMode = !notMode;
+    const button = document.getElementById("notButton");
+    button.textContent = notMode ? "NOT" : "IN";
+    updateMessage();
+}
+
+
 export async function fetchComparisonResults(event) {
     event.preventDefault();
 
@@ -14,6 +24,10 @@ export async function fetchComparisonResults(event) {
         return;
     }
 
+    const filterCondition = notMode
+        ? `FILTER (?museum != wd:${museum})`  
+        : `FILTER (?museum = wd:${museum})`; 
+
     const sparqlQuery = `
         PREFIX wd: <http://www.wikidata.org/entity/>
         PREFIX wdt: <http://www.wikidata.org/prop/direct/>
@@ -21,7 +35,7 @@ export async function fetchComparisonResults(event) {
         SELECT ?painting ?title ?museumName ?image WHERE {
             ?painting wdt:P170 wd:${artist} .
             ?painting wdt:P276 ?museum .
-            FILTER (?museum != wd:${museum}) .
+            ${filterCondition} .
             ?museum rdfs:label ?museumName .
             ?painting rdfs:label ?title .
             OPTIONAL { ?painting wdt:P18 ?image. }
@@ -54,7 +68,7 @@ export async function fetchComparisonResults(event) {
             results.forEach(result => {
                 const row = document.createElement("tr");
 
-               const imageCell = document.createElement("td");
+                const imageCell = document.createElement("td");
                 if (result.image) {
                     const img = document.createElement("img");
                     img.src = result.image.value;
@@ -81,13 +95,14 @@ export async function fetchComparisonResults(event) {
         } else {
             resultsTable.style.display = "none";
             noResults.style.display = "block";
-            hideTableBtn.style.display = "none"; 
+            hideTableBtn.style.display = "none";
         }
     } catch (error) {
         console.error("Error fetching SPARQL data:", error);
         alert("An error occurred while fetching the results.");
     }
 }
+
 
 export function updateMessage() {
     const artistSelect = document.getElementById('artist');
@@ -97,16 +112,19 @@ export function updateMessage() {
     const artistText = artistSelect.options[artistSelect.selectedIndex]?.text || 'an artist';
     const museumText = museumSelect.options[museumSelect.selectedIndex]?.text || 'a museum';
 
+    const filterModeText = notMode ? 'NOT in' : 'IN';
+
     if (artistSelect.value && museumSelect.value) {
-        messageElement.textContent = `You will see paintings from ${artistText} that are not in ${museumText}.`;
+        messageElement.textContent = `You will see paintings from ${artistText} that are ${filterModeText} ${museumText}.`;
     } else if (artistSelect.value) {
-        messageElement.textContent = `Select a museum to see paintings from ${artistText} that are not in it.`;
+        messageElement.textContent = `Select a museum to see paintings from ${artistText} that are ${filterModeText} it.`;
     } else if (museumSelect.value) {
-        messageElement.textContent = `Select an artist to see paintings that are not in ${museumText}.`;
+        messageElement.textContent = `Select an artist to see paintings that are ${filterModeText} ${museumText}.`;
     } else {
-        messageElement.textContent = `Select an artist and a museum to see paintings from the artist that are not in the museum.`;
+        messageElement.textContent = `Select an artist and a museum to see paintings from the artist that are ${filterModeText} the museum.`;
     }
 }
+
 
 export async function fetchMuseumAndArtists(event) {
     event.preventDefault();
