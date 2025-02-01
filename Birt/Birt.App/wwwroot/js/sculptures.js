@@ -102,6 +102,8 @@ async function displaySculptureResults(data) {
     });
     table.appendChild(headerRow);
 
+    const titlesSet = new Set();
+
     if (data.results.bindings.length === 0) {
         const noResultsRow = document.createElement('tr');
         const noResultsCell = document.createElement('td');
@@ -113,48 +115,53 @@ async function displaySculptureResults(data) {
         table.appendChild(noResultsRow);
     } else {
         data.results.bindings.forEach(item => {
-            const row = document.createElement('tr');
-
-            // Image column
-            const imgCell = document.createElement('td');
-            imgCell.style.border = '1px solid #ddd';
-            imgCell.style.padding = '8px';
             if (item.image) {
-                const img = document.createElement('img');
-                img.src = item.image.value;
-                img.alt = item.sculptureLabel.value;
-                img.width = 100;
-                img.height = 100;
-                img.loading = 'lazy';
-                img.style.cursor = 'pointer';
-                img.addEventListener('click', () => {
-                    openModal(img.src, img.alt);
-                });
-                imgCell.appendChild(img);
+                const title = item.sculptureLabel.value;
+                if (!titlesSet.has(title)) {
+                    titlesSet.add(title);
+
+                    const row = document.createElement('tr');
+
+                    // Image column
+                    const imgCell = document.createElement('td');
+                    imgCell.style.border = '1px solid #ddd';
+                    imgCell.style.padding = '8px';
+                    const img = document.createElement('img');
+                    img.src = item.image.value;
+                    img.alt = title;
+                    img.width = 100;
+                    img.height = 100;
+                    img.loading = 'lazy';
+                    img.style.cursor = 'pointer';
+                    img.addEventListener('click', () => {
+                        openModal(img.src, img.alt);
+                    });
+                    imgCell.appendChild(img);
+                    row.appendChild(imgCell);
+
+                    // Title column
+                    const titleCell = document.createElement('td');
+                    titleCell.style.border = '1px solid #ddd';
+                    titleCell.style.padding = '8px';
+                    const link = document.createElement('a');
+                    const sculptureId = item.sculpture.value.split('/').pop();
+                    link.href = `https://www.wikidata.org/wiki/${sculptureId}`;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.textContent = title;
+                    titleCell.appendChild(link);
+                    row.appendChild(titleCell);
+
+                    // Creation Date column
+                    const creationDateCell = document.createElement('td');
+                    creationDateCell.style.border = '1px solid #ddd';
+                    creationDateCell.style.padding = '8px';
+                    creationDateCell.textContent = item.creationDate ? item.creationDate.value : 'N/A';
+                    row.appendChild(creationDateCell);
+
+                    table.appendChild(row);
+                }
             }
-            row.appendChild(imgCell);
-
-            // Title column
-            const titleCell = document.createElement('td');
-            titleCell.style.border = '1px solid #ddd';
-            titleCell.style.padding = '8px';
-            const link = document.createElement('a');
-            const sculptureId = item.sculpture.value.split('/').pop();
-            link.href = `https://www.wikidata.org/wiki/${sculptureId}`;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = item.sculptureLabel.value;
-            titleCell.appendChild(link);
-            row.appendChild(titleCell);
-
-            // Creation Date column
-            const creationDateCell = document.createElement('td');
-            creationDateCell.style.border = '1px solid #ddd';
-            creationDateCell.style.padding = '8px';
-            creationDateCell.textContent = item.creationDate ? item.creationDate.value : 'N/A';
-            row.appendChild(creationDateCell);
-
-            table.appendChild(row);
         });
     }
 
