@@ -22,14 +22,25 @@ export function handleQuery(event) {
 export function toggleCriteriaForm() {
     console.log('toggleCriteriaForm');
     const queryValue = document.getElementById('queryDropdown').value;
-    const artistForm = document.getElementById('specificArtistForm');
 
+    const artistForm = document.getElementById('specificArtistForm');
+    const periodForm = document.getElementById('periodForm');
+
+    // Hide all forms by default
+    artistForm.style.display = 'none';
+    periodForm.style.display = 'none';
+
+    // Show the appropriate form based on selection
     if (queryValue === 'specific-artist') {
         artistForm.style.display = 'block';
-    } else {
+    } else if (queryValue === 'period') {
+        periodForm.style.display = 'block';
+    }
+    else{
         artistForm.style.display = 'none';
     }
 }
+
 // Fetching and displaying data
 export async function getFamousSculptures() {
     const query = `
@@ -229,3 +240,103 @@ export function exportTableToHTML(filename) {
     downloadLink.click();
     document.body.removeChild(downloadLink);
 }
+
+
+export async function getSculpturesByPeriod(startDate, endDate) {
+    const endpointUrl = "https://query.wikidata.org/sparql";
+
+    const sparqlQuery = `
+    SELECT DISTINCT ?sculpture ?sculptureLabel ?artist ?artistLabel ?inception ?image WHERE {
+      ?sculpture wdt:P31 wd:Q860861.  # Instance of sculpture
+      ?sculpture wdt:P170 ?artist.    # Has artist
+      ?sculpture wdt:P571 ?inception. # Inception date
+      ?sculpture wdt:P18 ?image.      # Must have an image
+    
+      # Ensure sculpture and artist have English labels
+      ?sculpture rdfs:label ?sculptureLabel. 
+      FILTER(LANG(?sculptureLabel) = "en")  
+    
+      ?artist rdfs:label ?artistLabel.  # Ensure artist has a name
+      FILTER(LANG(?artistLabel) = "en") 
+    
+      FILTER (?inception >= "${startDate}T00:00:00Z"^^xsd:dateTime &&
+              ?inception <= "${endDate}T23:59:59Z"^^xsd:dateTime)
+    
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    ORDER BY ?inception
+    LIMIT 50
+    `;
+
+    console.log("QUERY", sparqlQuery);
+    const url = `${endpointUrl}?query=${encodeURIComponent(sparqlQuery)}&format=json`;
+
+    document.getElementById("loading").style.display = "block";
+
+    try {
+        const response = await fetch(url, {
+            headers: { "Accept": "application/sparql-results+json" }
+        });
+        const data = await response.json();
+
+        const filteredResults = data.results.bindings.filter(item => item.image);
+        displayResults(filteredResults);
+    } catch (error) {
+        console.error("Error fetching sculptures:", error);
+    } finally {
+        document.getElementById("loading").style.display = "none";
+    }
+}
+
+
+
+function displayResults(results) {
+    const resultsContainer = document.getElementById("results");
+    resultsContainer.innerHTML = "";
+
+    const validResults = results.filter(item => item.sculptureLabel?.value && item.artistLabel?.value);
+
+    if (validResults.length === 0) {
+        resultsContainer.innerHTML = "<p>No sculptures found for the selected period.</p>";
+        return;
+    }
+
+    // Create a table
+    const table = document.createElement("table");
+    table.classList.add("table", "table-striped");
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Artist</th>
+                <th>Inception Year</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    `;
+
+    const tbody = table.querySelector("tbody");
+
+    validResults.forEach(item => {
+        const row = document.createElement("tr");
+
+        const sculptureLabel = item.sculptureLabel.value;
+        const artistLabel = item.artistLabel.value;
+        const inception = item.inception.value.split("T")[0]; 
+        const imageUrl = item.image.value;
+
+        row.innerHTML = `
+            <td>${sculptureLabel}</td>
+            <td>${artistLabel}</td>
+            <td>${inception}</td>
+            <td><img src="${imageUrl}" width="100" alt="${sculptureLabel}"></td>
+        `;
+
+        tbody.appendChild(row);
+    });
+
+    resultsContainer.appendChild(table);
+}
+
