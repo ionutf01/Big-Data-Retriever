@@ -1,0 +1,102 @@
+@page
+@model Birt.App.Pages.Sculptures
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Sculptures
+    </title>
+    <h1>Sculptures</h1>
+</head>
+<body>
+<h2>Possible Queries</h2>
+<p>"Every sculpture is a caricature." – Albert Camus</p>
+<select id="queryDropdown">
+    <option value="famous">List of Famous Sculptures</option>
+    <option value="specific-artist">Sculptures by a Specific Artist</option>
+    <option value="specific-museum">Sculptures in a Specific Museum</option>
+    <option value="historical">Historical Sculptures</option>
+    <option value="material">Sculptures by Material</option>
+</select>
+<button id="allsculptures" class="btn btn-primary">Get Results</button>
+<div id="loading" style="display: none;">
+    <div class="spinner"></div>
+    Loading data...
+</div>
+
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+    <div id="caption"></div>
+</div>
+
+
+<button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
+<button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
+
+<form id="specificArtistForm" method="get" style="display: none;">
+    <div class="form-group">
+        <label for="artist">Select Artist:</label>
+        <select id="artist" name="artist" class="form-control">
+            <option value="">-- Select Artist --</option>
+            <option value="Q762">Leonardo da Vinci</option>
+            <option value="Q5582">Vincent van Gogh</option>
+            <option value="Q5593">Pablo Picasso</option>
+            <option value="Q5592">Michelangelo</option>
+            <option value="Q296">Claude Monet</option>
+            <option value="Q5598">Rembrandt</option>
+        </select>
+    </div>
+</form>
+
+<h2>Results</h2>
+<ul id="results"></ul>
+<script type="module">
+    import { getAllSculptures, toggleCriteriaForm, handleQuery, exportTableToCSV, exportTableToHTML, getSpecificArtistSculptures } from '/js/sculptures.js';
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const queryDropdown = document.getElementById("queryDropdown");
+        queryDropdown.addEventListener("change", () => {
+            toggleCriteriaForm();
+            handleQuery(event);
+        });
+    
+        document.getElementById("allsculptures").addEventListener("click", () => {
+            getAllSculptures();
+            document.getElementById("exportCsv").style.display = 'inline-block';
+            document.getElementById("exportHtml").style.display = 'inline-block';
+        });
+    
+        document.getElementById("specificArtistForm").addEventListener('submit', (event) => {
+            event.preventDefault();
+            getSpecificArtistSculptures(event).then(() => {
+                document.getElementById("exportCsv").style.display = 'inline-block';
+                document.getElementById("exportHtml").style.display = 'inline-block';
+            });
+        });
+    
+        document.getElementById("artist").addEventListener("change", (event) => {
+            getSpecificArtistSculptures(event);
+        });
+    
+        document.getElementById("exportCsv").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as CSV?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.csv`;
+                exportTableToCSV(filename);
+            }
+        });
+    
+        document.getElementById("exportHtml").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as HTML?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.html`;
+                exportTableToHTML(filename);
+            }
+        });
+    });
+</script>
+</body>
+</html>
