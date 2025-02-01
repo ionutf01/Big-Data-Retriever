@@ -222,13 +222,36 @@ export function displaySimilarArtistsGogh(data) {
 
 async function fetchSimilarArtists(artistId) {
     const movement = document.getElementById('movement').value;
-    const occupation = document.getElementById('occupation').value;
-    const country = document.getElementById('country').value;
+    const notMovement = document.getElementById('not_movement').checked;
 
+    const occupation = document.getElementById('occupation').value;
+    const notOccupation = document.getElementById('not_occupation').checked;
+    const country = document.getElementById('country').value;
     let filters = [];
-    if (movement) filters.push(`?artist wdt:P135 wd:${movement}.`);
-    if (occupation) filters.push(`?artist wdt:P106 wd:${occupation}.`);
-    if (country) filters.push(`?artist wdt:P27 wd:${country}.`);
+
+    if (movement) {
+        filters.push(`?artist wdt:P135 ?movement.`);
+        if (notMovement) {
+            filters.push(`FILTER(?movement != wd:${movement}).`);
+        } else {
+            filters.push(`FILTER(?movement = wd:${movement}).`);
+        }
+    }
+
+    if (occupation) {
+        filters.push(`?artist wdt:P106 ?occupation.`);
+        if (notOccupation) {
+            filters.push(`FILTER(?occupation != wd:${occupation}).`);
+        } else {
+            filters.push(`FILTER(?occupation = wd:${occupation}).`);
+        }
+    }
+
+
+    if (country) {
+        filters.push(`?artist wdt:P27 wd:${country}.`);
+    }
+
 
     filters.push(`FILTER(?artist != wd:${artistId}).`);
 
@@ -238,7 +261,7 @@ async function fetchSimilarArtists(artistId) {
     }
 
     const query = `
-        SELECT ?artist ?artistLabel WHERE {
+        SELECT DISTINCT ?artist ?artistLabel WHERE {
             ${filters.join('\n')}
             SERVICE wikibase:label { 
                 bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". 
@@ -246,7 +269,7 @@ async function fetchSimilarArtists(artistId) {
         }
         LIMIT 15
     `;
-
+    console.log(query);
     const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
     const response = await fetch(url, {
         headers: {
@@ -254,13 +277,17 @@ async function fetchSimilarArtists(artistId) {
         }
     });
     const data = await response.json();
-
+    data.results.bindings = data.results.bindings.filter(artist => {
+        const label = artist.artistLabel ? artist.artistLabel.value : "";
+        return !/\d/.test(label);  
+    });
     if (artistId === 'Q762') {
         displaySimilarArtistsVinci(data);
     } else if (artistId === 'Q5582') {
         displaySimilarArtistsGogh(data);
     }
 }
+
 export async function displayComparison(data, artist1Name, artist2Name) {
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
