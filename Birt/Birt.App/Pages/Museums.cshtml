@@ -31,12 +31,18 @@
         </select>
     </div>
 
+    <div class="form-group">
+        <label>Filter Mode:</label>
+        <button type="button" id="notButton" class="btn btn-secondary">NOT</button>
+    </div>
+
     <p id="dynamicMessage" style="font-style: italic; color: #555;">
-        Select an artist and a museum to see paintings from the artist that are not in the museum.
+        Select an artist and a museum to see paintings from the artist that are **not** in the museum.
     </p>
-    
+
     <button type="submit" class="btn btn-primary">Compare</button>
 </form>
+
 
 <div id="results">
     <h2>Results</h2>
@@ -172,7 +178,7 @@
 </div>
 
 <script type="module">
-    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, fetchSimilarPaintings, exportTableToCSV,exportTableToHTML } from '/js/museum-comparison.js';
+    import { fetchComparisonResults, updateMessage, fetchMuseumAndArtists, fetchSimilarPaintings, exportTableToCSV,exportTableToHTML, toggleNotMode } from '/js/museum-comparison.js';
 
     document.getElementById('comparisonForm').addEventListener('submit', (event) => {
         event.preventDefault();
@@ -299,4 +305,7 @@
         }
     });
 
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("notButton").addEventListener("click", toggleNotMode);
+    });
 </script>
