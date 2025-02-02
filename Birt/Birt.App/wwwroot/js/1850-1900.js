@@ -1,7 +1,3 @@
-import { openModal } from './site.js';
-/*
-* Painting influences between 1850 and 1900
-* */
 async function fetchLabel(wikidataId) {
     const query = `
         SELECT ?label WHERE {
@@ -115,10 +111,17 @@ async function getInfluencesBetween1850and1900() {
     const url = `${endpointUrl}?query=${encodeURIComponent(sparqlQuery)}&format=json`;
 
     try {
+        const db = await openDatabase();
+        const cachedData = await getCachedData(db, 'influences1850-1900');
+        if (cachedData && (new Date().getTime() - cachedData.timestamp) < 24 * 60 * 60 * 1000) { // 24 hours cache
+            return cachedData.data;
+        }
+
         const response = await fetch(url, {
             headers: { "Accept": "application/sparql-results+json" }
         });
         const data = await response.json();
+        await setCachedData(db, 'influences1850-1900', data.results.bindings);
         return data.results.bindings;
     } catch (error) {
         console.error("Error fetching artists and influences:", error);
