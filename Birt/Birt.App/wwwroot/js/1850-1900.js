@@ -84,6 +84,9 @@ async function setCachedData(db, artistId, data) {
 }
 async function getInfluencesBetween1850and1900() {
     const endpointUrl = "https://query.wikidata.org/sparql";
+
+    const selectedLanguage = document.getElementById("languageDropdown").value || "en";
+
     const sparqlQuery = `
     #title: Painting born 1850-1900 and their influences
     #defaultView:Table
@@ -98,9 +101,9 @@ async function getInfluencesBetween1850and1900() {
       # Filter for artists born between 1850 and 1900
       FILTER(YEAR(?birthDate) >= 1850 && YEAR(?birthDate) <= 1900)
       
-      # Get labels in English
+      # Get labels in the selected language
       SERVICE wikibase:label { 
-        bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".
+        bd:serviceParam wikibase:language "${selectedLanguage},en".
         ?artist rdfs:label ?artistLabel.
         ?influence rdfs:label ?influenceLabel.
         ?influenceType rdfs:label ?influenceTypeLabel.
@@ -114,7 +117,7 @@ async function getInfluencesBetween1850and1900() {
 
     try {
         const db = await openDatabase();
-        const cachedData = await getCachedData(db, 'influences1850-1900');
+        const cachedData = await getCachedData(db, `influences1850-1900-${selectedLanguage}`);
         if (cachedData && (new Date().getTime() - cachedData.timestamp) < 24 * 60 * 60 * 1000) { // 24 hours cache
             return cachedData.data;
         }
@@ -123,13 +126,14 @@ async function getInfluencesBetween1850and1900() {
             headers: { "Accept": "application/sparql-results+json" }
         });
         const data = await response.json();
-        await setCachedData(db, 'influences1850-1900', data.results.bindings);
+        await setCachedData(db, `influences1850-1900-${selectedLanguage}`, data.results.bindings);
         return data.results.bindings;
     } catch (error) {
         console.error("Error fetching artists and influences:", error);
         return [];
     }
 }
+
 function displayInfluencesBetween1850and1900(data) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = "<h2>Painters born 1850-1900 and their influences</h2>";
