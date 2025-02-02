@@ -403,8 +403,14 @@ function displayResults(results) {
             <td>${sculptureLabel}</td>
             <td>${artistLabel}</td>
             <td>${inception}</td>
-            <td><img src="${imageUrl}" width="100" alt="${sculptureLabel}"></td>
+            <td><img src="${imageUrl}" width="100" alt="${sculptureLabel}" style="cursor: pointer;"></td>
         `;
+
+        // Add click event listener to the image for opening the modal
+        const imgElement = row.querySelector("img");
+        imgElement.addEventListener("click", () => {
+            openModal(imageUrl, sculptureLabel);
+        });
 
         tbody.appendChild(row);
     });
