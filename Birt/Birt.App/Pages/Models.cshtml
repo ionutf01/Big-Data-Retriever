@@ -12,7 +12,8 @@
     <h1>Our Models</h1>
     <p>Our models are built using Wikidata’s SPARQL endpoint. This service allows you to query, compare, visualize, and share large sets of data and knowledge. The platform also provides recommendations for related information in different languages. Through the use of big data techniques, we offer insights and summaries on topics such as the influences of fine arts, dance, and music in specific regions over recent years.</p>
     <h2>Possible Queries</h2>
-    <select id="queryDropdown">
+    <select id="queryDropdown" class="form-control" >
+        <option value="null">--- Select a Query ---</option>
         <option value="gogh">Get works of art for Vincent van Gogh</option>
         <option value="vinci">Get works of art for Leonardo da Vinci</option>
         <option value="similar-gogh">Get similar artists to Vincent van Gogh</option>
@@ -21,7 +22,7 @@
         <option value="paintingInfluencesbetween1850and1900">Get artists influences between 1850 and 1900</option>
         <option value="paintingsInfluencedByGogh">Get paintings influenced by Van Gogh</option>
     </select>
-    <button id="allworksofart" class="btn btn-primary">Get Results</button>
+    @* <button id="allworksofart" class="btn btn-primary">Get Results</button> *@
     <div id="loading" style="display: none;">
         <div class="spinner"></div>
         Loading data...
@@ -45,7 +46,7 @@
         <form>
             <div class="criteria-group">
                 <label for="movement">Artistic Movement:</label>
-                <select id="movement">
+                <select id="movement" class="form-control">
                     <option value="">-- Select Movement --</option>
                     <option value="Q166713">Post-Impressionism</option>
                     <option value="Q5592">Impressionism</option>
@@ -55,13 +56,13 @@
                 </select>
                 <div class="checkbox-container">
                     <input type="checkbox" id="not_movement">
-                    <label for="not_movement">NOT</label>
+                    <label for="not_movement" style="margin-left: 5px; min-width: 20px">NOT</label>
                 </div>
             </div>
 
             <div class="criteria-group">
                 <label for="occupation">Occupation:</label>
-                <select id="occupation">
+                <select id="occupation" class="form-control">
                     <option value="">-- Select Occupation --</option>
                     <option value="Q1028181">Painter</option>
                     <option value="Q1281618">Sculptor</option>
@@ -69,13 +70,14 @@
                 </select>
                 <div class="checkbox-container">
                     <input type="checkbox" id="not_occupation">
-                    <label for="not_occupation">NOT</label>
+                    <label for="not_movement" style="margin-left: 5px; min-width: 20px">NOT</label>
                 </div>
+                
             </div>
 
             <div class="criteria-group">
                 <label for="country">Country:</label>
-                <select id="country">
+                <select id="country" class="form-control">
                     <option value="">-- Select Country --</option>
                     <option value="Q30">United States</option>
                     <option value="Q142">France</option>
@@ -96,43 +98,61 @@
     <ul id="results"></ul>
     <div id="comparison"></div>
     <script type="module">
-        import { toggleCriteriaForm, getWorksOfArt, handleQuery, visualizeRDFDataImproved, closeVisualization, exportTableToCSV, exportTableToHTML} from '/js/main.js';
+        import { toggleCriteriaForm, getWorksOfArt, handleQuery, visualizeRDFDataImproved, closeVisualization, exportTableToCSV, exportTableToHTML } from '/js/main.js';
+
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById("allworksofart").addEventListener("click", () => {
-                getWorksOfArt();
-                document.getElementById("exportCsv").style.display = 'inline-block';
-                document.getElementById("exportHtml").style.display = 'inline-block';
+            const dropdown = document.getElementById("queryDropdown");
+
+            function executeQuery(query) {
+                console.log("Fetching results for:", query);
+                getWorksOfArt(); // Aici înlocuiește cu logica necesară pentru a trimite cererea
+            }
+
+            function fetchResults() {
+                const selectedValue = dropdown.value;
+
+                if (selectedValue !== "similar-gogh" && selectedValue !== "similar-vinci" && selectedValue !== "null") {
+                    executeQuery(selectedValue); // Rulează automat doar pentru opțiunile permise
+                }
+            }
+
+            // Ascultător pentru dropdown
+            dropdown.addEventListener("change", () => {
+                toggleCriteriaForm(); // Păstrează această funcție dacă e necesară
+                fetchResults();
             });
-            document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
+
+            // Ascultător pentru butonul de căutare manuală
             document.getElementById("handlequery").addEventListener("click", handleQuery);
-        
+
+            // Vizualizare RDF
             document.getElementById('showVisualization').addEventListener('click', () => {
                 document.getElementById('visualization').style.display = 'block';
                 document.getElementById('closeVisualization').style.display = 'block';
                 visualizeRDFDataImproved();
             });
-            document.getElementById('closeVisualization').addEventListener('click', () => {
-                closeVisualization();
-            });
-        
+
+            document.getElementById('closeVisualization').addEventListener('click', closeVisualization);
+
+            // Export CSV & HTML
             document.getElementById("exportCsv").addEventListener("click", () => {
                 if (confirm("Do you want to download the results as CSV?")) {
-                    const dropdown = document.getElementById("queryDropdown");
-                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
-                    const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.csv`;
+                    const filename = dropdown.options[dropdown.selectedIndex].text.replace(/\s+/g, '_').toLowerCase() + ".csv";
                     exportTableToCSV(filename);
                 }
             });
-        
+
             document.getElementById("exportHtml").addEventListener("click", () => {
                 if (confirm("Do you want to download the results as HTML?")) {
-                    const dropdown = document.getElementById("queryDropdown");
-                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
-                    const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}.html`;
+                    const filename = dropdown.options[dropdown.selectedIndex].text.replace(/\s+/g, '_').toLowerCase() + ".html";
                     exportTableToHTML(filename);
                 }
             });
+
+            // Execută automat dacă este selectată o opțiune validă
+            fetchResults();
         });
+
     </script>
 </div>
 </body>
