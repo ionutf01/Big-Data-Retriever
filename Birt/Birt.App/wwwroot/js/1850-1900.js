@@ -85,8 +85,10 @@ async function setCachedData(db, artistId, data) {
 async function getInfluencesBetween1850and1900() {
     const endpointUrl = "https://query.wikidata.org/sparql";
     const sparqlQuery = `
+    #title: Painting born 1850-1900 and their influences
+    #defaultView:Table
     SELECT DISTINCT ?artist ?artistLabel ?birthDate ?influenceLabel ?influenceTypeLabel WHERE {
-      ?artist wdt:P106 wd:Q483501;  # occupation: artist
+      ?artist wdt:P106 wd:Q1028181;  # occupation: artist
              wdt:P569 ?birthDate;    # date of birth
              wdt:P737|wdt:P941 ?influence.  # influenced by (P737) OR inspired by (P941)
       
@@ -130,7 +132,7 @@ async function getInfluencesBetween1850and1900() {
 }
 function displayInfluencesBetween1850and1900(data) {
     const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = "<h2>Artists born 1850-1900 and their influences</h2>";
+    resultsContainer.innerHTML = "<h2>Painters born 1850-1900 and their influences</h2>";
 
     const table = document.createElement('table');
     table.style.width = '100%';
