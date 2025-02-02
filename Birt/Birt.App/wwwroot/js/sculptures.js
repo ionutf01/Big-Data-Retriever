@@ -1,3 +1,4 @@
+import { fetchWithRetry } from './1850-1900.js';
 export function getAllSculptures() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
@@ -5,6 +6,10 @@ export function getAllSculptures() {
         getFamousSculptures();
     } else if (selectedArtist === "specific-artist") {
         getSpecificArtistSculptures();
+    } else if (selectedArtist === "specific-museum") {
+        getSpecificMuseumSculptures();
+    } else if (selectedArtist === "specific-museum") {
+        getSpecificMaterialSculptures();
     }
 }
 // Query handling functions
@@ -17,6 +22,16 @@ export function handleQuery(event) {
         if (artistSelect.value) {
             getSpecificArtistSculptures(event);
         }
+    } else if (queryValue === 'specific-museum') {
+        const artistSelect = document.getElementById('museum');
+        if (artistSelect.value) {
+            getSpecificMuseumSculptures(event);
+        }
+    } else if (queryValue === 'specific-material') {
+        const artistSelect = document.getElementById('material');
+        if (artistSelect.value) {
+            getSpecificMaterialSculptures(event);
+        }
     }
 }
 export function toggleCriteriaForm() {
@@ -24,24 +39,29 @@ export function toggleCriteriaForm() {
     const queryValue = document.getElementById('queryDropdown').value;
 
     const artistForm = document.getElementById('specificArtistForm');
+    const museumForm = document.getElementById('specificMuseumForm');
+    const materialForm = document.getElementById('specificMaterialForm');
     const periodForm = document.getElementById('periodForm');
 
     // Hide all forms by default
     artistForm.style.display = 'none';
     periodForm.style.display = 'none';
+    museumForm.style.display = 'none';
+    materialForm.style.display = 'none';
 
     // Show the appropriate form based on selection
     if (queryValue === 'specific-artist') {
         artistForm.style.display = 'block';
+    } else if (queryValue === 'specific-museum') {
+        museumForm.style.display = 'block';
+    } else if (queryValue === 'specific-material') {
+        materialForm.style.display = 'block';
     } else if (queryValue === 'period') {
         periodForm.style.display = 'block';
-    }
-    else{
+    } else {
         artistForm.style.display = 'none';
     }
 }
-
-// Fetching and displaying data
 export async function getFamousSculptures() {
     const query = `
         SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?creationDate ?location ?locationLabel ?image WHERE {
@@ -62,6 +82,7 @@ export async function getFamousSculptures() {
     });
     const data = await response.json();
     await displaySculptureResults(data);
+    
 }
 export async function getSpecificArtistSculptures(event) {
     event.preventDefault();
@@ -77,6 +98,62 @@ export async function getSpecificArtistSculptures(event) {
             ?sculpture wdt:P170 wd:${artist} .
             OPTIONAL { ?sculpture wdt:P571 ?creationDate . }  # Creation date
             OPTIONAL { ?sculpture wdt:P18 ?image . }          # Image
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        LIMIT 50
+    `;
+    console.log("QUERY", query);
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    await displaySculptureResults(data);
+}
+export async function getSpecificMuseumSculptures(event) {
+    event.preventDefault();
+    const museum = document.getElementById("museum").value;
+    if (!museum) {
+        alert("Please select a museum.");
+        return;
+    }
+    
+    const query = `
+        SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?image WHERE {
+            ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture
+            ?sculpture wdt:P276 wd:${museum} . 
+            OPTIONAL { ?sculpture wdt:P170 ?artist . }  # Creator
+            OPTIONAL { ?sculpture wdt:P18 ?image . }    # Image
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        LIMIT 50
+    `;
+    console.log("QUERY", query);
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    await displaySculptureResults(data);
+}
+export async function getSpecificMaterialSculptures(event) {
+    event.preventDefault();
+    const material = document.getElementById("material").value;
+    if (!material) {
+        alert("Please select a material.");
+        return;
+    }
+    
+    const query = `
+        SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?material ?materialLabel ?image WHERE {
+            ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture
+            ?sculpture wdt:P186 wd:${material} .
+            OPTIONAL { ?sculpture wdt:P170 ?artist . }  # Creator
+            OPTIONAL { ?sculpture wdt:P18 ?image . }    # Image
             SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
         }
         LIMIT 50
@@ -178,7 +255,6 @@ async function displaySculptureResults(data) {
 
     resultsContainer.appendChild(table);
 }
-
 export function openModal(src, alt) {
     const modal = document.getElementById('myModal');
     const modalImg = document.getElementById('img01');
@@ -198,7 +274,6 @@ export function openModal(src, alt) {
         }
     }
 }
-
 export function closeModal() {
     const modal = document.getElementById('myModal');
     modal.classList.add('fade-out');
@@ -240,8 +315,6 @@ export function exportTableToHTML(filename) {
     downloadLink.click();
     document.body.removeChild(downloadLink);
 }
-
-
 export async function getSculpturesByPeriod(startDate, endDate) {
     const endpointUrl = "https://query.wikidata.org/sparql";
 
@@ -287,10 +360,9 @@ export async function getSculpturesByPeriod(startDate, endDate) {
         document.getElementById("loading").style.display = "none";
     }
 }
-
-
-
 function displayResults(results) {
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     const resultsContainer = document.getElementById("results");
     resultsContainer.innerHTML = "";
 
@@ -336,7 +408,7 @@ function displayResults(results) {
 
         tbody.appendChild(row);
     });
-
+    
     resultsContainer.appendChild(table);
+    loadingIndicator.style.display = 'none';
 }
-

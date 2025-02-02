@@ -105,8 +105,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById("allworksofart").addEventListener("click", () => {
                 getWorksOfArt();
-                document.getElementById("exportCsv").style.display = 'inline-block';
-                document.getElementById("exportHtml").style.display = 'inline-block';
+                document.getElementById("exportCsv").style.display = 'none';
+                document.getElementById("exportHtml").style.display = 'none';
             });
             document.getElementById("queryDropdown").addEventListener("change", toggleCriteriaForm);
             document.getElementById("handlequery").addEventListener("click", handleQuery);

@@ -388,8 +388,6 @@ async function fetchArtistsInfluencedByVanGogh(notableWork = '') {
     });
     const data = await response.json();
     displayArtistsInfluencedByVanGogh(data);
-
-    loadingIndicator.style.display = 'none'; // Hide loading indicator
 }
 function displayArtistsInfluencedByVanGogh(data) {
     const loadingIndicator = document.getElementById('loading');
@@ -481,6 +479,9 @@ function displayArtistsInfluencedByVanGogh(data) {
         table.appendChild(row);
     });
 
+    loadingIndicator.style.display = 'none'; // Hide loading indicator
+    document.getElementById("exportCsv").style.display = 'inline-block';
+    document.getElementById("exportHtml").style.display = 'inline-block';
     container.appendChild(table);
 }
 
@@ -576,6 +577,8 @@ function displayResults(data) {
     });
 
     loadingIndicator.style.display = 'none'; // Hide loading indicator
+    document.getElementById("exportCsv").style.display = 'inline-block';
+    document.getElementById("exportHtml").style.display = 'inline-block';
     resultsContainer.appendChild(table);
 }
 async function displayInfluencedByGogh() {
@@ -647,6 +650,9 @@ async function fetchMessage(property) {
     }
 }
 function displayResultsPaintings(data) {
+    // add loading spinner
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; 
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Clear previous results
 
@@ -737,7 +743,9 @@ function displayResultsPaintings(data) {
 
         table.appendChild(row);
     });
-
+    loadingIndicator.style.display = 'none';
+    document.getElementById("exportCsv").style.display = 'inline-block';
+    document.getElementById("exportHtml").style.display = 'inline-block';
     resultsContainer.appendChild(table);
 }
 
