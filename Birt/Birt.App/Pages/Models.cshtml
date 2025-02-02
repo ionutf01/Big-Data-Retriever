@@ -40,11 +40,11 @@
     <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
     <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
 
-    <div id="criteria-form" style="display: none; margin-top: 20px;">
+    <div id="criteria-form" style="display: none; margin-top: 10px;">
         <h2>Select Criteria</h2>
         <form>
-            <label>
-                Artistic Movement:
+            <div class="criteria-group">
+                <label for="movement">Artistic Movement:</label>
                 <select id="movement">
                     <option value="">-- Select Movement --</option>
                     <option value="Q166713">Post-Impressionism</option>
@@ -53,33 +53,43 @@
                     <option value="Q4692">Renaissance</option>
                     <option value="Q1474884">High Renaissance</option>
                 </select>
-                <input type="checkbox" id="not_movement"> NOT
-            </label>
-            <br>
-            <label>
-                Occupation:
+                <div class="checkbox-container">
+                    <input type="checkbox" id="not_movement">
+                    <label for="not_movement">NOT</label>
+                </div>
+            </div>
+
+            <div class="criteria-group">
+                <label for="occupation">Occupation:</label>
                 <select id="occupation">
                     <option value="">-- Select Occupation --</option>
                     <option value="Q1028181">Painter</option>
                     <option value="Q1281618">Sculptor</option>
                     <option value="Q33231">Photographer</option>
                 </select>
-                <input type="checkbox" id="not_occupation"> NOT
-            </label>
-            <br>
-            <label>
-                Country:
+                <div class="checkbox-container">
+                    <input type="checkbox" id="not_occupation">
+                    <label for="not_occupation">NOT</label>
+                </div>
+            </div>
+
+            <div class="criteria-group">
+                <label for="country">Country:</label>
                 <select id="country">
                     <option value="">-- Select Country --</option>
                     <option value="Q30">United States</option>
                     <option value="Q142">France</option>
                     <option value="Q183">Germany</option>
                 </select>
-            </label>
-            <br>
+            </div>
+
             <button id="handlequery" type="button" class="btn btn-primary">Search</button>
         </form>
     </div>
+
+
+
+
 
 
     <h2>Results</h2>
