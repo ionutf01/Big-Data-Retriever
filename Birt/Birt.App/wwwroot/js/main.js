@@ -1,6 +1,7 @@
 import { getWorksOfArtGogh, getWorksOfArtDaVinci, fetchSimilarArtists, fetchArtistsInfluencedByVanGogh, displayTopPaintingsInfluencedByGogh, displayComparison } from './site.js';
 import { showArtistsAndInfluences } from './1850-1900.js';
-function getWorksOfArt() {
+function getWorksOfArt() {    
+    console.log("Fetching data...");
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
     if (selectedArtist === "gogh") {
