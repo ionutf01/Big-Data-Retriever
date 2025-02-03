@@ -162,7 +162,44 @@ export async function compareArtists(artist1Id, artist2Id) {
     const data = await response.json();
     displayComparison(data, artist1Name, artist2Name);
 }
-export function displaySimilarArtistsVinci(data) {
+function addStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #results ul {
+            list-style-type: none; /* Elimină punctele din listă */
+            padding: 0;
+        }
+
+        #results li {
+            display: flex;
+            justify-content: space-between; /* Aliniază textul și butonul pe aceeași linie */
+            align-items: center;
+            padding: 5px 0;
+            width: 250px; /* Dimensiune fixă pentru uniformizare */
+        }
+
+        #results button {
+            margin-left: 10px; /* Adaugă spațiu între nume și buton */
+            padding: 3px 8px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #results button:hover {
+            background-color: #0056b3;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+addStyles();
+
+function displaySimilarArtistsVinci(data) {
     console.log("DATA IN SIMILAR VINCI", data);
     const resultsContainer = document.getElementById('results');
 
@@ -176,22 +213,28 @@ export function displaySimilarArtistsVinci(data) {
 
     data.results.bindings.forEach(item => {
         const listItem = document.createElement('li');
-        const artistName = item.artistLabel.value;
+
+        // Creează un div pentru artist
+        const artistSpan = document.createElement('span');
+        artistSpan.textContent = item.artistLabel.value;
+
         const artistId = item.artist.value.split('/').pop();
 
+        // Creează butonul "Compare"
         const compareButton = document.createElement('button');
         compareButton.textContent = 'Compare';
-
         compareButton.addEventListener('click', () => {
-            compareArtists('Q762', artistId); // Dynamically attach compareArtists call
+            compareArtists('Q762', artistId);
         });
 
-        listItem.textContent = artistName;
+        // Adaugă artistul și butonul în listItem
+        listItem.appendChild(artistSpan);
         listItem.appendChild(compareButton);
 
         list.appendChild(listItem);
     });
 }
+
 
 export function displaySimilarArtistsGogh(data) {
     const resultsContainer = document.getElementById('results');
@@ -298,28 +341,33 @@ async function fetchSimilarArtists(artistId) {
 }
 
 export async function displayComparison(data, artist1Name, artist2Name) {
+    addComparisonStyles(); // Adaugă stilurile CSS
+
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
+
     const table = document.createElement('table');
+    table.classList.add('comparison-table');
+
     table.innerHTML = `
-        <tr>
-            <th>Property</th>
-            <th>${artist1Name}</th>
-            <th>${artist2Name}</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>${artist1Name}</th>
+                <th>${artist2Name}</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     `;
 
+    const tbody = table.querySelector('tbody');
     const groupedData = {};
 
     for (const item of data.results.bindings) {
         const propertyUri = item.property.value;
-        console.log("Property URI: " + propertyUri);
         const propertyItself = propertyUri.split('/').pop();
-        console.log("Property Itself: " + propertyItself);
         const propertyLabel = await fetchMessage(propertyItself);
-        const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '')
-        console.log("Property Label: " + cleanProperty);
-
+        const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '');
 
         const artist1Value = item.artist1ValueLabel ? item.artist1ValueLabel.value :
             (item.artist1Value ? item.artist1Value.value : "N/A");
@@ -340,11 +388,51 @@ export async function displayComparison(data, artist1Name, artist2Name) {
             <td>${Array.from(values.artist1).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
             <td>${Array.from(values.artist2).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
         `;
-        table.appendChild(row);
+        tbody.appendChild(row);
     }
 
+    table.appendChild(tbody);
     comparisonContainer.appendChild(table);
 }
+
+// Funcție pentru adăugarea stilurilor CSS dinamic în JavaScript
+function addComparisonStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .comparison-table a {
+            text-decoration: none;
+            color: #0073e6;
+        }
+
+        .comparison-table a:hover {
+            text-decoration: underline;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+
 
 /*
 * Artists influenced by Van Gogh
@@ -649,20 +737,62 @@ async function fetchMessage(property) {
         // You can also update the DOM or perform other actions with the message
     }
 }
+
+window.toggleView = function () {
+    isTableView = !isTableView;
+    document.getElementById("toggleView").textContent = isTableView ? "See Cards" : "See Table";
+    if (lastData) {
+        displayResultsPaintings(lastData);
+    }
+};
+window.displayResultsPaintings = function (data) {
+    lastData = data;
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';
+
+    if (isTableView) {
+        displayTable(data, resultsContainer);
+    } else {
+        displayCards(data, resultsContainer);
+    }
+};
+
+let isTableView = true; // Variabilă globală pentru a urmări starea vizualizării
+
+export function toggleView() {
+    console.log("Toggling view..."); // Debugging
+    let isTableView = true;
+    isTableView = !isTableView;
+    document.getElementById("toggleView").textContent = isTableView ? "See Cards" : "See Table";
+}
+
+
+let lastData = null; // Variabilă pentru a stoca ultima interogare de date
+
 function displayResultsPaintings(data) {
+    lastData = data; // Stocăm datele pentru a le reutiliza la schimbarea vizualizării
+
     // add loading spinner
     const loadingIndicator = document.getElementById('loading');
     loadingIndicator.style.display = 'block'; 
     const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = ''; // Clear previous results
+    resultsContainer.innerHTML = ''; // Curăță rezultatele anterioare
 
+    if (isTableView) {
+        displayTable(data, resultsContainer);
+    } else {
+        displayCards(data, resultsContainer);
+    }
+}
+
+function displayTable(data, container) {
     const table = document.createElement('table');
     table.style.width = '100%';
     table.style.borderCollapse = 'collapse';
 
-    // Add headers for the table
+    // Antet tabel
     const headerRow = document.createElement('tr');
-    const headers = ['Image', 'Title', 'Painter', 'Museum']; // Added "Museum" column
+    const headers = ['Image', 'Title', 'Painter', 'Museum'];
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
@@ -675,13 +805,11 @@ function displayResultsPaintings(data) {
     table.appendChild(headerRow);
 
     data.results.bindings.forEach(item => {
-        if (item.workLabel && item.workLabel.value.includes("Q") || !item.workImage || !item.workImage.value) {
-            return; // Skip results containing "Q<some_number>" or without an image
-        }
+        if (!item.workImage || !item.workImage.value) return;
 
         const row = document.createElement('tr');
 
-        // Image column
+        // Coloana Imagine
         const imgCell = document.createElement('td');
         imgCell.style.border = '1px solid #ddd';
         imgCell.style.padding = '8px';
@@ -691,14 +819,12 @@ function displayResultsPaintings(data) {
         img.width = 100;
         img.height = 100;
         img.loading = 'lazy';
-        img.style.cursor = 'pointer'; // Change cursor to pointer
-        img.addEventListener('click', () => {
-            openModal(img.src, img.alt); // Open the modal with the clicked image
-        });
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => openModal(img.src, img.alt));
         imgCell.appendChild(img);
         row.appendChild(imgCell);
 
-        // Title column
+        // Coloana Titlu
         const titleCell = document.createElement('td');
         titleCell.style.border = '1px solid #ddd';
         titleCell.style.padding = '8px';
@@ -711,7 +837,7 @@ function displayResultsPaintings(data) {
         titleCell.appendChild(link);
         row.appendChild(titleCell);
 
-        // Painter column
+        // Coloana Pictor
         const painterCell = document.createElement('td');
         painterCell.style.border = '1px solid #ddd';
         painterCell.style.padding = '8px';
@@ -724,7 +850,7 @@ function displayResultsPaintings(data) {
         painterCell.appendChild(painterLink);
         row.appendChild(painterCell);
 
-        // Museum column
+        // Coloana Muzeu
         const museumCell = document.createElement('td');
         museumCell.style.border = '1px solid #ddd';
         museumCell.style.padding = '8px';
@@ -743,11 +869,91 @@ function displayResultsPaintings(data) {
 
         table.appendChild(row);
     });
+
+    container.appendChild(table);
+}
+
+function displayCards(data, container) {
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+    grid.style.gap = '16px';
+
+    data.results.bindings.forEach(item => {
+        if (!item.workImage || !item.workImage.value) return;
+
+        const card = document.createElement('div');
+        card.style.border = '1px solid #ddd';
+        card.style.borderRadius = '8px';
+        card.style.overflow = 'hidden';
+        card.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+        card.style.padding = '16px';
+        card.style.backgroundColor = '#fff';
+        card.style.textAlign = 'center';
+
+        // Imaginea
+        const img = document.createElement('img');
+        img.src = item.workImage.value;
+        img.alt = item.workLabel ? item.workLabel.value : 'Image';
+        img.style.width = '100%';
+        img.style.height = '200px';
+        img.style.objectFit = 'cover';
+        img.loading = 'lazy';
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => openModal(img.src, img.alt));
+        card.appendChild(img);
+
+        // Titlu
+        const title = document.createElement('h3');
+        title.style.margin = '10px 0';
+        const link = document.createElement('a');
+        const workId = item.work.value.split('/').pop();
+        link.href = `https://www.wikidata.org/wiki/${workId}`;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = item.workLabel ? item.workLabel.value : 'Unknown';
+        link.style.color = '#007bff';
+        link.style.textDecoration = 'none';
+        title.appendChild(link);
+        card.appendChild(title);
+
+        // Pictor
+        const painter = document.createElement('p');
+        const painterLink = document.createElement('a');
+        const painterId = item.artist.value.split('/').pop();
+        painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
+        painterLink.target = '_blank';
+        painterLink.rel = 'noopener noreferrer';
+        painterLink.textContent = item.artistLabel ? item.artistLabel.value : 'Unknown';
+        painter.appendChild(document.createTextNode('Painter: '));
+        painter.appendChild(painterLink);
+        card.appendChild(painter);
+
+        // Muzeu
+        if (item.museum && item.museumLabel) {
+            const museum = document.createElement('p');
+            const museumLink = document.createElement('a');
+            const museumId = item.museum.value.split('/').pop();
+            museumLink.href = `https://www.wikidata.org/wiki/${museumId}`;
+            museumLink.target = '_blank';
+            museumLink.rel = 'noopener noreferrer';
+            museumLink.textContent = item.museumLabel.value;
+            museum.appendChild(document.createTextNode('Museum: '));
+            museum.appendChild(museumLink);
+            card.appendChild(museum);
+        }
+
+        grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+
     loadingIndicator.style.display = 'none';
     document.getElementById("exportCsv").style.display = 'inline-block';
     document.getElementById("exportHtml").style.display = 'inline-block';
     resultsContainer.appendChild(table);
 }
+
 
 export function openModal(src, alt) {
     const modal = document.getElementById('myModal');
