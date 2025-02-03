@@ -2,392 +2,491 @@
 @model Birt.App.Pages.DataAnalyzer
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Data Relationships Visualization</title>
+    <title>SHACL Shapes Visualization - Enhanced</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
         .node {
             stroke: #fff;
-            stroke-width: 1.5px;
+            stroke-width: 2px;
+            cursor: pointer;
+            filter: drop-shadow(0 0 3px rgba(0,0,0,0.3));
         }
+
         .link {
             stroke: #999;
             stroke-opacity: 0.6;
+            stroke-width: 2px;
         }
-        text {
-            font-family: Arial, sans-serif;
+
+        .label {
             font-size: 12px;
-        }
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            width: 80px;
-            height: 28px;
-            padding: 2px;
-            font: 12px sans-serif;
-            background: lightsteelblue;
-            border: 0px;
-            border-radius: 8px;
             pointer-events: none;
+            text-anchor: middle;
+            text-shadow: 0 0 3px white;
         }
-        .highlight {
-            stroke: orange;
-            stroke-width: 3px;
+
+        .node-info {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 300px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .legend {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .legend-item {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+
+        .controls {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            background: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .search input {
+            padding: 10px;
+            width: 250px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .search input:focus {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+        }
+
+        .error-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border: 2px solid red;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
-    <div>
-        <input type="text" id="searchInput" placeholder="Search for a node...">
-        <button id="searchButton">Search</button>
+    <div class="legend">
+        <h3>Legend</h3>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff7f0e"></div>
+            <span>NodeShape</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #1f77b4"></div>
+            <span>PropertyShape</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #2ca02c"></div>
+            <span>Constraint</span>
+        </div>
+        <h4>Link Types</h4>
+        <div class="legend-item">
+            <svg width="40" height="2"><line x1="0" y1="1" x2="40" y2="1" stroke="#999" stroke-width="2"/></svg>
+            <span>has_property</span>
+        </div>
+        <div class="legend-item">
+            <svg width="40" height="2"><line x1="0" y1="1" x2="40" y2="1" stroke="#999" stroke-width="2" stroke-dasharray="5,5"/></svg>
+            <span>has_constraint</span>
+        </div>
+        <div class="legend-item">
+            <svg width="40" height="2"><line x1="0" y1="1" x2="40" y2="1" stroke="#999" stroke-width="2" stroke-dasharray="10,10"/></svg>
+            <span>extends</span>
+        </div>
+        <div class="legend-item">
+            <svg width="40" height="2">
+                <line x1="0" y1="1" x2="40" y2="1" stroke="#999" stroke-width="2" stroke-dasharray="3,3"/>
+            </svg>
+            <span>exhibited_at</span>
+        </div>
+        <div class="legend-item">
+            <svg width="40" height="2">
+                <line x1="0" y1="1" x2="40" y2="1" stroke="#999" stroke-width="2" stroke-dasharray="7,3"/>
+            </svg>
+            <span>instance_of</span>
+        </div>
     </div>
-    <div>
-        <label><input type="checkbox" id="filterArtist" checked> Artist</label>
-        <label><input type="checkbox" id="filterWork" checked> Work</label>
-        <label><input type="checkbox" id="filterMuseum" checked> Museum</label>
-    </div>
-    <svg width="960" height="600"></svg>
-    <script>
-        const data = {
-            nodes: [
-                { id: "Vincent van Gogh", group: "artist", info: "Dutch post-impressionist painter" },
-                { id: "Starry Night", group: "work", info: "Famous painting by Vincent van Gogh" },
-                { id: "Louvre Museum", group: "museum", info: "World's largest art museum in Paris" },
-                { id: "Leonardo da Vinci", group: "artist", info: "Italian polymath of the Renaissance" },
-                { id: "Mona Lisa", group: "work", info: "Portrait painting by Leonardo da Vinci" },
-                { id: "British Museum", group: "museum", info: "Public institution in London" },
-                { id: "Pablo Picasso", group: "artist", info: "Spanish painter and sculptor" },
-                { id: "Guernica", group: "work", info: "Mural-sized oil painting by Pablo Picasso" },
-                { id: "Museum of Modern Art", group: "museum", info: "Art museum in New York City" },
-                { id: "Claude Monet", group: "artist", info: "French painter, founder of Impressionism" },
-                { id: "Water Lilies", group: "work", info: "Series of paintings by Claude Monet" },
-                { id: "Orangerie Museum", group: "museum", info: "Art gallery of impressionist paintings in Paris" },
-                { id: "Auguste Rodin", group: "artist", info: "French sculptor" },
-                { id: "The Thinker", group: "work", info: "Famous sculpture by Auguste Rodin" },
-                { id: "Rodin Museum", group: "museum", info: "Museum dedicated to Auguste Rodin in Paris" },
-                // Additional nodes
-                { id: "Salvador Dali", group: "artist", info: "Spanish surrealist artist" },
-                { id: "The Persistence of Memory", group: "work", info: "Famous painting by Salvador Dali" },
-                { id: "Guggenheim Museum", group: "museum", info: "Art museum in New York City" },
-                { id: "Henri Matisse", group: "artist", info: "French artist known for his use of color" },
-                { id: "The Dance", group: "work", info: "Famous painting by Henri Matisse" },
-                { id: "Tate Modern", group: "museum", info: "Modern art gallery in London" },
-                { id: "Jackson Pollock", group: "artist", info: "American painter known for his drip technique" },
-                { id: "No. 5, 1948", group: "work", info: "Famous painting by Jackson Pollock" },
-                { id: "National Gallery", group: "museum", info: "Art museum in London" },
-                { id: "Andy Warhol", group: "artist", info: "American artist known for pop art" },
-                { id: "Campbell's Soup Cans", group: "work", info: "Famous work by Andy Warhol" },
-                { id: "Whitney Museum", group: "museum", info: "Art museum in New York City" },
-                { id: "Georgia O'Keeffe", group: "artist", info: "American modernist artist" },
-                { id: "Black Iris", group: "work", info: "Famous painting by Georgia O'Keeffe" },
-                { id: "Art Institute of Chicago", group: "museum", info: "Art museum in Chicago" },
-                { id: "Frida Kahlo", group: "artist", info: "Mexican painter known for her self-portraits" },
-                { id: "The Two Fridas", group: "work", info: "Famous painting by Frida Kahlo" },
-                { id: "Museo Frida Kahlo", group: "museum", info: "Museum dedicated to Frida Kahlo in Mexico City" },
-                { id: "Edvard Munch", group: "artist", info: "Norwegian painter known for The Scream" },
-                { id: "The Scream", group: "work", info: "Famous painting by Edvard Munch" },
-                { id: "Munch Museum", group: "museum", info: "Art museum in Oslo" },
-                { id: "Gustav Klimt", group: "artist", info: "Austrian symbolist painter" },
-                { id: "The Kiss", group: "work", info: "Famous painting by Gustav Klimt" },
-                { id: "Belvedere Museum", group: "museum", info: "Art museum in Vienna" },
-                { id: "Rembrandt", group: "artist", info: "Dutch Golden Age painter" },
-                { id: "The Night Watch", group: "work", info: "Famous painting by Rembrandt" },
-                { id: "Rijksmuseum", group: "museum", info: "Art museum in Amsterdam" },
-                { id: "Johannes Vermeer", group: "artist", info: "Dutch Baroque painter" },
-                { id: "Girl with a Pearl Earring", group: "work", info: "Famous painting by Johannes Vermeer" },
-                { id: "Mauritshuis", group: "museum", info: "Art museum in The Hague" },
-                { id: "Caravaggio", group: "artist", info: "Italian Baroque painter" },
-                { id: "The Calling of St Matthew", group: "work", info: "Famous painting by Caravaggio" },
-                { id: "Galleria Borghese", group: "museum", info: "Art museum in Rome" },
-                { id: "Diego Velazquez", group: "artist", info: "Spanish Baroque painter" },
-                { id: "Las Meninas", group: "work", info: "Famous painting by Diego Velazquez" },
-                { id: "Prado Museum", group: "museum", info: "Art museum in Madrid" },
-                { id: "Paul Cezanne", group: "artist", info: "French post-impressionist painter" },
-                { id: "The Card Players", group: "work", info: "Famous painting by Paul Cezanne" },
-                { id: "Musee d'Orsay", group: "museum", info: "Art museum in Paris" },
-                { id: "Edgar Degas", group: "artist", info: "French impressionist artist" },
-                { id: "The Ballet Class", group: "work", info: "Famous painting by Edgar Degas" },
-                { id: "Metropolitan Museum of Art", group: "museum", info: "Art museum in New York City" },
-                { id: "Michelangelo", group: "artist", info: "Italian sculptor, painter, and architect" },
-                { id: "David", group: "work", info: "Famous sculpture by Michelangelo" },
-                { id: "Uffizi Gallery", group: "museum", info: "Art museum in Florence" },
-                { id: "Donatello", group: "artist", info: "Italian sculptor of the Renaissance" },
-                { id: "Saint George", group: "work", info: "Famous sculpture by Donatello" },
-                { id: "Bargello Museum", group: "museum", info: "Art museum in Florence" },
-                { id: "Gian Lorenzo Bernini", group: "artist", info: "Italian sculptor and architect" },
-                { id: "Apollo and Daphne", group: "work", info: "Famous sculpture by Gian Lorenzo Bernini" },
-                { id: "Villa Borghese", group: "museum", info: "Art museum in Rome" },
-                { id: "Antonio Canova", group: "artist", info: "Italian neoclassical sculptor" },
-                { id: "Psyche Revived by Cupid's Kiss", group: "work", info: "Famous sculpture by Antonio Canova" },
-                { id: "Louvre Museum", group: "museum", info: "World's largest art museum in Paris" },
-                { id: "Constantin Brancusi", group: "artist", info: "Romanian sculptor" },
-                { id: "The Kiss", group: "work", info: "Famous sculpture by Constantin Brancusi" },
-                { id: "National Museum of Art of Romania", group: "museum", info: "Art museum in Bucharest" },
-                { id: "Henry Moore", group: "artist", info: "English sculptor and artist" },
-                { id: "Reclining Figure", group: "work", info: "Famous sculpture by Henry Moore" },
-                { id: "Tate Britain", group: "museum", info: "Art museum in London" },
-                { id: "Barbara Hepworth", group: "artist", info: "English sculptor and artist" },
-                { id: "Single Form", group: "work", info: "Famous sculpture by Barbara Hepworth" },
-                { id: "Tate St Ives", group: "museum", info: "Art museum in St Ives" },
-                { id: "Louise Bourgeois", group: "artist", info: "French-American artist and sculptor" },
-                { id: "Maman", group: "work", info: "Famous sculpture by Louise Bourgeois" },
-                { id: "Guggenheim Museum Bilbao", group: "museum", info: "Art museum in Bilbao" },
-                { id: "Claes Oldenburg", group: "artist", info: "American sculptor" },
-                { id: "Spoonbridge and Cherry", group: "work", info: "Famous sculpture by Claes Oldenburg" },
-                { id: "Walker Art Center", group: "museum", info: "Art museum in Minneapolis" },
-                { id: "Antony Gormley", group: "artist", info: "British sculptor" },
-                { id: "Angel of the North", group: "work", info: "Famous sculpture by Antony Gormley" },
-                { id: "Baltic Centre for Contemporary Art", group: "museum", info: "Art museum in Gateshead" },
-                { id: "Jeff Koons", group: "artist", info: "American artist known for his balloon sculptures" },
-                { id: "Balloon Dog", group: "work", info: "Famous sculpture by Jeff Koons" },
-                { id: "Whitney Museum", group: "museum", info: "Art museum in New York City" },
-                { id: "Jaume Plensa", group: "artist", info: "Spanish sculptor" },
-                { id: "Crown Fountain", group: "work", info: "Famous sculpture by Jaume Plensa" },
-                { id: "Art Institute of Chicago", group: "museum", info: "Art museum in Chicago" },
-                { id: "Ai Weiwei", group: "artist", info: "Chinese contemporary artist and activist" },
-                { id: "Sunflower Seeds", group: "work", info: "Famous installation by Ai Weiwei" },
-                { id: "Tate Modern", group: "museum", info: "Modern art gallery in London" },
-                { id: "Maya Lin", group: "artist", info: "American designer and sculptor" },
-                { id: "Vietnam Veterans Memorial", group: "work", info: "Famous memorial by Maya Lin" },
-                { id: "National Mall", group: "museum", info: "National park in Washington, D.C." },
-                { id: "Rachel Whiteread", group: "artist", info: "British sculptor" },
-                { id: "House", group: "work", info: "Famous sculpture by Rachel Whiteread" },
-                { id: "Tate Modern", group: "museum", info: "Modern art gallery in London" }
-            ],
-            links: [
-                { source: "Vincent van Gogh", target: "Starry Night" },
-                { source: "Starry Night", target: "Louvre Museum" },
-                { source: "Leonardo da Vinci", target: "Mona Lisa" },
-                { source: "Mona Lisa", target: "British Museum" },
-                { source: "Pablo Picasso", target: "Guernica" },
-                { source: "Guernica", target: "Museum of Modern Art" },
-                { source: "Claude Monet", target: "Water Lilies" },
-                { source: "Water Lilies", target: "Orangerie Museum" },
-                { source: "Auguste Rodin", target: "The Thinker" },
-                { source: "The Thinker", target: "Rodin Museum" },
-                { source: "Rodin Museum", target: "Louvre Museum" },
-                // Additional links
-                { source: "Salvador Dali", target: "The Persistence of Memory" },
-                { source: "The Persistence of Memory", target: "Guggenheim Museum" },
-                { source: "Henri Matisse", target: "The Dance" },
-                { source: "The Dance", target: "Tate Modern" },
-                { source: "Jackson Pollock", target: "No. 5, 1948" },
-                { source: "No. 5, 1948", target: "National Gallery" },
-                { source: "Andy Warhol", target: "Campbell's Soup Cans" },
-                { source: "Campbell's Soup Cans", target: "Whitney Museum" },
-                { source: "Georgia O'Keeffe", target: "Black Iris" },
-                { source: "Black Iris", target: "Art Institute of Chicago" },
-                { source: "Frida Kahlo", target: "The Two Fridas" },
-                { source: "The Two Fridas", target: "Museo Frida Kahlo" },
-                { source: "Edvard Munch", target: "The Scream" },
-                { source: "The Scream", target: "Munch Museum" },
-                { source: "Gustav Klimt", target: "The Kiss" },
-                { source: "The Kiss", target: "Belvedere Museum" },
-                { source: "Rembrandt", target: "The Night Watch" },
-                { source: "The Night Watch", target: "Rijksmuseum" },
-                { source: "Johannes Vermeer", target: "Girl with a Pearl Earring" },
-                { source: "Girl with a Pearl Earring", target: "Mauritshuis" },
-                { source: "Caravaggio", target: "The Calling of St Matthew" },
-                { source: "The Calling of St Matthew", target: "Galleria Borghese" },
-                { source: "Diego Velazquez", target: "Las Meninas" },
-                { source: "Las Meninas", target: "Prado Museum" },
-                { source: "Paul Cezanne", target: "The Card Players" },
-                { source: "The Card Players", target: "Musee d'Orsay" },
-                { source: "Edgar Degas", target: "The Ballet Class" },
-                { source: "The Ballet Class", target: "Metropolitan Museum of Art" },
-                { source: "Michelangelo", target: "David" },
-                { source: "David", target: "Uffizi Gallery" },
-                { source: "Donatello", target: "Saint George" },
-                { source: "Saint George", target: "Bargello Museum" },
-                { source: "Gian Lorenzo Bernini", target: "Apollo and Daphne" },
-                { source: "Apollo and Daphne", target: "Villa Borghese" },
-                { source: "Antonio Canova", target: "Psyche Revived by Cupid's Kiss" },
-                { source: "Psyche Revived by Cupid's Kiss", target: "Louvre Museum" },
-                { source: "Constantin Brancusi", target: "The Kiss" },
-                { source: "The Kiss", target: "National Museum of Art of Romania" },
-                { source: "Henry Moore", target: "Reclining Figure" },
-                { source: "Reclining Figure", target: "Tate Britain" },
-                { source: "Barbara Hepworth", target: "Single Form" },
-                { source: "Single Form", target: "Tate St Ives" },
-                { source: "Louise Bourgeois", target: "Maman" },
-                { source: "Maman", target: "Guggenheim Museum Bilbao" },
-                { source: "Claes Oldenburg", target: "Spoonbridge and Cherry" },
-                { source: "Spoonbridge and Cherry", target: "Walker Art Center" },
-                { source: "Antony Gormley", target: "Angel of the North" },
-                { source: "Angel of the North", target: "Baltic Centre for Contemporary Art" },
-                { source: "Jeff Koons", target: "Balloon Dog" },
-                { source: "Balloon Dog", target: "Whitney Museum" },
-                { source: "Jaume Plensa", target: "Crown Fountain" },
-                { source: "Crown Fountain", target: "Art Institute of Chicago" },
-                { source: "Ai Weiwei", target: "Sunflower Seeds" },
-                { source: "Sunflower Seeds", target: "Tate Modern" },
-                { source: "Maya Lin", target: "Vietnam Veterans Memorial" },
-                { source: "Vietnam Veterans Memorial", target: "National Mall" },
-                { source: "Rachel Whiteread", target: "House" },
-                { source: "House", target: "Tate Modern" }
-            ]
-        };
 
-        const width = 960;
-        const height = 600;
-        
-        const svg = d3.select("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .call(d3.zoom().on("zoom", (event) => {
-                svg.attr("transform", event.transform);
-            }))
-            .append("g");
-        
-        const tooltip = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
-        
-        const simulation = d3.forceSimulation(data.nodes)
-            .force("link", d3.forceLink(data.links).id(d => d.id).distance(200))
-            .force("charge", d3.forceManyBody().strength(-300))
-            .force("center", d3.forceCenter(width / 2, height / 2));
-        
-        const link = svg.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(data.links)
-            .enter().append("line")
-            .attr("class", "link");
-        
-        const node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(data.nodes)
-            .enter().append("circle")
-            .attr("class", "node")
-            .attr("r", 10)
-            .attr("fill", d => {
-                if (d.group === "artist") return "blue";
-                if (d.group === "work") return "green";
-                return "red";
-            })
-            .on("mouseover", (event, d) => {
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", .9);
-                tooltip.html(d.id)
-                    .style("left", (event.pageX + 5) + "px")
-                    .style("top", (event.pageY - 28) + "px");
-            })
-            .on("mouseout", () => {
-                tooltip.transition()
-                    .duration(500)
-                    .style("opacity", 0);
-            })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-        
-        const label = svg.append("g")
-            .attr("class", "labels")
-            .selectAll("text")
-            .data(data.nodes)
-            .enter().append("text")
-            .attr("dy", -3)
-            .text(d => d.id);
-        
-        simulation.on("tick", () => {
-            link
-                .attr("x1", d => d.source.x)
-                .attr("y1", d => d.source.y)
-                .attr("x2", d => d.target.x)
-                .attr("y2", d => d.target.y);
-        
-            node
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y);
-        
-            label
-                .attr("x", d => d.x)
-                .attr("y", d => d.y);
+    <div class="node-info">
+        <h3>Node Information</h3>
+        <div id="info-content">Select a node to see details</div>
+        <div class="search">
+            <input type="text" placeholder="Search nodes...">
+        </div>
+    </div>
+
+
+    <div class="controls">
+        <button onclick="resetZoom()">Reset View</button>
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+    </div>
+
+    <div id="visualization"></div>
+
+<script>
+try {
+    const shaclData = {
+        nodes: [
+            // NodeShapes
+            { id: "ArtistShape", type: "NodeShape", target: "art:Artist" },
+            { id: "PainterShape", type: "NodeShape", target: "art:Painter" },
+            { id: "InfluenceShape", type: "NodeShape", target: "art:Influence" },
+            { id: "TimePeriodShape", type: "NodeShape", target: "art:TimePeriod" },
+
+            // PropertyShapes
+            { id: "hasName", type: "PropertyShape", datatype: "xsd:string" },
+            { id: "birthDate", type: "PropertyShape", datatype: "xsd:date" },
+            { id: "influencedBy", type: "PropertyShape", class: "art:Influence" },
+            { id: "hasType", type: "PropertyShape", class: "owl:Class" },
+
+            // Constraints
+            { id: "birthDateRange", type: "Constraint", value: "1850-1900" },
+            { id: "nameRequired", type: "Constraint", value: "minCount: 1" },
+            { id: "validWikidataID", type: "Constraint", value: "pattern: ^Q[0-9]+$" },
+
+            // Events (Artists)
+            { id: "AlbertEdelfelt", type: "Event", label: "Albert Edelfelt", value: "Q356644" },
+            { id: "AlexanderCalder", type: "Event", label: "Alexander Calder", value: "Q151580" },
+            { id: "AndreDerain", type: "Event", label: "André Derain", value: "Q156272" },
+            { id: "AntoineBourdelle", type: "Event", label: "Antoine Bourdelle", value: "Q314350" },
+            { id: "GeorgesSeurat", type: "Event", label: "Georges Seurat", value: "Q34013" },
+            { id: "HenriMatisse", type: "Event", label: "Henri Matisse", value: "Q5589" },
+            { id: "PaulCezanne", type: "Event", label: "Paul Cézanne", value: "Q157541" },
+            { id: "PaulGauguin", type: "Event", label: "Paul Gauguin", value: "Q37693" },
+            { id: "Renoir", type: "Event", label: "Pierre-Auguste Renoir", value: "Q40599" },
+            { id: "AugusteRodin", type: "Event", label: "Auguste Rodin", value: "Q159432" },
+
+            // Influences (Exhibitions)
+            { id: "VeniceBiennale", type: "Influence", label: "Venice Biennale", value: "Q205751" },
+            { id: "ArmoryShow", type: "Influence", label: "Armory Show", value: "Q688909" },
+            { id: "FreeSecession", type: "Influence", label: "Free Secession", value: "Q910743" },
+            { id: "SwissNationalExhibition", type: "Influence", label: "Swiss National Exhibition", value: "Q1121146" },
+            { id: "ExpoInternational1937", type: "Influence", label: "Exposition Internationale 1937", value: "Q1165755" }
+        ],
+        links: [
+            // ArtistShape connections
+            { source: "ArtistShape", target: "hasName", type: "has_property" },
+            { source: "ArtistShape", target: "birthDate", type: "has_property" },
+            { source: "ArtistShape", target: "influencedBy", type: "has_property" },
+
+            // Property constraints
+            { source: "birthDate", target: "birthDateRange", type: "has_constraint" },
+            { source: "hasName", target: "nameRequired", type: "has_constraint" },
+
+            // PainterShape inheritance
+            { source: "PainterShape", target: "ArtistShape", type: "extends" },
+
+            // InfluenceShape connections
+            { source: "InfluenceShape", target: "hasName", type: "has_property" },
+            { source: "InfluenceShape", target: "hasType", type: "has_property" },
+
+            // Event-Influence connections
+            { source: "HenriMatisse", target: "VeniceBiennale", type: "exhibited_at" },
+            { source: "HenriMatisse", target: "ArmoryShow", type: "exhibited_at" },
+            { source: "AndreDerain", target: "VeniceBiennale", type: "exhibited_at" },
+            { source: "AndreDerain", target: "ArmoryShow", type: "exhibited_at" },
+            { source: "GeorgesSeurat", target: "VeniceBiennale", type: "exhibited_at" },
+            { source: "PaulCezanne", target: "VeniceBiennale", type: "exhibited_at" },
+            { source: "PaulGauguin", target: "ArmoryShow", type: "exhibited_at" },
+            { source: "Renoir", target: "VeniceBiennale", type: "exhibited_at" },
+            { source: "AugusteRodin", target: "ExpoInternational1937", type: "exhibited_at" },
+
+            // Artist connections to ArtistShape
+            { source: "AlbertEdelfelt", target: "ArtistShape", type: "instance_of" },
+            { source: "AlexanderCalder", target: "ArtistShape", type: "instance_of" },
+            { source: "AndreDerain", target: "ArtistShape", type: "instance_of" },
+            { source: "AntoineBourdelle", target: "ArtistShape", type: "instance_of" },
+            { source: "GeorgesSeurat", target: "ArtistShape", type: "instance_of" },
+            { source: "HenriMatisse", target: "ArtistShape", type: "instance_of" },
+            { source: "PaulCezanne", target: "ArtistShape", type: "instance_of" },
+            { source: "PaulGauguin", target: "ArtistShape", type: "instance_of" },
+            { source: "Renoir", target: "ArtistShape", type: "instance_of" },
+            { source: "AugusteRodin", target: "ArtistShape", type: "instance_of" }
+        ]
+    };
+
+    const width = window.innerWidth - 40;
+    const height = window.innerHeight - 40;
+
+    const color = d3.scaleOrdinal()
+        .domain(["NodeShape", "PropertyShape", "Constraint", "Event", "Influence"])
+        .range(["#ff7f0e", "#1f77b4", "#2ca02c", "#e377c2", "#17becf"]);
+
+    // Create SVG with zoom support
+    const svg = d3.select("#visualization")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    const g = svg.append("g");
+
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            g.attr("transform", event.transform);
         });
-        
-        function dragstarted(event, d) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
+
+    svg.call(zoom);
+
+    // Create arrow marker
+    g.append("defs").selectAll("marker")
+        .data(["end"])
+        .enter().append("marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 15)
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5");
+
+    // Create force simulation
+    const simulation = d3.forceSimulation(shaclData.nodes)
+        .force("link", d3.forceLink(shaclData.links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody().strength(-300))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collide", d3.forceCollide().radius(50));
+
+    // Create links
+    const link = g.append("g")
+        .selectAll("line")
+        .data(shaclData.links)
+        .join("line")
+        .attr("class", "link")
+        .attr("marker-end", "url(#end)")
+        .attr("stroke-dasharray", d => {
+            switch(d.type) {
+                case "has_constraint": return "5,5";
+                case "extends": return "10,10";
+                default: return null;
+            }
+        });
+
+    // Create nodes
+    const node = g.append("g")
+        .selectAll("circle")
+        .data(shaclData.nodes)
+        .join("circle")
+        .attr("class", "node")
+        .attr("r", 10)
+        .attr("fill", d => color(d.type))
+        .call(d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended));
+
+    // Add labels
+    const label = g.append("g")
+        .selectAll("text")
+        .data(shaclData.nodes)
+        .join("text")
+        .attr("class", "label")
+        .attr("dy", ".35em")
+        .text(d => d.id);
+
+    // Search functionality
+    d3.select(".search input").on("input", function() {
+        const term = this.value.toLowerCase();
+        node.style("opacity", d => d.id.toLowerCase().includes(term) ? 1 : 0.2);
+        label.style("opacity", d => d.id.toLowerCase().includes(term) ? 1 : 0.2);
+        link.style("opacity", d => {
+            const sourceMatch = d.source.id.toLowerCase().includes(term);
+            const targetMatch = d.target.id.toLowerCase().includes(term);
+            return sourceMatch || targetMatch ? 1 : 0.2;
+        });
+    });
+
+    // Enhanced node click handler
+    node.on("click", function(event, d) {
+        const infoContent = document.getElementById("info-content");
+        let content = `
+            <div style="border-left: 4px solid ${color(d.type)}; padding-left: 10px">
+                <h4 style="margin: 0 0 10px 0">${d.id}</h4>
+                <table style="border-collapse: collapse; width: 100%">
+                    <tr>
+                        <td><strong>Type:</strong></td>
+                        <td>${d.type}</td>
+                    </tr>
+                    ${d.target ? `
+                    <tr>
+                        <td><strong>Target:</strong></td>
+                        <td>${d.target}</td>
+                    </tr>` : ''}
+                    ${d.datatype ? `
+                    <tr>
+                        <td><strong>Datatype:</strong></td>
+                        <td>${d.datatype}</td>
+                    </tr>` : ''}
+                    ${d.class ? `
+                    <tr>
+                        <td><strong>Class:</strong></td>
+                        <td>${d.class}</td>
+                    </tr>` : ''}
+                    ${d.value ? `
+                    <tr>
+                        <td><strong>Constraint:</strong></td>
+                        <td>${d.value}</td>
+                    </tr>` : ''}
+                </table>
+            </div>
+        `;
+        infoContent.innerHTML = content;
+    });
+
+    // Simulation tick handler
+    simulation.on("tick", () => {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+
+        label
+            .attr("x", d => d.x)
+            .attr("y", d => d.y);
+    });
+    link.attr("stroke-dasharray", d => {
+        switch(d.type) {
+            case "has_constraint": return "5,5";
+            case "extends": return "10,10";
+            case "exhibited_at": return "3,3";
+            case "instance_of": return "7,3";
+            default: return null;
         }
-        
-        function dragged(event, d) {
-            d.fx = event.x;
-            d.fy = event.y;
-        }
-        
-        function dragended(event, d) {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
-        
-        // Search functionality
-        document.getElementById("searchButton").addEventListener("click", () => {
-            const query = document.getElementById("searchInput").value.toLowerCase();
-            node.classed("highlight", d => d.id.toLowerCase().includes(query));
-        });
-        
-        // Filter functionality
-        const filters = {
-            artist: true,
-            work: true,
-            museum: true
-        };
-        
-        document.getElementById("filterArtist").addEventListener("change", (event) => {
-            filters.artist = event.target.checked;
-            updateNodes();
-        });
-        
-        document.getElementById("filterWork").addEventListener("change", (event) => {
-            filters.work = event.target.checked;
-            updateNodes();
-        });
-        
-        document.getElementById("filterMuseum").addEventListener("change", (event) => {
-            filters.museum = event.target.checked;
-            updateNodes();
-        });
-        
-        function updateNodes() {
-            node.style("display", d => filters[d.group] ? "block" : "none");
-            label.style("display", d => filters[d.group] ? "block" : "none");
-        }
-        
-        // Add legend
-        const legendData = [
-            { group: "artist", color: "blue" },
-            { group: "work", color: "green" },
-            { group: "museum", color: "red" }
-        ];
-        
-        const legend = svg.append("g")
-            .attr("class", "legend")
-            .attr("transform", `translate(${width - 100}, 20)`);
-        
-        legend.selectAll("rect")
-            .data(legendData)
-            .enter().append("rect")
-            .attr("x", 0)
-            .attr("y", (d, i) => i * 20)
-            .attr("width", 18)
-            .attr("height", 18)
-            .style("fill", d => d.color);
-        
-        legend.selectAll("text")
-            .data(legendData)
-            .enter().append("text")
-            .attr("x", 24)
-            .attr("y", (d, i) => i * 20 + 9)
-            .attr("dy", ".35em")
-            .text(d => d.group);
-    </script>
+    });
+
+    // Zoom functions
+    function resetZoom() {
+        svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+    }
+
+    function zoomIn() {
+        svg.transition().duration(750).call(zoom.scaleBy, 1.5);
+    }
+
+    function zoomOut() {
+        svg.transition().duration(750).call(zoom.scaleBy, 0.67);
+    }
+
+    // Drag handlers
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+
+    // Window resize handler
+    window.addEventListener('resize', () => {
+        const width = window.innerWidth - 40;
+        const height = window.innerHeight - 40;
+        svg.attr("width", width).attr("height", height);
+        simulation.force("center", d3.forceCenter(width / 2, height / 2)).restart();
+    });
+
+    // Update color scale to include new types
+    
+    
+    // Add timestamp and user information
+    const footer = d3.select("body")
+        .append("div")
+        .style("position", "fixed")
+        .style("bottom", "20px")
+        .style("left", "20px")
+        .style("font-size", "12px")
+        .style("color", "#666");
+
+    footer.append("p")
+        .text("Generated: 2025-02-03 13:39:08 UTC");
+
+    footer.append("p")
+        .text("User: ionutf01");
+
+} catch (error) {
+    console.error("Visualization error:", error);
+    d3.select("#visualization")
+        .append("div")
+        .attr("class", "error-message")
+        .text(`Error loading visualization: ${error.message}`);
+}
+</script>
 </body>
 </html>

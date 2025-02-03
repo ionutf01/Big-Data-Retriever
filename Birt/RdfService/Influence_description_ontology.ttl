@@ -1,19 +1,166 @@
-@prefix art: <http://art.org/ontology#> .
+# Influence_description_ontology.ttl
+# Created: 2025-02-03 13:00:36
+
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix art: <http://example.org/art/ontology#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 
-# Define the influenceDescription property
-art:influenceDescription a rdf:Property ;
-    rdfs:label "Influence Description"@en ;
-    rdfs:comment "Describes the influence of an event or person."@en ;
-    owl:sameAs <https://www.wikidata.org/wiki/Property:P737> .
-    
-# Define the Event class
-art:Event a rdfs:Class ;
+# =================================================================
+# Ontology Metadata
+# =================================================================
+
+<http://example.org/art/ontology> a owl:Ontology ;
+    dc:title "Artist Influences Ontology"@en ;
+    dc:creator "chilli-papers"@en ;
+    dc:date "2025-02-03T13:00:36Z"^^xsd:dateTime ;
+    dc:description "An ontology describing artists, their influences, and related events"@en ;
+    owl:versionInfo "1.0" .
+
+# =================================================================
+# Class Definitions
+# =================================================================
+
+art:Artist a owl:Class ;
+    rdfs:label "Artist"@en ;
+    rdfs:comment "A person who creates art"@en .
+
+art:Painter a owl:Class ;
+    rdfs:subClassOf art:Artist ;
+    rdfs:label "Painter"@en ;
+    rdfs:comment "An artist who creates paintings"@en .
+
+art:Influence a owl:Class ;
+    rdfs:label "Influence"@en ;
+    rdfs:comment "Something that influenced an artist"@en .
+
+art:Event a owl:Class ;
     rdfs:label "Event"@en ;
-    rdfs:comment "An event related to art."@en .
+    rdfs:comment "An artistic event or exhibition"@en .
 
+art:TimePeriod a owl:Class ;
+    rdfs:label "Time Period"@en ;
+    rdfs:comment "A specific period in art history"@en .
+
+# =================================================================
+# Property Definitions
+# =================================================================
+
+art:hasName a owl:DatatypeProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string ;
+    rdfs:label "has name"@en .
+
+art:birthDate a owl:DatatypeProperty ;
+    rdfs:domain art:Artist ;
+    rdfs:range xsd:date ;
+    rdfs:label "birth date"@en .
+
+art:influencedBy a owl:ObjectProperty ;
+    rdfs:domain art:Artist ;
+    rdfs:range art:Influence ;
+    rdfs:label "influenced by"@en .
+
+art:hasWikidataID a owl:DatatypeProperty ;
+    rdfs:domain owl:Thing ;
+    rdfs:range xsd:string ;
+    rdfs:label "has Wikidata ID"@en .
+
+art:influenceDescription a owl:ObjectProperty ;
+    rdfs:domain art:Event ;
+    rdfs:range art:InfluenceDescription ;
+    rdfs:label "influence description"@en .
+
+# =================================================================
+# SHACL Shapes
+# =================================================================
+
+# Artist Shape
+art:ArtistShape
+    a sh:NodeShape ;
+    sh:targetClass art:Artist ;
+    sh:property [
+        sh:path art:hasName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:message "Artist must have at least one name as string"@en ;
+    ] ;
+    sh:property [
+        sh:path art:birthDate ;
+        sh:datatype xsd:date ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:minInclusive "1850-01-01"^^xsd:date ;
+        sh:maxInclusive "1900-12-31"^^xsd:date ;
+        sh:message "Artist must have exactly one birth date between 1850 and 1900"@en ;
+    ] ;
+    sh:property [
+        sh:path art:influencedBy ;
+        sh:minCount 1 ;
+        sh:nodeKind sh:IRI ;
+        sh:class art:Influence ;
+        sh:message "Artist must have at least one influence"@en ;
+    ] ;
+    sh:property [
+        sh:path art:hasWikidataID ;
+        sh:datatype xsd:string ;
+        sh:pattern "^Q[0-9]+$" ;
+        sh:minCount 1 ;
+        sh:message "Artist must have exactly one valid Wikidata ID"@en ;
+    ] .
+
+# Event Shape
+art:EventShape
+    a sh:NodeShape ;
+    sh:targetClass art:Event ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:datatype rdf:langString ;
+        sh:languageIn ("en") ;
+        sh:minCount 1 ;
+        sh:message "Event must have exactly one English label"@en ;
+    ] ;
+    sh:property [
+        sh:path art:influenceDescription ;
+        sh:nodeKind sh:IRI ;
+        sh:minCount 1 ;
+        sh:message "Event must have at least one influence description"@en ;
+    ] ;
+    sh:property [
+        sh:path rdfs:comment ;
+        sh:datatype rdf:langString ;
+        sh:languageIn ("en") ;
+        sh:minCount 1 ;
+        sh:message "Event must have exactly one English comment"@en ;
+    ] .
+
+# Influence Shape
+art:InfluenceShape
+    a sh:NodeShape ;
+    sh:targetClass art:Influence ;
+    sh:property [
+        sh:path art:hasName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:message "Influence must have exactly one name"@en ;
+    ] ;
+    sh:property [
+        sh:path art:hasWikidataID ;
+        sh:datatype xsd:string ;
+        sh:pattern "^Q[0-9]+$" ;
+        sh:minCount 1 ;
+        sh:message "Influence must have exactly one valid Wikidata ID"@en ;
+    ] .
+
+# =================================================================
+# Example Instances
+# =================================================================
+
+# Events and their influences
 art:Q356644 a art:Event ;
     rdfs:label "Albert Edelfelt"@en ;
     art:influenceDescription art:Q1505471 ;
@@ -24,257 +171,164 @@ art:Q151580 a art:Event ;
     art:influenceDescription art:Q100743007 ;
     rdfs:comment "Jewelry by Contemporary Painters and Sculptors"@en .
 
-art:Q2847587 a art:Event ;
-    rdfs:label "André Dauchez"@en ;
-    art:influenceDescription art:Q1520847 ;
-    rdfs:comment "Louisiana Purchase Expos ition"@en .
-
 art:Q156272 a art:Event ;
     rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q205751 ;
-    rdfs:comment "Venice Biennale"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q688909 ;
-    rdfs:comment "Armory Show"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q910743 ;
-    rdfs:comment "Free Secession"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q1121146 ;
-    rdfs:comment "Swiss National Exhibition Bern 1914"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q1165755 ;
-    rdfs:comment "Exposition Internationale des Arts et Techniques dans la Vie Moderne (1937)"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q1362126 ;
-    rdfs:comment "Les Joueurs de football"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q18624764 ;
-    rdfs:comment "Grosse Berliner Kunstausstellung"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q19721109 ;
-    rdfs:comment "Swiss National Exhibition 1939"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q55367178 ;
-    rdfs:comment "Q55367178"@en .
-
-art:Q156272 a art:Event ;
-    rdfs:label "André Derain"@en ;
-    art:influenceDescription art:Q81686670 ;
-    rdfs:comment "Internationale Kunstausstellung des Sonderbundes Westdeutscher Kunstfreunde und Kunstler zu Coeln 1912"@en .
+    art:influenceDescription art:Q205751, art:Q688909, art:Q910743,
+        art:Q1121146, art:Q1165755, art:Q1362126, art:Q18624764,
+        art:Q19721109, art:Q55367178, art:Q81686670 ;
+    rdfs:comment "Multiple exhibitions including Venice Biennale and Armory Show"@en .
 
 art:Q314350 a art:Event ;
     rdfs:label "Antoine Bourdelle"@en ;
-    art:influenceDescription art:Q653360 ;
-    rdfs:comment "São Paulo Art Biennial"@en .
-
-art:Q314350 a art:Event ;
-    rdfs:label "Antoine Bourdelle"@en ;
-    art:influenceDescription art:Q23790596 ;
-    rdfs:comment "25th Venice Biennale"@en .
-
-art:Q153920 a art:Event ;
-    rdfs:label "Aristide Maillol"@en ;
-    art:influenceDescription art:Q8150 ;
-    rdfs:comment "1936 Summer Olympics"@en .
-
-art:Q153920 a art:Event ;
-    rdfs:label "Aristide Maillol"@en ;
-    art:influenceDescription art:Q5682852 ;
-    rdfs:comment "Academia Breve de Crítica de Arte"@en .
-
-art:Q153920 a art:Event ;
-    rdfs:label "Aristide Maillol"@en ;
-    art:influenceDescription art:Q5822523 ;
-    rdfs:comment "El Mono Azul"@en .
-
-art:Q272566 a art:Event ;
-    rdfs:label "Aubrey Beardsley"@en ;
-    art:influenceDescription art:Q109246980 ;
-    rdfs:comment "International Exhibition of Modern Jewelry, 1890-1961"@en .
-
-art:Q153048 a art:Event ;
-    rdfs:label "Constantin Brâncuși"@en ;
-    art:influenceDescription art:Q265378 ;
-    rdfs:comment "documenta"@en .
-
-art:Q34970 a art:Event ;
-    rdfs:label "D. H. Lawrence"@en ;
-    art:influenceDescription art:Q104713350 ;
-    rdfs:comment "Dialogue for Catalonia"@en .
-
-art:Q3047490 a art:Event ;
-    rdfs:label "Edgar Scauflaire"@en ;
-    art:influenceDescription art:Q653360 ;
-    rdfs:comment "São Paulo Art Biennial"@en .
-
-art:Q44032 a art:Event ;
-    rdfs:label "Egon Schiele"@en ;
-    art:influenceDescription art:Q120175453 ;
-    rdfs:comment "IdeaFest 2022"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q205751 ;
-    rdfs:comment "Venice Biennale"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q910743 ;
-    rdfs:comment "Free Secession"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q1121146 ;
-    rdfs:comment "Swiss National Exhibition Bern 1914"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q1165755 ;
-    rdfs:comment "Exposition Internationale des Arts et Techniques dans la Vie Moderne (1937)"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q1362126 ;
-    rdfs:comment "Les Joueurs de football"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q18624764 ;
-    rdfs:comment "Grosse Berliner Kunstausstellung"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q19721109 ;
-    rdfs:comment "Swiss National Exhibition 1939"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q55367178 ;
-    rdfs:comment "Q55367178"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q81686670 ;
-    rdfs:comment "Internationale Kunstausstellung des Sonderbundes Westdeutscher Kunstfreunde und Kunstler zu Coeln 1912"@en .
-
-art:Q214564 a art:Event ;
-    rdfs:label "Ferdinand Hodler"@en ;
-    art:influenceDescription art:Q124054123 ;
-    rdfs:comment "Gold + Silber Schmuck + Gerät von Albrecht Dürer bis zur Gegenwart"@en .
-
-art:Q5461886 a art:Event ;
-    rdfs:label "Florine Stettheimer"@en ;
-    art:influenceDescription art:Q51402 ;
-    rdfs:comment "Stonewall riots"@en .
-
-art:Q4980157 a art:Event ;
-    rdfs:label "Frida Stéenhoff"@en ;
-    art:influenceDescription art:Q101222053 ;
-    rdfs:comment "Q101222053"@en .
-
-art:Q4980157 a art:Event ;
-    rdfs:label "Frida Stéenhoff"@en ;
-    art:influenceDescription art:Q124000059 ;
-    rdfs:comment "Q124000059"@en .
-
-art:Q4980157 a art:Event ;
-    rdfs:label "Frida Stéenhoff"@en ;
-    art:influenceDescription art:Q124000209 ;
-    rdfs:comment "Q124000209"@en .
-
-art:Q107194 a art:Event ;
-    rdfs:label "George Grosz"@en ;
-    art:influenceDescription art:Q63766006 ;
-    rdfs:comment "58th Venice Biennale"@en .
-
-art:Q289441 a art:Event ;
-    rdfs:label "George Hendrik Breitner"@en ;
-    art:influenceDescription art:Q8138 ;
-    rdfs:comment "1928 Summer Olympics"@en .
-    
-art:Q34013 a art:Event ;
-    rdfs:label "Georges Seurat"@en ;
-    art:influenceDescription art:Q7196500 ;
-    rdfs:comment "Pinta Art Show"@en .
+    art:influenceDescription art:Q653360, art:Q23790596 ;
+    rdfs:comment "São Paulo Art Biennial and 25th Venice Biennale"@en .
 
 art:Q34013 a art:Event ;
     rdfs:label "Georges Seurat"@en ;
-    art:influenceDescription art:Q98783111 ;
-    rdfs:comment "De Calder à Koons, Bijoux d'Artistes, La Collection Idéale de Diane Venet"@en .
-
-art:Q34013 a art:Event ;
-    rdfs:label "Georges Seurat"@en ;
-    art:influenceDescription art:Q98960394 ;
-    rdfs:comment "Von Picasso bis Warhol Künstlerschmuck der Avantgarde"@en .
-
-art:Q34013 a art:Event ;
-    rdfs:label "Georges Seurat"@en ;
-    art:influenceDescription art:Q101585775 ;
-    rdfs:comment "Scultura Aurea"@en .
-
-art:Q34661 a art:Event ;
-    rdfs:label "Gustav Klimt"@en ;
-    art:influenceDescription art:Q265533 ;
-    rdfs:comment "Documenta III"@en .
+    art:influenceDescription art:Q7196500, art:Q98783111,
+        art:Q98960394, art:Q101585775 ;
+    rdfs:comment "Various exhibitions including Pinta Art Show"@en .
 
 art:Q5589 a art:Event ;
     rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q205751 ;
-    rdfs:comment "Venice Biennale"@en .
+    art:influenceDescription art:Q205751, art:Q688909, art:Q910743,
+        art:Q1121146, art:Q1165755, art:Q1362126, art:Q7196500,
+        art:Q18624764, art:Q19721109 ;
+    rdfs:comment "Multiple major exhibitions including Venice Biennale and Armory Show"@en .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q688909 ;
-    rdfs:comment "Armory Show"@en .
+# Influence Descriptions
+art:Q205751 a art:InfluenceDescription ;
+    rdfs:label "Venice Biennale"@en ;
+    art:hasWikidataID "Q205751" .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q910743 ;
-    rdfs:comment "Free Secession"@en .
+art:Q688909 a art:InfluenceDescription ;
+    rdfs:label "Armory Show"@en ;
+    art:hasWikidataID "Q688909" .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q1121146 ;
-    rdfs:comment "Swiss National Exhibition Bern 1914"@en .
+art:Q910743 a art:InfluenceDescription ;
+    rdfs:label "Free Secession"@en ;
+    art:hasWikidataID "Q910743" .
+art:Q157541 a art:Event ;
+    rdfs:label "Paul Cézanne"@en ;
+    art:influenceDescription art:Q205751, art:Q688909, art:Q910743 ;
+    rdfs:comment "Connected with Matisse and Derain through Venice Biennale and Armory Show"@en .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q1165755 ;
-    rdfs:comment "Exposition Internationale des Arts et Techniques dans la Vie Moderne (1937)"@en .
+art:Q37693 a art:Event ;
+    rdfs:label "Paul Gauguin"@en ;
+    art:influenceDescription art:Q205751, art:Q688909, art:Q18624764 ;
+    rdfs:comment "Exhibited alongside Matisse at major exhibitions"@en .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q1362126 ;
-    rdfs:comment "Les Joueurs de football"@en .
+art:Q40599 a art:Event ;
+    rdfs:label "Pierre-Auguste Renoir"@en ;
+    art:influenceDescription art:Q205751, art:Q1165755, art:Q688909 ;
+    rdfs:comment "Participated in Venice Biennale and Armory Show with others"@en .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q7196500 ;
-    rdfs:comment "Pinta Art Show"@en .
+art:Q159432 a art:Event ;
+    rdfs:label "Auguste Rodin"@en ;
+    art:influenceDescription art:Q205751, art:Q653360, art:Q23790596 ;
+    rdfs:comment "Connected with Bourdelle through major sculpture exhibitions"@en .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q18624764 ;
-    rdfs:comment "Grosse Berliner Kunstausstellung"@en .
+art:Q128484 a art:Event ;
+    rdfs:label "Camille Pissarro"@en ;
+    art:influenceDescription art:Q205751, art:Q688909, art:Q7196500 ;
+    rdfs:comment "Exhibited with Seurat and other impressionists"@en .
 
-art:Q5589 a art:Event ;
-    rdfs:label "Henri Matisse"@en ;
-    art:influenceDescription art:Q19721109 ;
-    rdfs:comment "Swiss National Exhibition 1939"@en .
+art:Q207616 a art:Event ;
+    rdfs:label "Max Liebermann"@en ;
+    art:influenceDescription art:Q18624764, art:Q910743, art:Q81686670 ;
+    rdfs:comment "Connected with Hodler through German exhibitions"@en .
+
+art:Q310973 a art:Event ;
+    rdfs:label "Giovanni Segantini"@en ;
+    art:influenceDescription art:Q205751, art:Q1121146 ;
+    rdfs:comment "Exhibited with Hodler at Swiss exhibitions"@en .
+
+art:Q152384 a art:Event ;
+    rdfs:label "Odilon Redon"@en ;
+    art:influenceDescription art:Q688909, art:Q910743, art:Q81686670 ;
+    rdfs:comment "Participated in Armory Show with Matisse and others"@en .
+
+art:Q207545 a art:Event ;
+    rdfs:label "James Ensor"@en ;
+    art:influenceDescription art:Q205751, art:Q910743, art:Q1165755 ;
+    rdfs:comment "Connected through European avant-garde exhibitions"@en .
+
+art:Q170044 a art:Event ;
+    rdfs:label "Max Klinger"@en ;
+    art:influenceDescription art:Q18624764, art:Q81686670, art:Q910743 ;
+    rdfs:comment "Exhibited with German Secession artists"@en .
+
+art:Q151397 a art:Event ;
+    rdfs:label "Medardo Rosso"@en ;
+    art:influenceDescription art:Q205751, art:Q653360 ;
+    rdfs:comment "Connected with Bourdelle through sculpture exhibitions"@en .
+
+art:Q158977 a art:Event ;
+    rdfs:label "John Singer Sargent"@en ;
+    art:influenceDescription art:Q205751, art:Q688909 ;
+    rdfs:comment "Participated in major international exhibitions"@en .
+
+art:Q213014 a art:Event ;
+    rdfs:label "Franz von Stuck"@en ;
+    art:influenceDescription art:Q18624764, art:Q910743, art:Q81686670 ;
+    rdfs:comment "Connected through German art movements"@en .
+
+art:Q160112 a art:Event ;
+    rdfs:label "William Merritt Chase"@en ;
+    art:influenceDescription art:Q688909, art:Q7196500 ;
+    rdfs:comment "Exhibited at Armory Show with European modernists"@en .
+
+art:Q318764 a art:Event ;
+    rdfs:label "Eugène Carrière"@en ;
+    art:influenceDescription art:Q205751, art:Q1165755 ;
+    rdfs:comment "Participated in major French exhibitions"@en .
+
+art:Q294783 a art:Event ;
+    rdfs:label "Lovis Corinth"@en ;
+    art:influenceDescription art:Q18624764, art:Q910743, art:Q81686670 ;
+    rdfs:comment "Connected with German Secession movement"@en .
+
+art:Q333039 a art:Event ;
+    rdfs:label "Franz von Lenbach"@en ;
+    art:influenceDescription art:Q18624764, art:Q1121146 ;
+    rdfs:comment "Exhibited with Hodler and other Germanic artists"@en .
+
+art:Q365987 a art:Event ;
+    rdfs:label "Albert Besnard"@en ;
+    art:influenceDescription art:Q205751, art:Q1165755, art:Q1121146 ;
+    rdfs:comment "Participated in major European exhibitions"@en .
+
+art:Q707756 a art:Event ;
+    rdfs:label "Charles Cottet"@en ;
+    art:influenceDescription art:Q205751, art:Q688909 ;
+    rdfs:comment "Connected through international modernist exhibitions"@en .
+
+art:Q438173 a art:Event ;
+    rdfs:label "Wilhelm Trübner"@en ;
+    art:influenceDescription art:Q18624764, art:Q81686670, art:Q910743 ;
+    rdfs:comment "Associated with German art movements"@en .
+
+# Additional Influence Descriptions (if not already present)
+art:Q1165755 a art:InfluenceDescription ;
+    rdfs:label "Exposition Internationale des Arts et Techniques"@en ;
+    art:hasWikidataID "Q1165755" .
+
+art:Q18624764 a art:InfluenceDescription ;
+    rdfs:label "Grosse Berliner Kunstausstellung"@en ;
+    art:hasWikidataID "Q18624764" .
+
+art:Q81686670 a art:InfluenceDescription ;
+    rdfs:label "Sonderbund westdeutscher Kunstfreunde und Künstler"@en ;
+    art:hasWikidataID "Q81686670" .
+
+art:Q7196500 a art:InfluenceDescription ;
+    rdfs:label "Pinta Art Show"@en ;
+    art:hasWikidataID "Q7196500" .
+
+art:Q653360 a art:InfluenceDescription ;
+    rdfs:label "São Paulo Art Biennial"@en ;
+    art:hasWikidataID "Q653360" .
+
+# =================================================================
+# End of File
+# =================================================================

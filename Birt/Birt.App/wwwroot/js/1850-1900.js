@@ -82,27 +82,80 @@ async function setCachedData(db, artistId, data) {
         };
     });
 }
+async function validateSparqlResults(sparqlResults) {
+    const resultsArray = sparqlResults.data;
+    console.log("RESULTS ARRAY:", resultsArray);
+    if (!Array.isArray(resultsArray)) {
+        console.error('sparqlResults.data is not an array:', resultsArray);
+        return {
+            conforms: false,
+            results: [],
+            error: 'Invalid SPARQL results format'
+        };
+    }
+
+    // Transform SPARQL results to the expected format
+    const transformedResults = resultsArray.map(result => {
+        console.log("Processing result:", result);
+        return {
+            artist: result.artist?.value || '',
+            artistLabel: result.artistLabel?.value || '',
+            birthDate: result.birthDate?.value.split('T')[0] || '',
+            influence: result.influence?.value || '',
+            influenceLabel: result.influenceLabel?.value || '',
+            influenceTypeLabel: result.influenceType?.value || ''
+        };
+    });
+
+    const requestBody = JSON.stringify({ queryResults: transformedResults });
+    console.log("Request payload:", requestBody);
+
+    try {
+        const response = await fetch('http://localhost:5242/rdf/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: requestBody
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        console.error('Validation request failed:', error);
+        return {
+            conforms: false,
+            results: [],
+            error: `Failed to validate RDF data: ${error.message}`
+        };
+    }
+}
+
 async function getInfluencesBetween1850and1900() {
     const endpointUrl = "https://query.wikidata.org/sparql";
-
     const selectedLanguage = document.getElementById("languageDropdown").value || "en";
 
     const sparqlQuery = `
     #title: Painting born 1850-1900 and their influences
     #defaultView:Table
-    SELECT DISTINCT ?artist ?artistLabel ?birthDate ?influenceLabel ?influenceTypeLabel WHERE {
+    SELECT DISTINCT ?artist ?artistLabel ?birthDate ?influence ?influenceLabel ?influenceTypeLabel WHERE {
       ?artist wdt:P106 wd:Q1028181;  # occupation: artist
              wdt:P569 ?birthDate;    # date of birth
              wdt:P737|wdt:P941 ?influence.  # influenced by (P737) OR inspired by (P941)
-      
+
       # Get the type of the influence (person, movement, event, etc)
       ?influence wdt:P31 ?influenceType.
-      
+
       # Filter for artists born between 1850 and 1900
       FILTER(YEAR(?birthDate) >= 1850 && YEAR(?birthDate) <= 1900)
-      
+
       # Get labels in the selected language
-      SERVICE wikibase:label { 
+      SERVICE wikibase:label {
         bd:serviceParam wikibase:language "${selectedLanguage},en".
         ?artist rdfs:label ?artistLabel.
         ?influence rdfs:label ?influenceLabel.
@@ -119,7 +172,13 @@ async function getInfluencesBetween1850and1900() {
         const db = await openDatabase();
         const cachedData = await getCachedData(db, `influences1850-1900-${selectedLanguage}`);
         if (cachedData && (new Date().getTime() - cachedData.timestamp) < 24 * 60 * 60 * 1000) { // 24 hours cache
-            return cachedData.data;
+            const validationResults = await validateSparqlResults({ data: cachedData.data });
+            console.log("Validation results:", validationResults);
+            if (validationResults.conforms) {
+                return cachedData.data;
+            } else {
+                console.warn("Cached data validation failed, fetching new data.");
+            }
         }
 
         const response = await fetch(url, {
@@ -127,7 +186,12 @@ async function getInfluencesBetween1850and1900() {
         });
         const data = await response.json();
         await setCachedData(db, `influences1850-1900-${selectedLanguage}`, data.results.bindings);
-        return data.results.bindings;
+
+        const results = data.results.bindings;
+        const validationResults = await validateSparqlResults({ data: results });
+        console.log("Validation results:", validationResults);
+
+        return results;
     } catch (error) {
         console.error("Error fetching artists and influences:", error);
         return [];
