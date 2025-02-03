@@ -1,5 +1,5 @@
 import { getWorksOfArtGogh, getWorksOfArtDaVinci, fetchSimilarArtists, fetchArtistsInfluencedByVanGogh, displayTopPaintingsInfluencedByGogh, displayComparison } from './site.js';
-import { displayPaintingInfluencesBetween1850And1900 } from './1850-1900.js';
+import { showArtistsAndInfluences } from './1850-1900.js';
 function getWorksOfArt() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
@@ -14,7 +14,7 @@ function getWorksOfArt() {
     } else if (selectedArtist === "influencedByGogh") {
         fetchArtistsInfluencedByVanGogh(); // done
     } else if (selectedArtist === "paintingInfluencesbetween1850and1900") {
-        displayPaintingInfluencesBetween1850And1900();
+        showArtistsAndInfluences();
     } else if (selectedArtist === "paintingsInfluencedByGogh") {
         displayTopPaintingsInfluencedByGogh();
     }

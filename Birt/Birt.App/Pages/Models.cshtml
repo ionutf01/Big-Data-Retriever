@@ -89,6 +89,22 @@
         </form>
     </div>
 
+    <div id="language-selection" style="display: none; margin-top: 20px;">
+        <h2>Select Language</h2>
+        <select id="languageDropdown">
+            <option value="">-- Select Language --</option>
+            <option value="en">English</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="es">Spanish</option>
+            <option value="it">Italian</option>
+            <option value="ru">Russian</option>
+            <option value="zh">Chinese</option>
+            <option value="ja">Japanese</option>
+        </select>
+    </div>
+
+    <button id="toggleView" onclick="toggleView()" style="display: none;" class="btn btn-primary">See Cards</button>
 
 
 
@@ -132,9 +148,10 @@
                 visualizeRDFDataImproved();
             });
 
-            document.getElementById('closeVisualization').addEventListener('click', closeVisualization);
+            document.getElementById('closeVisualization').addEventListener('click', () => {
+                closeVisualization();
+            });
 
-            // Export CSV & HTML
             document.getElementById("exportCsv").addEventListener("click", () => {
                 if (confirm("Do you want to download the results as CSV?")) {
                     const filename = dropdown.options[dropdown.selectedIndex].text.replace(/\s+/g, '_').toLowerCase() + ".csv";
@@ -151,6 +168,25 @@
 
             // Execută automat dacă este selectată o opțiune validă
             fetchResults();
+            // Referințe la elementele necesare
+            const dropdown = document.getElementById("queryDropdown");
+            const toggleButton = document.getElementById("toggleView");
+
+            toggleButton.style.display = "none"; // Ascunde butonul inițial
+
+            dropdown.addEventListener("change", function () {
+                console.log("Dropdown changed:", dropdown.value); // Debugging
+
+                if (dropdown.value === "gogh" || dropdown.value === "vinci") {
+                    console.log("Showing button"); // Debugging
+                    toggleButton.style.display = "block"; // Afișează butonul
+                } else {
+                    console.log("Hiding button"); // Debugging
+                    toggleButton.style.display = "none"; // Ascunde butonul
+                }
+            });
+
+            toggleButton.addEventListener("click", toggleView);
         });
 
     </script>
