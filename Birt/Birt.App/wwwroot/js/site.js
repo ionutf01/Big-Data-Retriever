@@ -162,7 +162,44 @@ export async function compareArtists(artist1Id, artist2Id) {
     const data = await response.json();
     displayComparison(data, artist1Name, artist2Name);
 }
-export function displaySimilarArtistsVinci(data) {
+function addStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #results ul {
+            list-style-type: none; /* Elimină punctele din listă */
+            padding: 0;
+        }
+
+        #results li {
+            display: flex;
+            justify-content: space-between; /* Aliniază textul și butonul pe aceeași linie */
+            align-items: center;
+            padding: 5px 0;
+            width: 250px; /* Dimensiune fixă pentru uniformizare */
+        }
+
+        #results button {
+            margin-left: 10px; /* Adaugă spațiu între nume și buton */
+            padding: 3px 8px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #results button:hover {
+            background-color: #0056b3;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+addStyles();
+
+function displaySimilarArtistsVinci(data) {
     console.log("DATA IN SIMILAR VINCI", data);
     const resultsContainer = document.getElementById('results');
 
@@ -176,22 +213,28 @@ export function displaySimilarArtistsVinci(data) {
 
     data.results.bindings.forEach(item => {
         const listItem = document.createElement('li');
-        const artistName = item.artistLabel.value;
+
+        // Creează un div pentru artist
+        const artistSpan = document.createElement('span');
+        artistSpan.textContent = item.artistLabel.value;
+
         const artistId = item.artist.value.split('/').pop();
 
+        // Creează butonul "Compare"
         const compareButton = document.createElement('button');
         compareButton.textContent = 'Compare';
-
         compareButton.addEventListener('click', () => {
-            compareArtists('Q762', artistId); // Dynamically attach compareArtists call
+            compareArtists('Q762', artistId);
         });
 
-        listItem.textContent = artistName;
+        // Adaugă artistul și butonul în listItem
+        listItem.appendChild(artistSpan);
         listItem.appendChild(compareButton);
 
         list.appendChild(listItem);
     });
 }
+
 
 export function displaySimilarArtistsGogh(data) {
     const resultsContainer = document.getElementById('results');
@@ -298,28 +341,33 @@ async function fetchSimilarArtists(artistId) {
 }
 
 export async function displayComparison(data, artist1Name, artist2Name) {
+    addComparisonStyles(); // Adaugă stilurile CSS
+
     const comparisonContainer = document.getElementById('comparison');
     comparisonContainer.innerHTML = `<h2>Comparison: ${artist1Name} vs. ${artist2Name}</h2>`;
+
     const table = document.createElement('table');
+    table.classList.add('comparison-table');
+
     table.innerHTML = `
-        <tr>
-            <th>Property</th>
-            <th>${artist1Name}</th>
-            <th>${artist2Name}</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Property</th>
+                <th>${artist1Name}</th>
+                <th>${artist2Name}</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     `;
 
+    const tbody = table.querySelector('tbody');
     const groupedData = {};
 
     for (const item of data.results.bindings) {
         const propertyUri = item.property.value;
-        console.log("Property URI: " + propertyUri);
         const propertyItself = propertyUri.split('/').pop();
-        console.log("Property Itself: " + propertyItself);
         const propertyLabel = await fetchMessage(propertyItself);
-        const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '')
-        console.log("Property Label: " + cleanProperty);
-
+        const cleanProperty = propertyLabel.split('@')[0].replace('{"object":"', '').replace('"}', '').replace('[', '');
 
         const artist1Value = item.artist1ValueLabel ? item.artist1ValueLabel.value :
             (item.artist1Value ? item.artist1Value.value : "N/A");
@@ -340,11 +388,51 @@ export async function displayComparison(data, artist1Name, artist2Name) {
             <td>${Array.from(values.artist1).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
             <td>${Array.from(values.artist2).map(value => `<a href="https://en.wikipedia.org/wiki/${encodeURIComponent(value)}" target="_blank" rel="noopener noreferrer">${value}</a>`).join(", ")}</td>
         `;
-        table.appendChild(row);
+        tbody.appendChild(row);
     }
 
+    table.appendChild(tbody);
     comparisonContainer.appendChild(table);
 }
+
+// Funcție pentru adăugarea stilurilor CSS dinamic în JavaScript
+function addComparisonStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .comparison-table a {
+            text-decoration: none;
+            color: #0073e6;
+        }
+
+        .comparison-table a:hover {
+            text-decoration: underline;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+
 
 /*
 * Artists influenced by Van Gogh
