@@ -1,0 +1,5 @@
+SELECT DISTINCT ?artist ?artistLabel WHERE {
+    ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
+    ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
