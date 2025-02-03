@@ -1,10 +1,10 @@
 using VDS.RDF;
 using VDS.RDF.Parsing;
+using VDS.RDF.Shacl;
+using WebApplication1;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
@@ -20,6 +20,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -30,53 +31,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
-app.MapGet("/rdf", () =>
-    {
-        var graph = new Graph();
-      try
-        {
-            FileLoader.Load(graph, "./properties_ontology.ttl");
-        }
-        catch (Exception ex)
-        {
-            return Results.Problem($"Error loading file: {ex.Message}");
-        }
-      
-        var ttlParser = new TurtleParser();
-        ttlParser.Load(graph, "./properties_ontology.ttl");
-        var triples = graph.Triples.Select(triple => new
-        {
-            Subject = triple.Subject.ToString(),
-            Predicate = triple.Predicate.ToString(),
-            Object = triple.Object.ToString()
-        });
-        // return triples;
-        // print triples
-        return Results.Ok(triples);
-    })
-    .WithName("GetRdf")
-    .WithOpenApi();
 
 app.MapGet("/rdf/{property}", (string property) =>
 {
@@ -111,45 +65,175 @@ app.MapGet("/rdf/{property}", (string property) =>
 .WithName("GetRdfProperty")
 .WithOpenApi();
 
-app.MapGet("/rdf/visualize", () =>
+app.MapPost("/rdf/validate", async (SparqlValidationRequest request) =>
 {
-    var graph = new Graph();
+    var startTime = DateTime.UtcNow;
+    var requestId = Guid.NewGuid().ToString();
+    var currentTimestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
     try
     {
-        graph.LoadFromFile("Influence_description_ontology.ttl");
+        if (request.QueryResults == null || !request.QueryResults.Any())
+        {
+            return Results.BadRequest(new ValidationResponse
+            {
+                Success = false,
+                Error = "No query results provided for validation",
+                Metadata = new MetaData
+                {
+                    RequestId = requestId,
+                    Timestamp = currentTimestamp,
+                    ProcessedRecords = 0,
+                    ProcessingTime = DateTime.UtcNow - startTime
+                }
+            });
+        }
+
+        var validationIssues = new List<ValidationIssue>();
+        var validResults = new List<SparqlQueryResult>();
+
+        // Validate each result
+        foreach (var result in request.QueryResults)
+        {
+            var resultIsValid = true;
+
+            // Validate Artist URI
+            if (!Uri.IsWellFormedUriString(result.Artist, UriKind.Absolute))
+            {
+                resultIsValid = false;
+                validationIssues.Add(new ValidationIssue
+                {
+                    Message = $"Invalid Artist URI: {result.Artist}",
+                    Path = "Artist",
+                    FocusNode = result.Artist,
+                    Severity = ViolationSeverity.Critical,
+                    SuggestedAction = "Exclude this record and report to data source administrator. URI format must be fixed at source."
+                });
+            }
+
+            // Validate Artist Label
+            if (string.IsNullOrEmpty(result.ArtistLabel))
+            {
+                resultIsValid = false;
+                validationIssues.Add(new ValidationIssue
+                {
+                    Message = "Artist must have a label",
+                    Path = "ArtistLabel",
+                    FocusNode = result.Artist,
+                    Severity = ViolationSeverity.Warning,
+                    SuggestedAction = "Try to fetch label from Wikidata using the artist URI, or mark for manual review."
+                });
+            }
+
+            // Validate Birth Date
+            if (DateTime.TryParse(result.BirthDate, out DateTime birthDate))
+            {
+                if (birthDate.Year < 1850 || birthDate.Year > 1900)
+                {
+                    resultIsValid = false;
+                    validationIssues.Add(new ValidationIssue
+                    {
+                        Message = $"Birth date {result.BirthDate} is outside the valid range (1850-1900)",
+                        Path = "BirthDate",
+                        FocusNode = result.Artist,
+                        Severity = ViolationSeverity.Critical,
+                        SuggestedAction = "Exclude this record as it doesn't meet the time period criteria. Consider adjusting your SPARQL query filters."
+                    });
+                }
+            }
+            else
+            {
+                resultIsValid = false;
+                validationIssues.Add(new ValidationIssue
+                {
+                    Message = $"Invalid birth date format: {result.BirthDate}",
+                    Path = "BirthDate",
+                    FocusNode = result.Artist,
+                    Severity = ViolationSeverity.Critical,
+                    SuggestedAction = "Exclude this record. Date format must be YYYY-MM-DD."
+                });
+            }
+
+            // Validate Influence URI and Type
+            if (!Uri.IsWellFormedUriString(result.Influence, UriKind.Absolute))
+            {
+                resultIsValid = false;
+                validationIssues.Add(new ValidationIssue
+                {
+                    Message = $"Invalid Influence URI: {result.Influence}",
+                    Path = "Influence",
+                    FocusNode = result.Influence,
+                    Severity = ViolationSeverity.Critical,
+                    SuggestedAction = "Exclude this influence relationship. URI format must be fixed at source."
+                });
+            }
+
+            if (string.IsNullOrEmpty(result.InfluenceLabel))
+            {
+                validationIssues.Add(new ValidationIssue
+                {
+                    Message = "Influence missing label",
+                    Path = "InfluenceLabel",
+                    FocusNode = result.Influence,
+                    Severity = ViolationSeverity.Warning,
+                    SuggestedAction = "Try to fetch label from Wikidata using the influence URI, or mark for manual review."
+                });
+            }
+
+            // If the result is valid, add it to valid results
+            if (resultIsValid)
+            {
+                validResults.Add(result);
+            }
+        }
+
+        var processingTime = DateTime.UtcNow - startTime;
+
+        var validationResponse = new ValidationResponse
+        {
+            Success = !validationIssues.Any(i => i.Severity == ViolationSeverity.Critical),
+            Results = validationIssues,
+            Metadata = new MetaData
+            {
+                RequestId = requestId,
+                Timestamp = currentTimestamp,
+                ProcessedRecords = request.QueryResults.Count,
+                ProcessingTime = processingTime
+            },
+            ValidRecords = validResults.Count,
+            TotalRecords = request.QueryResults.Count,
+            SuggestedActions = new List<string>
+            {
+                $"Critical Issues: {validationIssues.Count(i => i.Severity == ViolationSeverity.Critical)}",
+                $"Warnings: {validationIssues.Count(i => i.Severity == ViolationSeverity.Warning)}",
+                $"Info Items: {validationIssues.Count(i => i.Severity == ViolationSeverity.Info)}",
+                validationIssues.Any(i => i.Severity == ViolationSeverity.Critical) 
+                    ? "Some records have critical violations and should be excluded. Consider reviewing your SPARQL query or data source."
+                    : "Data has only minor issues and can be used with caution."
+            }
+        };
+
+        return Results.Ok(validationResponse);
     }
     catch (Exception ex)
     {
-        return Results.Problem($"Error loading file: {ex.Message}");
-    }
-
-    var nodes = new HashSet<object>();
-    var links = new List<object>();
-
-    foreach (var triple in graph.Triples)
-    {
-        var subject = triple.Subject.ToString();
-        var predicate = triple.Predicate.ToString();
-        var obj = triple.Object.ToString();
-
-        // Add nodes
-        if (!nodes.Any(n => n.ToString().Contains(subject)))
+        return Results.Problem(new ValidationResponse
         {
-            nodes.Add(new { id = subject, label = subject, group = "subject" });
-        }
-        if (!nodes.Any(n => n.ToString().Contains(obj)))
-        {
-            nodes.Add(new { id = obj, label = obj, group = "object" });
-        }
-
-        // Add links
-        links.Add(new { source = subject, target = obj, label = predicate });
+            Success = false,
+            Error = $"Validation failed: {ex.Message}",
+            Metadata = new MetaData
+            {
+                RequestId = requestId,
+                Timestamp = currentTimestamp,
+                ProcessedRecords = request.QueryResults?.Count ?? 0,
+                ProcessingTime = DateTime.UtcNow - startTime
+            }
+        }.ToString());
     }
-
-    return Results.Ok(new { nodes = nodes.ToList(), links });
 })
-.WithName("VisualizeRdf")
+.WithName("ValidateRdf")
 .WithOpenApi();
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

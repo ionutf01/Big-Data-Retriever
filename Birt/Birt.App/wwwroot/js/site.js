@@ -883,7 +883,8 @@ function displayTable(data, container) {
 }
 
 function displayCards(data) {
-    
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     console.log("DATA IN DISPLAY CARDS", data);
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Curăță rezultatele anterioare
@@ -892,9 +893,6 @@ function displayCards(data) {
     grid.style.display = 'grid';
     grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
     grid.style.gap = '16px';
-
-    // const loadingIndicator = document.getElementById('loading');
-    // loadingIndicator.style.display = 'block';
 
     data.results.bindings.forEach(item => {
         if (!item.workImage || !item.workImage.value) return;
@@ -965,7 +963,7 @@ function displayCards(data) {
 
     resultsContainer.appendChild(grid);
 
-    // loadingIndicator.style.display = 'none';
+    loadingIndicator.style.display = 'none';
     document.getElementById("exportCsv").style.display = 'inline-block';
     document.getElementById("exportHtml").style.display = 'inline-block';
 }

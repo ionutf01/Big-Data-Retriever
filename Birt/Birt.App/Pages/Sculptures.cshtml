@@ -150,6 +150,12 @@
     
         document.getElementById("allsculptures").addEventListener("click", () => {
             getAllSculptures();
+            document.getElementById("exportMuseumsCsv").style.display = "none";
+            document.getElementById("exportMuseumsHtml").style.display = "none";
+            document.getElementById("exportArtistsCsv").style.display = "none";
+            document.getElementById("exportArtistsHtml").style.display = "none";
+            document.getElementById("exportMaterialCsv").style.display = "none";
+            document.getElementById("exportMaterialHtml").style.display = "none";
             document.getElementById("exportCsv").style.display = "inline-block";
             document.getElementById("exportHtml").style.display = "inline-block";
         });
@@ -160,8 +166,12 @@
         
         document.getElementById("artist").addEventListener("change", (event) => {
             getSpecificArtistSculptures(event);
+            document.getElementById("exportCsv").style.display = "none";
+            document.getElementById("exportHtml").style.display = "none";
             document.getElementById("exportMuseumsCsv").style.display = "none";
             document.getElementById("exportMuseumsHtml").style.display = "none";
+            document.getElementById("exportMaterialCsv").style.display = "none";
+            document.getElementById("exportMaterialHtml").style.display = "none";
             document.getElementById("exportArtistsCsv").style.display = "inline-block";
             document.getElementById("exportArtistsHtml").style.display = "inline-block";
         });
@@ -172,6 +182,8 @@
             document.getElementById("exportArtistsHtml").style.display = "none";
             document.getElementById("exportMaterialCsv").style.display = "none";
             document.getElementById("exportMaterialHtml").style.display = "none";
+            document.getElementById("exportCsv").style.display = "none";
+            document.getElementById("exportHtml").style.display = "none";
             document.getElementById("exportMuseumsCsv").style.display = "inline-block";
             document.getElementById("exportMuseumsHtml").style.display = "inline-block";
         });
@@ -182,6 +194,8 @@
             document.getElementById("exportMuseumsHtml").style.display = "none";
             document.getElementById("exportArtistsCsv").style.display = "none";
             document.getElementById("exportArtistsHtml").style.display = "none";
+            document.getElementById("exportCsv").style.display = "none";
+            document.getElementById("exportHtml").style.display = "none";
             document.getElementById("exportMaterialCsv").style.display = "inline-block";
             document.getElementById("exportMaterialHtml").style.display = "inline-block";
         });

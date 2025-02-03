@@ -39,7 +39,9 @@
     
     <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
     <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
-
+    
+    <button id="openModalButton" class="btn btn-primary" style="display: none">Open Validation Report</button>
+    
     <div id="criteria-form" style="display: none; margin-top: 10px;">
         <h2>Select Criteria</h2>
         <form>
@@ -105,10 +107,14 @@
 
     <button id="toggleView" onclick="toggleView()" style="display: none;" class="btn btn-primary">See Cards</button>
 
-
-
-
-
+    <div id="validationReportModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Validation Report</h2>
+            <div id="reportContent"></div>
+            <button id="closereportmodal">Close</button>
+        </div>
+    </div>
     <h2>Results</h2>
     <ul id="results"></ul>
     <div id="comparison"></div>
@@ -137,17 +143,9 @@
             });
     
             document.getElementById("handlequery").addEventListener("click", handleQuery);
-    
-            document.getElementById('showVisualization').addEventListener('click', () => {
-                document.getElementById('visualization').style.display = 'block';
-                document.getElementById('closeVisualization').style.display = 'block';
-                visualizeRDFDataImproved();
+            document.getElementById("closereportmodal").addEventListener("click", () => {
+                document.getElementById("validationReportModal").style.display = "none";
             });
-    
-            document.getElementById('closeVisualization').addEventListener('click', () => {
-                closeVisualization();
-            });
-
             document.getElementById("exportCsv").addEventListener("click", () => {
                 if (confirm("Do you want to download the results as CSV?")) {
                     const dropdown = document.getElementById("queryDropdown");
@@ -167,6 +165,7 @@
             });
 
             fetchResults();
+            // Referințe la elementele necesare
             const toggleButton = document.getElementById("toggleView");
     
             toggleButton.style.display = "none"; 

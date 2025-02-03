@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Technical documentation for the Art Gallery RDF Application">
+    <meta name="author" content="ionutf01">
+    <meta name="last-modified" content="2025-02-03 20:41:47">
+    <title>Art Gallery RDF Application - Technical Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style_scholarly.css">
+</head>
+<body>
+<nav id="topbar">
+    <ul>
+        <li><a href="#introduction"><i class="fas fa-info-circle"></i> Introduction</a></li>
+        <li><a href="#architecture"><i class="fas fa-sitemap"></i> Architecture</a></li>
+        <li><a href="#microservices"><i class="fas fa-cogs"></i> Microservices</a></li>
+        <li><a href="#ontology"><i class="fas fa-project-diagram"></i> Ontology</a></li>
+        <li><a href="#features"><i class="fas fa-list"></i> Features</a></li>
+        <li><a href="#api"><i class="fas fa-code"></i> API</a></li>
+        <li><a href="#deployment"><i class="fas fa-cloud-upload-alt"></i> Deployment</a></li>
+    </ul>
+</nav>
+
+<header>
+    <h1>Art Gallery RDF Application - Technical Documentation</h1>
+    <div class="metadata">
+        <p><strong>Version:</strong> 1.0.0</p>
+        <p><strong>Last Updated:</strong> 2025-02-03</p>
+        <p><strong>Authors:</strong> Feraru Ionut, Nastase Valentin-Codrin</p>
+    </div>
+</header>
+
+<section id="toc">
+    <h2>Table of Contents</h2>
+    <nav id="toc-nav">
+        <ul id="toc-nav-ul">
+            <li><a href="#introduction"><i></i>1. Introduction</a></li>
+            <li><a href="#architecture"><i></i>2. System Architecture</a></li>
+            <li><a href="#microservices"><i></i>3. Microservices</a></li>
+            <li><a href="#ontology"><i></i>4. RDF Ontology</a></li>
+            <li><a href="#features"><i></i>5. Features and Pages</a></li>
+            <li><a href="#api"><i></i>6. API Documentation</a></li>
+            <li><a href="#deployment"><i></i>7. Deployment</a></li>
+        </ul>
+    </nav>
+</section>
+
+<section id="introduction">
+    <h2>1. Introduction</h2>
+    <p>This document provides comprehensive technical documentation for the Art Gallery RDF Application, a semantic web application designed to manage and query art-related data using RDF and SPARQL technologies.</p>
+
+    <h3>1.1 Purpose</h3>
+    <p>The application serves as a platform for exploring and analyzing art collections, providing detailed information about paintings, sculptures, and museums through semantic web technologies.</p>
+
+    <h3>1.2 Technology Stack</h3>
+    <ul>
+        <li>Frontend: HTML5, CSS3, JavaScript</li>
+        <li>Backend: .NET Core with Razor Pages</li>
+        <li>RDF Storage: [Your RDF Store, e.g., GraphDB, Virtuoso]</li>
+        <li>Query Language: SPARQL 1.1</li>
+    </ul>
+</section>
+
+<section id="architecture">
+    <h2>2. System Architecture</h2>
+    <div class="architecture-diagram">
+        [Place for your architecture diagram]
+    </div>
+
+    <h3>2.1 Component Overview</h3>
+    <table>
+        <tr>
+            <th>Component</th>
+            <th>Description</th>
+            <th>Technologies</th>
+        </tr>
+        <tr>
+            <td>UI Microservice</td>
+            <td>Handles user interface and client-side logic</td>
+            <td>.NET Razor, JavaScript</td>
+        </tr>
+        <tr>
+            <td>RDF Service</td>
+            <td>Manages RDF data and SPARQL queries</td>
+            <td>.NET Core, RDF.NET</td>
+        </tr>
+    </table>
+</section>
+
+<section id="microservices">
+    <h2>3. Microservices</h2>
+
+    <h3>3.1 UI Microservice</h3>
+    <pre>
+Project Structure:
+/Pages
+    /Models
+    /Museums
+    /Sculptures
+    /DataAnalyzer
+/wwwroot
+    /js
+    /css
+    /lib
+    </pre>
+
+    <h3>3.2 RDF Service</h3>
+    <div class="api-endpoint">
+        <h4>Main Endpoints:</h4>
+        <pre>
+GET /rdf/{property}
+POST /rdf/validate</pre>
+    </div>
+</section>
+
+<section id="ontology">
+    <h2>4. RDF Ontology</h2>
+    <p>The application utilizes a custom ontology for representing art-related concepts and relationships.</p>
+
+    <h3>4.1 Core Ontology Classes</h3>
+    <pre>
+art:Artist
+    a owl:Class ;
+    rdfs:label "Artist"@en ;
+    rdfs:subClassOf foaf:Person .
+
+art:Painter
+    a owl:Class ;
+    rdfs:label "Painter"@en ;
+    rdfs:subClassOf art:Artist .
+
+art:Influence
+    a owl:Class ;
+    rdfs:label "Influence"@en .
+
+art:TimePeriod
+    a owl:Class ;
+    rdfs:label "Time Period"@en .
+    </pre>
+
+    <h3>4.2 Property Definitions</h3>
+    <pre>
+art:hasName
+    a owl:DatatypeProperty ;
+    rdfs:domain art:Artist ;
+    rdfs:range xsd:string .
+
+art:birthDate
+    a owl:DatatypeProperty ;
+    rdfs:domain art:Artist ;
+    rdfs:range xsd:date .
+
+art:influencedBy
+    a owl:ObjectProperty ;
+    rdfs:domain art:Artist ;
+    rdfs:range art:Influence .
+
+art:hasType
+    a owl:ObjectProperty ;
+    rdfs:range owl:Class .
+    </pre>
+    <h3>4.3 SHACL Validation Framework</h3>
+    <p>SHACL shapes are used to validate the RDF data against the ontology schema.</p>
+    <h4>Node shape definitions</h4>
+    <pre>
+# Artist Shape Definition
+art:ArtistShape
+    a sh:NodeShape ;
+    sh:targetClass art:Artist ;
+    sh:property [
+        sh:path art:hasName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path art:birthDate ;
+        sh:datatype xsd:date ;
+        sh:pattern "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" ;
+    ] .
+
+# Painter Shape Definition
+art:PainterShape
+    a sh:NodeShape ;
+    sh:targetClass art:Painter ;
+    sh:property [
+        sh:path art:technique ;
+        sh:class art:PaintingTechnique ;
+    ] .
+    </pre>
+    <h4>Property Shapes and Constraints</h4>
+    <pre>
+# Name Property Constraints
+art:hasNameShape
+    a sh:PropertyShape ;
+    sh:path art:hasName ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+    sh:nodeKind sh:Literal ;
+    sh:pattern "^[A-Za-z\\s-]+$" .
+
+# Birth Date Constraints
+art:birthDateShape
+    a sh:PropertyShape ;
+    sh:path art:birthDate ;
+    sh:datatype xsd:date ;
+    sh:minInclusive "1850-01-01"^^xsd:date ;
+    sh:maxInclusive "1900-12-31"^^xsd:date .
+    </pre>
+    <h3>4.4 RDF Data Model</h3>
+    <p>The RDF data model represents artists, paintings, and influences in a graph structure.</p>
+    <p>Artist Instance Example</p>
+    <pre>
+art:HenriMatisse
+a art:Artist ;
+art:hasName "Henri Matisse" ;
+art:birthDate "1869-12-31"^^xsd:date ;
+art:influencedBy art:VeniceBiennale ;
+art:wikidata "Q5589" ;
+art:exhibited art:ArmoryShow .
+    </pre>
+    <p>Exhibition Instance Example</p>
+    <pre>
+art:VeniceBiennale
+a art:Influence ;
+art:hasName "Venice Biennale" ;
+art:hasType art:Exhibition ;
+art:wikidata "Q205751" ;
+art:startDate "1895"^^xsd:gYear .
+    </pre>
+    <h3>4.5 Semantic Relationships</h3>
+    <p>Relationship Types</p>
+    <pre>
+1. **Hierarchical Relations**
+   - extends (Class inheritance)
+   - instance_of (Individual-Class relationship)
+
+2. **Property Relations**
+   - has_property (Shape-Property connection)
+   - has_constraint (Property-Constraint binding)
+
+3. **Domain-Specific Relations**
+   - exhibited_at (Artist-Exhibition connection)
+   - influenced_by (Artist influence mapping)
+    </pre>
+    <p>Validation Rules</p>
+    <pre>
+# Example SPARQL query for validation
+SELECT ?artist ?exhibition
+WHERE {
+    ?artist a art:Artist ;
+            art:exhibited ?exhibition .
+    ?exhibition a art:Influence .
+    FILTER NOT EXISTS {
+        ?exhibition art:startDate ?date .
+        FILTER (?date < ?artist art:birthDate)
+    }
+}
+    </pre>
+    <h3>4.6 SHACL Validation Implementation</h3>
+    <p>Core Validation Rules</p>
+    <pre>
+# Artist Validation Rules
+art:ArtistValidation
+    a sh:NodeShape ;
+    sh:targetClass art:Artist ;
+    sh:property [
+        sh:path art:wikidata ;
+        sh:pattern "^Q[0-9]+$" ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path art:exhibited ;
+        sh:class art:Influence ;
+        sh:minCount 0 ;
+    ] .
+    </pre>
+    <p>Complex Validation Patterns</p>
+    <pre>
+# Exhibition Date Validation
+art:ExhibitionDateValidation
+    a sh:NodeShape ;
+    sh:targetClass art:Influence ;
+    sh:property [
+        sh:path art:startDate ;
+        sh:datatype xsd:gYear ;
+        sh:minInclusive "1850"^^xsd:gYear ;
+        sh:maxInclusive "1950"^^xsd:gYear ;
+    ] .
+    </pre>
+    <h3>4.7 Ontology Statistics</h3>
+    <ul>
+        <li> Artists: 10 instances</li>
+        <li> Exhibitions: 5 instances</li>
+        <li> Total Properties: 8</li>
+        <li> Total Constraints: 11</li>
+    </ul>
+</section>
+
+<section id="features">
+    <h2>5. Features and Pages</h2>
+
+    <h3>5.1 Paintings Page</h3>
+    <p>Implements SPARQL queries for painting-related data:</p>
+    <p>Used <a href="https://wikidata.org">Wikidata</a> over <a href="https://dbpedia.org">DBPedia</a> because of the following reasons: </p>
+    <ol>
+        <li>Has more comprehensive data about artistic influences</li>
+        <li>Includes both direct influences and inspirations</li>
+        <li>Provides better structured information about the type of influence</li>
+        <li>Has more consistent data quality</li>
+        <li>Is generally more up-to-date</li>
+    </ol>
+    <pre>
+SELECT ?painting ?title ?artist
+WHERE {
+    ?painting a :Painting ;
+             :title ?title ;
+             :hasCreator ?artist .
+}
+    </pre>
+
+    <h3>5.2 Museums Page</h3>
+    <p>Features interactive museum exploration with collection statistics.</p>
+
+    <h3>5.3 Sculptures Page</h3>
+    <p>Provides detailed information about sculptural works and their locations.</p>
+
+    <h3>5.4 Ontology Visualization</h3>
+    <p>Interactive visualization of the RDF schema using [Your Visualization Library].</p>
+    <h4>SHACL Validation and Artist Influences Ontology Visualization</h4>
+    <p>This report provides a detailed analysis of a D3.js-based visualization system representing SHACL shapes and artist influences in an ontological structure, with particular focus on RDF data modeling, SHACL validation patterns, and semantic relationships.</p>
+    
+</section>
+
+<section id="api">
+    <h2>6. API Documentation</h2>
+
+    <h3>6.1 SPARQL Endpoints</h3>
+    <div class="api-endpoint">
+        <p><strong>Query Endpoint:</strong> <code>/api/sparql/query</code></p>
+        <p><strong>Update Endpoint:</strong> <code>/api/sparql/update</code></p>
+    </div>
+
+    <h3>6.2 RDF Service API</h3>
+    <div class="api-endpoint">
+        <p><strong>Get RDF Data:</strong> <code>GET /api/rdf/{resource-type}</code></p>
+        <p><strong>Update RDF Data:</strong> <code>POST /api/rdf/{resource-type}</code></p>
+    </div>
+</section>
+
+<section id="deployment">
+    <h2>7. Deployment</h2>
+
+    <h3>7.1 Requirements</h3>
+    <ul>
+        <li>.NET Core 7.0 or higher</li>
+        <li>RDF Triple Store</li>
+        <li>Web Server (IIS/Nginx)</li>
+    </ul>
+
+    <h3>7.2 Configuration</h3>
+    <pre>
+{
+    "RdfService": {
+        "EndpointUrl": "http://localhost:8890/sparql",
+        "GraphUri": "http://example.org/artgallery"
+    }
+}
+    </pre>
+</section>
+<section id="detailed-tech-stack">
+    <h2>8. Detailed Technology Stack Analysis</h2>
+
+    <h3>8.1 Frontend Technologies</h3>
+    <div class="component-details">
+        <h4>HTML5 & CSS3</h4>
+        <ul>
+            <li><strong>Semantic HTML5 Elements Used:</strong>
+                <ul>
+                    <li>&lt;header&gt; - For page headers and section headers</li>
+                    <li>&lt;nav&gt; - For navigation menus</li>
+                    <li>&lt;main&gt; - For main content areas</li>
+                    <li>&lt;section&gt; - For logical content grouping</li>
+                    <li>&lt;article&gt; - For self-contained content pieces</li>
+                    <li>&lt;aside&gt; - For sidebar information</li>
+                    <li>&lt;footer&gt; - For page footers</li>
+                </ul>
+            </li>
+            <li><strong>CSS3 Features Implemented:</strong>
+                <ul>
+                    <li>Flexbox for responsive layouts</li>
+                    <li>CSS Grid for complex page structures</li>
+                    <li>CSS Variables for theme consistency</li>
+                    <li>Media Queries for responsive design</li>
+                    <li>Transitions and Animations for interactive elements</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h4>JavaScript Implementation</h4>
+        <pre>
+// Example of SPARQL Query Handler
+export async function getFamousSculptures() {
+    const query = `
+        SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?creationDate ?location ?locationLabel ?image WHERE {
+            ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture
+            ?sculpture wdt:P170 ?artist .     # Creator
+            OPTIONAL { ?sculpture wdt:P571 ?creationDate . }  # Creation date
+            OPTIONAL { ?sculpture wdt:P276 ?location . }      # Location
+            OPTIONAL { ?sculpture wdt:P18 ?image . }          # Image
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        }
+        LIMIT 50
+    `;
+    const url = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(query);
+    const response = await fetch(url, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        }
+    });
+    const data = await response.json();
+    await displaySculptureResults(data);
+    
+}
+
+// Example of RDF Data Visualization
+const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    // Add headers for the table
+    const headerRow = document.createElement('tr');
+    const headers = ['Image', 'Title', 'Creation Date'];
+    headers.forEach(headerText => {
+        const header = document.createElement('th');
+        header.textContent = headerText;
+        header.style.border = '1px solid #ddd';
+        header.style.padding = '8px';
+        header.style.textAlign = 'left';
+        header.style.backgroundColor = '#f2f2f2';
+        headerRow.appendChild(header);
+    });
+    table.appendChild(headerRow);
+
+    const titlesSet = new Set();
+
+    if (data.results.bindings.length === 0) {
+        const noResultsRow = document.createElement('tr');
+        const noResultsCell = document.createElement('td');
+        noResultsCell.colSpan = headers.length;
+        noResultsCell.textContent = 'No results found.';
+        noResultsCell.style.textAlign = 'center';
+        noResultsCell.style.padding = '8px';
+        noResultsRow.appendChild(noResultsCell);
+        table.appendChild(noResultsRow);
+    } else {
+        data.results.bindings.forEach(item => {
+            if (item.image) {
+                const title = item.sculptureLabel.value;
+                if (!titlesSet.has(title)) {
+                    titlesSet.add(title);
+
+                    const row = document.createElement('tr');
+
+                    // Image column
+                    const imgCell = document.createElement('td');
+                    imgCell.style.border = '1px solid #ddd';
+                    imgCell.style.padding = '8px';
+                    const img = document.createElement('img');
+                    img.src = item.image.value;
+                    img.alt = title;
+                    img.width = 100;
+                    img.height = 100;
+                    img.loading = 'lazy';
+                    img.style.cursor = 'pointer';
+                    img.addEventListener('click', () => {
+                        openModal(img.src, img.alt);
+                    });
+                    imgCell.appendChild(img);
+                    row.appendChild(imgCell);
+
+                    // Title column
+                    const titleCell = document.createElement('td');
+                    titleCell.style.border = '1px solid #ddd';
+                    titleCell.style.padding = '8px';
+                    const link = document.createElement('a');
+                    const sculptureId = item.sculpture.value.split('/').pop();
+                    link.href = `https://www.wikidata.org/wiki/${sculptureId}`;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.textContent = title;
+                    titleCell.appendChild(link);
+                    row.appendChild(titleCell);
+
+                    // Creation Date column
+                    const creationDateCell = document.createElement('td');
+                    creationDateCell.style.border = '1px solid #ddd';
+                    creationDateCell.style.padding = '8px';
+                    creationDateCell.textContent = item.creationDate ? item.creationDate.value : 'N/A';
+                    row.appendChild(creationDateCell);
+
+                    table.appendChild(row);
+                }
+            }
+        });
+    }
+
+    resultsContainer.appendChild(table);
+}
+        </pre>
+    </div>
+
+    <h3>8.2 Backend Technologies (.NET Razor)</h3>
+    <div class="component-details">
+        <h4>Core Components</h4>
+        <pre>
+// Example Razor Page Model
+public class PaintingsModel : PageModel
+{
+    private readonly IRdfService _rdfService;
+    private readonly ILogger<PaintingsModel> _logger;
+
+    public PaintingsModel(
+        IRdfService rdfService,
+        ILogger<PaintingsModel> logger)
+    {
+        _rdfService = rdfService;
+        _logger = logger;
+    }
+
+    public IList<Painting> Paintings { get; set; }
+
+    public async Task OnGetAsync()
+    {
+        var query = @"
+            PREFIX art: <http://example.org/artontology#>
+            SELECT ?painting ?title ?artist ?year
+            WHERE {
+                ?painting a art:Painting ;
+                         art:title ?title ;
+                         art:creator ?artist ;
+                         art:year ?year .
+            }
+            ORDER BY ?year";
+
+        Paintings = await _rdfService.ExecuteQuery<Painting>(query);
+    }
+}
+        </pre>
+
+        <h4>Dependency Injection Configuration</h4>
+        <pre>
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddRazorPages();
+    
+    // RDF Service Configuration
+    services.AddSingleton<IRdfService, RdfService>();
+    services.Configure<RdfOptions>(Configuration.GetSection("RdfService"));
+    
+    // Add CORS policy for API access
+    services.AddCors(options =>
+    {
+        options.AddPolicy("AllowSpecificOrigin",
+            builder => builder
+                .WithOrigins("http://localhost:5000")
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+    });
+}
+        </pre>
+    </div>
+
+    <h3>8.3 RDF Service Architecture</h3>
+    <div class="component-details">
+        <h4>Service Interface</h4>
+        <pre>
+public interface IRdfService
+{
+    Task<IEnumerable<T>> ExecuteQuery<T>(string sparqlQuery);
+    Task<bool> UpdateData(string updateQuery);
+    Task<IGraph> GetOntologyGraph();
+}
+        </pre>
+
+        <h4>Implementation Details</h4>
+        <pre>
+public class RdfService : IRdfService
+{
+    private readonly IOptions<RdfOptions> _options;
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<RdfService> _logger;
+
+    public RdfService(
+        IOptions<RdfOptions> options,
+        HttpClient httpClient,
+        ILogger<RdfService> logger)
+    {
+        _options = options;
+        _httpClient = httpClient;
+        _logger = logger;
+    }
+
+    public async Task<IEnumerable<T>> ExecuteQuery<T>(string sparqlQuery)
+    {
+        try
+        {
+            var endpoint = _options.Value.EndpointUrl;
+            var response = await _httpClient.PostAsync(endpoint,
+                new StringContent(sparqlQuery));
+            
+            // Process SPARQL results
+            var results = await ProcessResults<T>(response);
+            return results;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error executing SPARQL query");
+            throw;
+        }
+    }
+}
+        </pre>
+    </div>
+</section>
+
+<section id="microservices-detailed">
+    <h2>10. Microservices Implementation Details</h2>
+
+    <h3>10.1 UI Microservice Architecture</h3>
+    <div class="component-details">
+        <h4>Project Structure</h4>
+        <pre>└──
+UI/
+├── Pages/
+│   ├── Paintings/
+│   │   ├── Index.cshtml
+│   │   ├── Models.cshtml
+│   │   ├── Sculptures.cshtml
+│   │   ├── Museums.cshtml
+│   │   └── DataAnalyzer.cshtml
+└── wwwroot/
+    ├── js/
+    │   ├── 1850-1900.js
+        ├── museum-comparison.js
+        ├── sculptures.js
+        ├── site.js
+    │   └── main.js
+    └── css/
+        └── styles.css
+        </pre>
+
+        <h4>Key Components</h4>
+        <ul>
+            <li><strong>Pages:</strong> Razor Pages implementing the UI</li>
+            <li><strong>Services:</strong> Internal services for data processing</li>
+            <li><strong>Models:</strong> Data models and DTOs</li>
+            <li><strong>wwwroot:</strong> Static files and client-side resources</li>
+        </ul>
+    </div>
+
+    <h3>10.2 RDF Service Architecture</h3>
+    <div class="component-details">
+        <h4>Project Structure</h4>
+        <pre>
+ArtGallery.RdfService/
+├── Controllers/
+│   ├── RdfController.cs
+│   └── SparqlController.cs
+├── Services/
+│   ├── IRdfStore.cs
+│   └── RdfStore.cs
+├── Models/
+│   ├── RdfEntity.cs
+│   └── SparqlQuery.cs
+└── Configuration/
+    └── RdfStoreOptions.cs
+        </pre>
+
+        <h4>Service Implementation</h4>
+        <pre>
+public class RdfStore : IRdfStore
+{
+    private readonly ITripleStore _store;
+    private readonly IConfiguration _configuration;
+
+    public RdfStore(IConfiguration configuration)
+    {
+        _configuration = configuration;
+        _store = new TripleStore();
+        InitializeStore();
+    }
+
+    private void InitializeStore()
+    {
+        // Load initial RDF data
+        var graph = new Graph();
+        graph.LoadFromFile("ontology.ttl");
+        _store.Add(graph);
+    }
+
+    public async Task<IEnumerable<Triple>> QueryAsync(string sparqlQuery)
+    {
+        var results = _store.ExecuteQuery(sparqlQuery);
+        return await Task.FromResult(results);
+    }
+}
+        </pre>
+    </div>
+</section>
+
+<section id="ui-screenshots">
+    <h2>13. User Interface Documentation</h2>
+
+    <h3>13.1 Models</h3>
+    <div class="component-details">
+    <p>The user can query and see different types of paintings.</p>
+        <!-- Add your actual screenshot here -->
+        <div class="screenshot">
+            [Screenshot: Paintings Search Interface]
+            <!-- <img src="screenshots/paintings-search.png" alt="Paintings Search Interface"> -->
+        </div>
+        <p>Key features visible in the Models page:</p>
+        <ul>
+            <li>query 1</li>
+            <li>query 2</li>
+            <li>Thumbnail previews</li>
+            <li>Quick view modal</li>
+        </ul>
+    </div>
+
+    <h3>13.2 Museums</h3>
+    <div class="component-details">
+        <p>The user can query and see different types of paintings.</p>
+        <!-- Add your actual screenshot here -->
+        <div class="screenshot">
+            [Screenshot: Paintings Search Interface]
+            <!-- <img src="screenshots/paintings-search.png" alt="Paintings Search Interface"> -->
+        </div>
+        <p>Key features visible in the Models page:</p>
+        <ul>
+            <li>query 1</li>
+            <li>query 2</li>
+            <li>Thumbnail previews</li>
+            <li>Quick view modal</li>
+        </ul>
+    </div>
+
+    <h3>13.3 Sculptures</h3>
+    <div class="component-details">
+        <p>The user can query and see different types of paintings.</p>
+        <!-- Add your actual screenshot here -->
+        <div class="screenshot">
+            [Screenshot: Paintings Search Interface]
+            <!-- <img src="screenshots/paintings-search.png" alt="Paintings Search Interface"> -->
+        </div>
+        <p>Key features visible in the Models page:</p>
+        <ul>
+            <li>query 1</li>
+            <li>query 2</li>
+            <li>Thumbnail previews</li>
+            <li>Quick view modal</li>
+        </ul>
+    </div>
+    
+    <h3>13.4 Data Relationships Visualizations</h3>
+    <div class="component-details">
+        <!-- Add your actual screenshot here -->
+        <div class="screenshot">
+            [Screenshot: Ontology Graph Visualization]
+            <!-- <img src="screenshots/ontology-viz.png" alt="Ontology Visualization"> -->
+        </div>
+        <p>The ontology visualization provides:</p>
+        <ul>
+            <li>Interactive graph navigation</li>
+            <li>Zoom and pan controls</li>
+            <li>Class hierarchy display</li>
+            <li>Property relationship visualization</li>
+        </ul>
+    </div>
+</section>
+
+<section id="sequence-diagrams">
+    <h2>14. Operation Sequence Diagrams</h2>
+
+    <h3>14.1 SPARQL Query Flow</h3>
+    <div class="sequence-diagram">
+        <!-- Add your actual sequence diagram here -->
+        [Sequence Diagram: SPARQL Query Process]
+        <!--
+        Client -> UI Service: Request Paintings
+        UI Service -> RDF Service: Execute SPARQL Query
+        RDF Service -> Triple Store: Query Data
+        Triple Store -> RDF Service: Return Results
+        RDF Service -> UI Service: Process Results
+        UI Service -> Client: Display Results
+        -->
+    </div>
+
+    <h3>14.2 Data Update Flow</h3>
+    <div class="sequence-diagram">
+        <!-- Add your actual sequence diagram here -->
+        [Sequence Diagram: RDF Data Update Process]
+    </div>
+</section>
+
+<footer id="footer">
+    <p>© 2025 Art Gallery RDF Application Documentation</p>
+</footer>
+
+</body>
+</html>

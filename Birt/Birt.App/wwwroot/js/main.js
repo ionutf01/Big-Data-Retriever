@@ -1,5 +1,5 @@
 import { getWorksOfArtGogh, getWorksOfArtDaVinci, fetchSimilarArtists, fetchArtistsInfluencedByVanGogh, displayTopPaintingsInfluencedByGogh, displayComparison } from './site.js';
-import { showArtistsAndInfluences } from './1850-1900.js';
+import { showArtistsAndInfluences, openReportModal } from './1850-1900.js';
 function getWorksOfArt() {    
     console.log("Fetching data...");
     const dropdown = document.getElementById("queryDropdown");
@@ -206,4 +206,4 @@ function exportTableToHTML(filename) {
     document.body.removeChild(downloadLink);
 }
 
-export { getWorksOfArt, toggleCriteriaForm, handleQuery, visualizeRDFDataImproved,closeVisualization, exportTableToHTML, exportTableToCSV};
+export { getWorksOfArt, toggleCriteriaForm, handleQuery, visualizeRDFDataImproved,closeVisualization, exportTableToHTML, exportTableToCSV, openReportModal};
