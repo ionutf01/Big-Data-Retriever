@@ -22,7 +22,6 @@
         <option value="paintingInfluencesbetween1850and1900">Get artists influences between 1850 and 1900</option>
         <option value="paintingsInfluencedByGogh">Get paintings influenced by Van Gogh</option>
     </select>
-    @* <button id="allworksofart" class="btn btn-primary">Get Results</button> *@
     <div id="loading" style="display: none;">
         <div class="spinner"></div>
         Loading data...
@@ -115,80 +114,77 @@
     <div id="comparison"></div>
     <script type="module">
         import { toggleCriteriaForm, getWorksOfArt, handleQuery, visualizeRDFDataImproved, closeVisualization, exportTableToCSV, exportTableToHTML } from '/js/main.js';
-
+    
         document.addEventListener('DOMContentLoaded', () => {
             const dropdown = document.getElementById("queryDropdown");
-
+    
             function executeQuery(query) {
                 console.log("Fetching results for:", query);
-                getWorksOfArt(); // Aici înlocuiește cu logica necesară pentru a trimite cererea
+                getWorksOfArt(); 
             }
-
+    
             function fetchResults() {
                 const selectedValue = dropdown.value;
-
+    
                 if (selectedValue !== "similar-gogh" && selectedValue !== "similar-vinci" && selectedValue !== "null") {
-                    executeQuery(selectedValue); // Rulează automat doar pentru opțiunile permise
+                    executeQuery(selectedValue);
                 }
             }
-
-            // Ascultător pentru dropdown
+    
             dropdown.addEventListener("change", () => {
-                toggleCriteriaForm(); // Păstrează această funcție dacă e necesară
+                toggleCriteriaForm(); 
                 fetchResults();
             });
-
-            // Ascultător pentru butonul de căutare manuală
+    
             document.getElementById("handlequery").addEventListener("click", handleQuery);
-
-            // Vizualizare RDF
+    
             document.getElementById('showVisualization').addEventListener('click', () => {
                 document.getElementById('visualization').style.display = 'block';
                 document.getElementById('closeVisualization').style.display = 'block';
                 visualizeRDFDataImproved();
             });
-
+    
             document.getElementById('closeVisualization').addEventListener('click', () => {
                 closeVisualization();
             });
 
             document.getElementById("exportCsv").addEventListener("click", () => {
                 if (confirm("Do you want to download the results as CSV?")) {
-                    const filename = dropdown.options[dropdown.selectedIndex].text.replace(/\s+/g, '_').toLowerCase() + ".csv";
+                    const dropdown = document.getElementById("queryDropdown");
+                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                    const filename = selectedOption.replace(/\s+/g, '_').toLowerCase() + ".csv"; // ✅ CORECT
                     exportTableToCSV(filename);
                 }
             });
 
             document.getElementById("exportHtml").addEventListener("click", () => {
                 if (confirm("Do you want to download the results as HTML?")) {
-                    const filename = dropdown.options[dropdown.selectedIndex].text.replace(/\s+/g, '_').toLowerCase() + ".html";
+                    const dropdown = document.getElementById("queryDropdown");
+                    const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                    const filename = selectedOption.replace(/\s+/g, '_').toLowerCase() + ".html"; 
                     exportTableToHTML(filename);
                 }
             });
 
-            // Execută automat dacă este selectată o opțiune validă
             fetchResults();
-            // Referințe la elementele necesare
-            const dropdown = document.getElementById("queryDropdown");
             const toggleButton = document.getElementById("toggleView");
-
-            toggleButton.style.display = "none"; // Ascunde butonul inițial
-
+    
+            toggleButton.style.display = "none"; 
+    
             dropdown.addEventListener("change", function () {
-                console.log("Dropdown changed:", dropdown.value); // Debugging
-
+                console.log("Dropdown changed:", dropdown.value); 
+    
                 if (dropdown.value === "gogh" || dropdown.value === "vinci") {
-                    console.log("Showing button"); // Debugging
-                    toggleButton.style.display = "block"; // Afișează butonul
+                    console.log("Showing button");
+                    toggleButton.style.display = "block"; 
                 } else {
-                    console.log("Hiding button"); // Debugging
-                    toggleButton.style.display = "none"; // Ascunde butonul
+                    console.log("Hiding button"); 
+                    toggleButton.style.display = "none"; 
                 }
             });
-
-            toggleButton.addEventListener("click", toggleView);
+    
         });
-
+    
     </script>
 </div>
 </body>
