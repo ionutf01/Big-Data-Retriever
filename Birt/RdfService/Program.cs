@@ -20,6 +20,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Remove("X-Frame-Options");  
+    context.Response.Headers.Add("Content-Security-Policy", "frame-ancestors 'self' http://localhost:5077;");
+    await next();
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
