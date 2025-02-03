@@ -87,6 +87,7 @@ art:ArtistShape
         sh:path art:hasName ;
         sh:datatype xsd:string ;
         sh:minCount 1 ;
+        sh:maxCount 1 ;
         sh:message "Artist must have at least one name as string"@en ;
     ] ;
     sh:property [

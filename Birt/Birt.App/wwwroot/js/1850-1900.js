@@ -173,7 +173,6 @@ async function getInfluencesBetween1850and1900() {
         const cachedData = await getCachedData(db, `influences1850-1900-${selectedLanguage}`);
         if (cachedData && (new Date().getTime() - cachedData.timestamp) < 24 * 60 * 60 * 1000) { // 24 hours cache
             const validationResults = await validateSparqlResults({ data: cachedData.data });
-            console.log("Validation results:", validationResults);
             if (validationResults.conforms) {
                 return cachedData.data;
             } else {
@@ -189,17 +188,54 @@ async function getInfluencesBetween1850and1900() {
 
         const results = data.results.bindings;
         const validationResults = await validateSparqlResults({ data: results });
-        console.log("Validation results:", validationResults);
-
+        openReportModal(validationResults);
         return results;
     } catch (error) {
         console.error("Error fetching artists and influences:", error);
         return [];
     }
 }
+export function openReportModal(validationResults) {
+    const modal = document.getElementById('validationReportModal');
+    const reportContent = document.getElementById('reportContent');
 
-function displayInfluencesBetween1850and1900(data) {
-    // show loading spinner
+    // Clear previous content
+    reportContent.innerHTML = '';
+
+    // Populate modal with validation results
+    const metadata = validationResults.metadata;
+    const suggestedActions = validationResults.suggestedActions;
+
+    reportContent.innerHTML = `
+        <p><strong>Request ID:</strong> ${metadata.requestId}</p>
+        <p><strong>Timestamp:</strong> ${metadata.timestamp}</p>
+        <p><strong>Processed Records:</strong> ${metadata.processedRecords}</p>
+        <p><strong>Processing Time:</strong> ${metadata.processingTime}</p>
+        <p><strong>Valid Records:</strong> ${validationResults.validRecords}</p>
+        <p><strong>Total Records:</strong> ${validationResults.totalRecords}</p>
+        <h3>Suggested Actions</h3>
+        <ul>
+            ${suggestedActions.map(action => `<li>${action}</li>`).join('')}
+        </ul>
+    `;
+
+    // Show the modal
+    modal.style.display = 'block';
+}
+document.querySelector('.close').addEventListener('click', closeReportModal);
+// Event listener for closing the modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('validationReportModal');
+    if (event.target == modal) {
+        closeReportModal();
+    }
+}
+function closeReportModal() {
+    const modal = document.getElementById('validationReportModal');
+    modal.style.display = 'none';
+}
+async function displayInfluencesBetween1850and1900(data) {
+    // Show loading spinner
     const loadingIndicator = document.getElementById('loading');
     loadingIndicator.style.display = 'block'; // Show loading indicator
     const resultsContainer = document.getElementById('results');
@@ -251,66 +287,15 @@ function displayInfluencesBetween1850and1900(data) {
 
         table.appendChild(row);
     });
-    
+
     loadingIndicator.style.display = 'none';
 
     document.getElementById("exportCsv").style.display = 'inline-block';
     document.getElementById("exportHtml").style.display = 'inline-block';
     resultsContainer.appendChild(table);
 }
-
 async function showArtistsAndInfluences() {
     const data = await getInfluencesBetween1850and1900();
     displayInfluencesBetween1850and1900(data);
 }
-
-// Call the function to fetch and display the data
-async function prepareData() {
-    try {
-        const response = await fetch('../ontology/Influence_description_ontology.ttl');
-        if (!response.ok) {
-            throw new Error(`Failed to fetch ontology data: ${response.statusText}`);
-        }
-        const text = await response.text();
-        const lines = text.split('\n').slice(4); // Skip the first 4 lines containing prefixes
-        const nodes = new Map();
-        const links = [];
-
-        console.log("Ontology data fetched successfully:", text);
-
-        let currentNode = null;
-        lines.forEach(line => {
-            line = line.trim();
-            if (line.startsWith('ex:Q')) {
-                const parts = line.split(' ');
-                currentNode = parts[0].replace('ex:', '');
-                const labelMatch = line.match(/rdfs:label\s+"([^"]+)"@en/);
-                if (labelMatch) {
-                    const label = labelMatch[1];
-                    nodes.set(currentNode, { id: currentNode, label: label, group: 'artist' });
-                    console.log(`Node added: ${currentNode} - ${label}`);
-                } else {
-                    console.log(`No label found for node: ${currentNode}`);
-                }
-            } else if (line.includes('ex:influenceDescription')) {
-                const parts = line.split(' ');
-                const influenceId = parts[2].replace('ex:', '').replace(';', '');
-                links.push({ source: currentNode, target: influenceId });
-                if (!nodes.has(influenceId)) {
-                    nodes.set(influenceId, { id: influenceId, label: influenceId, group: 'event' });
-                }
-                console.log(`Link added: ${currentNode} -> ${influenceId}`);
-            }
-        });
-
-        console.log("Nodes inside the function:", Array.from(nodes.values()));
-        console.log("Links inside the function:", links);
-
-        return { nodes: Array.from(nodes.values()), links };
-    } catch (error) {
-        console.error("Error in prepareData:", error);
-        return { nodes: [], links: [] };
-    }
-}
-
 export { showArtistsAndInfluences };

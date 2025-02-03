@@ -51,8 +51,7 @@ public class ValidationResponse
 public class MetaData
 {
     public string RequestId { get; set; } = Guid.NewGuid().ToString();
-    public string Timestamp { get; set; } = "2025-02-03 18:03:13"; // Using provided timestamp
-    public string UserLogin { get; set; } = "ionutf01";
+    public string Timestamp { get; set; } = "2025-02-03 18:03:13";
     public int ProcessedRecords { get; set; }
     public TimeSpan ProcessingTime { get; set; }
 }

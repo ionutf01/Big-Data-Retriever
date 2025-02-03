@@ -69,8 +69,7 @@ app.MapPost("/rdf/validate", async (SparqlValidationRequest request) =>
 {
     var startTime = DateTime.UtcNow;
     var requestId = Guid.NewGuid().ToString();
-    var currentTimestamp = "2025-02-03 18:57:20";
-    var currentUser = "ionutf01";
+    var currentTimestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
     try
     {
@@ -84,7 +83,6 @@ app.MapPost("/rdf/validate", async (SparqlValidationRequest request) =>
                 {
                     RequestId = requestId,
                     Timestamp = currentTimestamp,
-                    UserLogin = currentUser,
                     ProcessedRecords = 0,
                     ProcessingTime = DateTime.UtcNow - startTime
                 }
@@ -199,7 +197,6 @@ app.MapPost("/rdf/validate", async (SparqlValidationRequest request) =>
             {
                 RequestId = requestId,
                 Timestamp = currentTimestamp,
-                UserLogin = currentUser,
                 ProcessedRecords = request.QueryResults.Count,
                 ProcessingTime = processingTime
             },
@@ -228,7 +225,6 @@ app.MapPost("/rdf/validate", async (SparqlValidationRequest request) =>
             {
                 RequestId = requestId,
                 Timestamp = currentTimestamp,
-                UserLogin = currentUser,
                 ProcessedRecords = request.QueryResults?.Count ?? 0,
                 ProcessingTime = DateTime.UtcNow - startTime
             }
