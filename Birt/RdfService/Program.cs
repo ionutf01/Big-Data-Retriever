@@ -32,33 +32,6 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
-app.MapGet("/rdf", () =>
-{
-    var graph = new Graph();
-  try
-    {
-        FileLoader.Load(graph, "./properties_ontology.ttl");
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem($"Error loading file: {ex.Message}");
-    }
-  
-    var ttlParser = new TurtleParser();
-    ttlParser.Load(graph, "./properties_ontology.ttl");
-    var triples = graph.Triples.Select(triple => new
-    {
-        Subject = triple.Subject.ToString(),
-        Predicate = triple.Predicate.ToString(),
-        Object = triple.Object.ToString()
-    });
-    // return triples;
-    // print triples
-    return Results.Ok(triples);
-})
-.WithName("GetRdf")
-.WithOpenApi();
-
 app.MapGet("/rdf/{property}", (string property) =>
 {
     var graph = new Graph();
@@ -92,45 +65,6 @@ app.MapGet("/rdf/{property}", (string property) =>
 .WithName("GetRdfProperty")
 .WithOpenApi();
 
-app.MapGet("/rdf/visualize", () =>
-{
-    var graph = new Graph();
-    try
-    {
-        graph.LoadFromFile("Influence_description_ontology.ttl");
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem($"Error loading file: {ex.Message}");
-    }
-
-    var nodes = new HashSet<object>();
-    var links = new List<object>();
-
-    foreach (var triple in graph.Triples)
-    {
-        var subject = triple.Subject.ToString();
-        var predicate = triple.Predicate.ToString();
-        var obj = triple.Object.ToString();
-
-        // Add nodes
-        if (!nodes.Any(n => n.ToString().Contains(subject)))
-        {
-            nodes.Add(new { id = subject, label = subject, group = "subject" });
-        }
-        if (!nodes.Any(n => n.ToString().Contains(obj)))
-        {
-            nodes.Add(new { id = obj, label = obj, group = "object" });
-        }
-
-        // Add links
-        links.Add(new { source = subject, target = obj, label = predicate });
-    }
-
-    return Results.Ok(new { nodes = nodes.ToList(), links });
-})
-.WithName("VisualizeRdf")
-.WithOpenApi();
 app.MapPost("/rdf/validate", async (SparqlValidationRequest request) =>
 {
     var startTime = DateTime.UtcNow;
