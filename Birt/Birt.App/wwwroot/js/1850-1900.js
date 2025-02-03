@@ -84,7 +84,6 @@ async function setCachedData(db, artistId, data) {
 }
 async function validateSparqlResults(sparqlResults) {
     const resultsArray = sparqlResults.data;
-    console.log("RESULTS ARRAY:", resultsArray);
     if (!Array.isArray(resultsArray)) {
         console.error('sparqlResults.data is not an array:', resultsArray);
         return {
@@ -96,7 +95,6 @@ async function validateSparqlResults(sparqlResults) {
 
     // Transform SPARQL results to the expected format
     const transformedResults = resultsArray.map(result => {
-        console.log("Processing result:", result);
         return {
             artist: result.artist?.value || '',
             artistLabel: result.artistLabel?.value || '',
@@ -108,8 +106,6 @@ async function validateSparqlResults(sparqlResults) {
     });
 
     const requestBody = JSON.stringify({ queryResults: transformedResults });
-    console.log("Request payload:", requestBody);
-
     try {
         const response = await fetch('http://localhost:5242/rdf/validate', {
             method: 'POST',

@@ -764,16 +764,6 @@ window.displayResultsPaintings = function (data) {
     }
 };
 
-
-
-// export function toggleView() {
-//     console.log("Toggling view..."); // Debugging
-//     let isTableView = true;
-//     isTableView = !isTableView;
-//     document.getElementById("toggleView").textContent = isTableView ? "See Cards" : "See Table";
-// }
-
-
 let lastData = null; // Variabilă pentru a stoca ultima interogare de date
 
 function displayResultsPaintings(data) {
@@ -967,8 +957,6 @@ function displayCards(data) {
     document.getElementById("exportCsv").style.display = 'inline-block';
     document.getElementById("exportHtml").style.display = 'inline-block';
 }
-
-
 
 export function openModal(src, alt) {
     const modal = document.getElementById('myModal');

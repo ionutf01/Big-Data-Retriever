@@ -14,12 +14,13 @@
 <nav id="topbar">
     <ul>
         <li><a href="#introduction"><i class="fas fa-info-circle"></i> Introduction</a></li>
-        <li><a href="#architecture"><i class="fas fa-sitemap"></i> Architecture</a></li>
+        <li><a href="#architecture"><i class="fas fa-sitemap"></i> System Architecture</a></li>
         <li><a href="#microservices"><i class="fas fa-cogs"></i> Microservices</a></li>
-        <li><a href="#ontology"><i class="fas fa-project-diagram"></i> Ontology</a></li>
-        <li><a href="#features"><i class="fas fa-list"></i> Features</a></li>
-        <li><a href="#api"><i class="fas fa-code"></i> API</a></li>
+        <li><a href="#ontology"><i class="fas fa-project-diagram"></i> RDF Ontology</a></li>
+        <li><a href="#features"><i class="fas fa-list"></i> Features and Pages</a></li>
         <li><a href="#deployment"><i class="fas fa-cloud-upload-alt"></i> Deployment</a></li>
+        <li><a href="#detailed-tech-stack"><i class="fas fa-tools"></i> Detailed Technology Stack Analysis</a></li>
+        <li><a href="#ui-screenshots"><i class="fas fa-images"></i> User Interface Documentation</a></li>
     </ul>
 </nav>
 
@@ -66,7 +67,9 @@
 <section id="architecture">
     <h2>2. System Architecture</h2>
     <div class="architecture-diagram">
-        [Place for your architecture diagram]
+        <div class="screenshot">
+            <img src="./files/diagram.png" alt="Architecture diagram">
+        </div>
     </div>
 
     <h3>2.1 Component Overview</h3>
@@ -139,7 +142,6 @@ art:TimePeriod
     a owl:Class ;
     rdfs:label "Time Period"@en .
     </pre>
-
     <h3>4.2 Property Definitions</h3>
     <pre>
 art:hasName
@@ -297,14 +299,118 @@ art:ExhibitionDateValidation
         <li> Total Properties: 8</li>
         <li> Total Constraints: 11</li>
     </ul>
+    <h3>4.8 Adhering to the linked data principles</h3>
+    <h4>1. Use URIs as Names for Things</h4>
+    <h5>Implementation</h5>
+    <p>Our ontology consistently uses URIs to identify:</p>
+    <ul>
+        <li>Artists (http://www.wikidata.org/entity/Q...)</li>
+        <li>Artistic Influences (http://www.wikidata.org/entity/Q...)</li>
+        <li>Influence Types (http://example.org/art/ontology#InfluenceType)</li>
+        <li>Time Periods (http://example.org/art/ontology#TimePeriod)</li>
+    </ul>
+    
+    <h5>Example</h5>
+    <pre>
+@prefix wd: &lt;http://www.wikidata.org/entity/&gt; .
+@prefix art: &lt;http://example.org/art/ontology#&gt; .
+
+wd:Q762 a art:Artist ;  # Vincent van Gogh
+art:hasInfluence wd:Q34661 .  # Impressionism
+    </pre>
+    
+    <h5>Compliance Assessment</h5>
+    <ul>
+        <li>All entities have unique, persistent URIs</li>
+        <li>Uses established namespaces (Wikidata) where appropriate</li>
+        <li>Custom namespace for domain-specific concepts</li>
+    </ul>
+    
+    <h4>2. Use HTTP URIs</h4>
+    
+    <h5>Implementation</h5>
+    <p>Our ontology uses HTTP URIs for:</p>
+    <ul>
+        <li>Entity identification</li>
+        <li>Property definitions</li>
+        <li>Class hierarchies</li>
+    </ul>
+    
+    <h5>URI Structure</h5>
+    <pre>
+Base URI: http://example.org/art/ontology#
+Wikidata Entities: http://www.wikidata.org/entity/
+Properties: http://www.wikidata.org/prop/direct/
+    </pre>
+    
+    <h5>Compliance Assessment</h5>
+    <ul>
+        <li>All URIs are HTTP-based</li>
+        <li>URIs are resolvable</li>
+        <li>Follows W3C best practices</li>
+    </ul>
+    
+    <h4>3. Provide Useful Information Using RDF Standards</h4>
+    
+    <h5>Implementation</h5>
+    <p>Information is provided using:</p>
+    <ul>
+        <li>RDF/XML</li>
+        <li>Turtle</li>
+        <li>JSON-LD</li>
+    </ul>
+    
+    <h5>Data Model Example</h5>
+    <pre>
+# Artist Definition
+art:Artist rdf:type owl:Class ;
+    rdfs:label "Artist"@en ;
+    rdfs:comment "A person who creates art"@en .
+
+# Influence Relationship
+art:hasInfluence rdf:type owl:ObjectProperty ;
+rdfs:domain art:Artist ;
+rdfs:range art:Influence .
+    </pre>
+    
+    <h5>Properties and Relationships</h5>
+    <ol>
+        <li><strong>Core Properties:</strong>
+            <ul>
+                <li>art:hasInfluence</li>
+                <li>art:birthDate</li>
+                <li>art:deathDate</li>
+                <li>art:influenceType</li>
+            </ul>
+        </li>
+        <li><strong>Data Properties:</strong>
+            <ul>
+                <li>Labels in multiple languages</li>
+                <li>Temporal information</li>
+                <li>Source references</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h5>Compliance Assessment</h5>
+    <ul>
+        <li>Uses standard RDF vocabularies</li>
+        <li>Provides multilingual labels</li>
+        <li>Includes comprehensive metadata</li>
+    </ul>
+    
+    <h5>Validation</h5>
+    <ul>
+        <li>SHACL shapes for data validation</li>
+        <li>Regular expression patterns for literal values</li>
+        <li>Cardinality constraints for relationships</li>
+    </ul>
+    
 </section>
 
 <section id="features">
     <h2>5. Features and Pages</h2>
-
-    <h3>5.1 Paintings Page</h3>
-    <p>Implements SPARQL queries for painting-related data:</p>
-    <p>Used <a href="https://wikidata.org">Wikidata</a> over <a href="https://dbpedia.org">DBPedia</a> because of the following reasons: </p>
+    <p>The project is using <a href="https://wikidata.org">Wikidata</a> over <a href="https://dbpedia.org">DBPedia</a> because of the following reasons: </p>
     <ol>
         <li>Has more comprehensive data about artistic influences</li>
         <li>Includes both direct influences and inspirations</li>
@@ -312,55 +418,146 @@ art:ExhibitionDateValidation
         <li>Has more consistent data quality</li>
         <li>Is generally more up-to-date</li>
     </ol>
-    <pre>
-SELECT ?painting ?title ?artist
-WHERE {
-    ?painting a :Painting ;
-             :title ?title ;
-             :hasCreator ?artist .
-}
-    </pre>
+    
+    <h3>5.1 Paintings Page</h3>
+    <p>Implements SPARQL queries for painting-related data:</p>
+    <ol>
+        <li>Get works of art for Vincent van Gogh: <pre>SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel ?museum ?museumLabel WHERE {  
+  ?work wdt:P170 wd:Q5582.  OPTIONAL { ?work wdt:P18 ?workImage. }  
+  OPTIONAL { ?work wdt:P170 ?artist. }  OPTIONAL { ?work wdt:P276 ?museum. }  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+LIMIT 20</pre></li>
+        <li>Get works of art for Leonardo da Vinci: <pre>SELECT DISTINCT ?work ?workLabel ?workImage ?artist ?artistLabel ?museum ?museumLabel WHERE {  
+    ?work wdt:P170 wd:Q762.  # Created by Claude Monet (Q762)    OPTIONAL { ?work wdt:P18 ?workImage. }  # Optional: image of the painting    OPTIONAL { ?work wdt:P170 ?artist. }    # Optional: artist of the painting    OPTIONAL { ?work wdt:P276 ?museum. }    # Optional: museum where the painting is locatedSERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }  
+}  
+LIMIT 20</pre></li>
+        <li>Get similar artists to Vincent van Gogh: <pre>SELECT DISTINCT ?property ?propertyLabel ?artist1Value ?artist1ValueLabel ?artist2Value ?artist2ValueLabel WHERE {  
+    # Proprietăți și valori pentru artistul 1    OPTIONAL {        wd:${artist1Id} ?property ?artist1Value.        FILTER(?artist1Value != "" && ?artist1Value != "N/A").    }    # Proprietăți și valori pentru artistul 2    OPTIONAL {        wd:${artist2Id} ?property ?artist2Value.        FILTER(?artist2Value != "" && ?artist2Value != "N/A").    }    # Adăugare etichete pentru proprietăți și valori    SERVICE wikibase:label {        bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".  
+        ?property rdfs:label ?propertyLabel.        ?artist1Value rdfs:label ?artist1ValueLabel.        ?artist2Value rdfs:label ?artist2ValueLabel.    }    # Filtru pe proprietăți relevante    FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570, wdt:P27, wdt:P19, wdt:P20, wdt:P18, wdt:P800, wdt:P937)) # Mișcare, profesie, naștere, deces}</pre></li>
+        <li>Get similar artists to Leonardo da Vinci: <pre>SELECT DISTINCT ?property ?propertyLabel ?artist1Value ?artist1ValueLabel ?artist2Value ?artist2ValueLabel WHERE {  
+    # Proprietăți și valori pentru artistul 1    OPTIONAL {        wd:${artist1Id} ?property ?artist1Value.        FILTER(?artist1Value != "" && ?artist1Value != "N/A").    }    # Proprietăți și valori pentru artistul 2    OPTIONAL {        wd:${artist2Id} ?property ?artist2Value.        FILTER(?artist2Value != "" && ?artist2Value != "N/A").    }    # Adăugare etichete pentru proprietăți și valori    SERVICE wikibase:label {        bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en".  
+        ?property rdfs:label ?propertyLabel.        ?artist1Value rdfs:label ?artist1ValueLabel.        ?artist2Value rdfs:label ?artist2ValueLabel.    }    # Filtru pe proprietăți relevante    FILTER(?property IN (wdt:P135, wdt:P106, wdt:P569, wdt:P570, wdt:P27, wdt:P19, wdt:P20, wdt:P18, wdt:P800, wdt:P937)) # Mișcare, profesie, naștere, deces}</pre></li>
+        <li>Get artists influenced by Vincent van Gogh: <pre>PREFIX icon: <http://www.iconontology.org/ontology#>  
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>  
+PREFIX wd: <http://www.wikidata.org/entity/>  
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  
+PREFIX owl: <http://www.w3.org/2002/07/owl#>  
+SELECT DISTINCT ?artist ?artistLabel ?work ?workLabel ?workImage WHERE {  
+    ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)    ?artist wdt:P106 wd:Q1028181.  # Occupation: painter    OPTIONAL {        ?work wdt:P170 ?artist.        ?work rdfs:label ?workLabel.        OPTIONAL { ?work wdt:P18 ?workImage. }    }    OPTIONAL {        ?artist icon:hasInfluence ?influence.        ?influence rdfs:label ?influenceLabel.    }    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}</pre></li>
+        <li>Get artists influences between 1850 and 1900: <pre>#title: Painting born 1850-1900 and their influences  
+#defaultView:Table  
+SELECT DISTINCT ?artist ?artistLabel ?birthDate ?influence ?influenceLabel ?influenceTypeLabel WHERE {  
+  ?artist wdt:P106 wd:Q1028181;  # occupation: artist         wdt:P569 ?birthDate;    # date of birth         wdt:P737|wdt:P941 ?influence.  # influenced by (P737) OR inspired by (P941)  
+  # Get the type of the influence (person, movement, event, etc)  ?influence wdt:P31 ?influenceType.  
+  # Filter for artists born between 1850 and 1900  FILTER(YEAR(?birthDate) >= 1850 && YEAR(?birthDate) <= 1900)  
+  # Get labels in the selected language  SERVICE wikibase:label {    bd:serviceParam wikibase:language "${selectedLanguage},en".  
+    ?artist rdfs:label ?artistLabel.    ?influence rdfs:label ?influenceLabel.    ?influenceType rdfs:label ?influenceTypeLabel.  }}  
+ORDER BY ?artistLabel ?birthDate  
+LIMIT 1000</pre></li>
+        <li>Get paintings influenced by Van Gogh: <pre>PREFIX icon: <http://www.iconontology.org/ontology#>  
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>  
+PREFIX wd: <http://www.wikidata.org/entity/>  
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  
+PREFIX owl: <http://www.w3.org/2002/07/owl#>  
+  
+SELECT ?artist ?artistLabel WHERE {  
+    ?artist wdt:P737 wd:Q5582.  # Influenced by Vincent van Gogh (Q5582)    ?artist wdt:P106 wd:Q1028181.  # Occupation: painter    ?artist wdt:P31 wd:Q5.         # Instance of: human    OPTIONAL { ?artist icon:hasInfluence ?influenceDescription. }    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}
+SELECT ?work ?workLabel ?workImage WHERE {  
+    ?work wdt:P170 wd:${painterId}.  # Created by the painter  
+    ?work wdt:P31 wd:Q3305213.  # Instance of painting (Q3305213)    OPTIONAL { ?work wdt:P18 ?workImage. }    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+LIMIT 3</pre></li>
+    </ol>
 
     <h3>5.2 Museums Page</h3>
-    <p>Features interactive museum exploration with collection statistics.</p>
+    <p>Implements SPARQL queries for comparing artists and museums in a creative way</p>
+    <ol>
+        <li>Compare Paintings: <pre>PREFIX wd: <http://www.wikidata.org/entity/>  
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>  
+PREFIX schema: <http://schema.org/>  
+SELECT ?painting ?title ?museumName ?image WHERE {  
+    ?painting wdt:P170 wd:${artist} .    ?painting wdt:P276 ?museum .    ${filterCondition} .    ?museum rdfs:label ?museumName .    ?painting rdfs:label ?title .    OPTIONAL { ?painting wdt:P18 ?image. }    FILTER (lang(?title) = "en" && lang(?museumName) = "en")}</pre></li>
+        <li>Find Museums and Other Artists <pre>For artists:
+
+PREFIX wd: <http://www.wikidata.org/entity/>  
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>  
+  
+SELECT DISTINCT ?museumLabel (SAMPLE(?otherArtist) AS ?otherArtist) (SAMPLE(?otherArtistLabel) AS ?otherArtistLabel) WHERE {  
+    VALUES ?museum { ${museumIds} }    ?otherPainting wdt:P170 ?otherArtist;                   wdt:P276 ?museum.  
+    FILTER (?otherArtist != wd:${artist})  
+  
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+GROUP BY ?museumLabel  
+ORDER BY ?museumLabel
+
+For paintings:
+PREFIX wd: <http://www.wikidata.org/entity/>  
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>  
+  
+SELECT DISTINCT ?museumLabel ?otherArtistLabel (SAMPLE(?otherPaintingLabel) AS ?otherPaintingLabel) (SAMPLE(?paintingImage) AS ?paintingImage) WHERE {  
+    VALUES ?museum { ${museumIds} }    VALUES ?otherArtist { ${artistIds} }        ?otherPainting wdt:P170 ?otherArtist;  
+                   wdt:P276 ?museum.  
+    OPTIONAL { ?otherPainting rdfs:label ?otherPaintingLabel. FILTER(LANG(?otherPaintingLabel) = "en") }    OPTIONAL { ?otherPainting wdt:P18 ?paintingImage }  
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+GROUP BY ?museumLabel ?otherArtistLabel  
+ORDER BY ?museumLabel</pre></li>
+        <li>Find Similar Paintings: <pre>PREFIX wd: <http://www.wikidata.org/entity/>  
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>  
+  
+SELECT DISTINCT ?museumLabel ?otherArtistLabel ?otherPaintingLabel ?paintingImage WHERE {  
+    VALUES ?museum { ${museumIds} }    VALUES ?otherArtist { ${artistIds} }        ?otherPainting wdt:P170 ?otherArtist;  
+                   wdt:P276 ?museum.  
+    OPTIONAL { ?otherPainting rdfs:label ?otherPaintingLabel. FILTER(LANG(?otherPaintingLabel) = "en") }    OPTIONAL { ?otherPainting wdt:P18 ?paintingImage }  
+    FILTER EXISTS { ?otherPainting wdt:P18 ?paintingImage }  # ✅ Ensure we only get paintings with images  
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+ORDER BY ?museumLabel  
+LIMIT 5</pre></li>
+    </ol>
 
     <h3>5.3 Sculptures Page</h3>
     <p>Provides detailed information about sculptural works and their locations.</p>
+    <ol>
+        <li>List of Famous Sculptures: <pre>SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?creationDate ?location ?locationLabel ?image WHERE {  
+    ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture    ?sculpture wdt:P170 ?artist .     # Creator    OPTIONAL { ?sculpture wdt:P571 ?creationDate . }  # Creation date    OPTIONAL { ?sculpture wdt:P276 ?location . }      # Location    OPTIONAL { ?sculpture wdt:P18 ?image . }          # Image    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+LIMIT 50</pre></li>
+        <li>Sculptures by a Specific Artist: <pre>SELECT ?sculpture ?sculptureLabel ?creationDate ?image WHERE {  
+    ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture    ?sculpture wdt:P170 wd:${artist} .    OPTIONAL { ?sculpture wdt:P571 ?creationDate . }  # Creation date    OPTIONAL { ?sculpture wdt:P18 ?image . }          # Image    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+LIMIT 50</pre></li>
+        <li>Sculptures in a Specific Museum: <pre>SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?image WHERE {  
+    ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture    ?sculpture wdt:P276 wd:${museum} .    OPTIONAL { ?sculpture wdt:P170 ?artist . }  # Creator  
+    OPTIONAL { ?sculpture wdt:P18 ?image . }    # Image    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+LIMIT 50</pre></li>
+        <li>Sculptures by a Specific Material: <pre>SELECT ?sculpture ?sculptureLabel ?artist ?artistLabel ?material ?materialLabel ?image WHERE {  
+    ?sculpture wdt:P31 wd:Q860861 .  # Instance of sculpture    ?sculpture wdt:P186 wd:${material} .    OPTIONAL { ?sculpture wdt:P170 ?artist . }  # Creator    OPTIONAL { ?sculpture wdt:P18 ?image . }    # Image    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }}  
+LIMIT 50</pre></li>
+        <li>Sculptures from a Specific Period: <pre>SELECT DISTINCT ?sculpture ?sculptureLabel ?artist ?artistLabel ?inception ?image WHERE {  
+  ?sculpture wdt:P31 wd:Q860861.  # Instance of sculpture  ?sculpture wdt:P170 ?artist.    # Has artist  ?sculpture wdt:P571 ?inception. # Inception date  ?sculpture wdt:P18 ?image.      # Must have an image  
+  # Ensure sculpture and artist have English labels  ?sculpture rdfs:label ?sculptureLabel.FILTER(LANG(?sculptureLabel) = "en")    
+  ?artist rdfs:label ?artistLabel.  # Ensure artist has a name  FILTER(LANG(?artistLabel) = "en")   
+  FILTER (?inception >= "${startDate}T00:00:00Z"^^xsd:dateTime &&  
+          ?inception <= "${endDate}T23:59:59Z"^^xsd:dateTime)  
+  
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }}  
+ORDER BY ?inception  
+LIMIT 50</pre></li>
+    </ol>
 
     <h3>5.4 Ontology Visualization</h3>
     <p>Interactive visualization of the RDF schema using [Your Visualization Library].</p>
     <h4>SHACL Validation and Artist Influences Ontology Visualization</h4>
-    <p>This report provides a detailed analysis of a D3.js-based visualization system representing SHACL shapes and artist influences in an ontological structure, with particular focus on RDF data modeling, SHACL validation patterns, and semantic relationships.</p>
+    <p>A detailed analysis of a D3.js-based visualization system representing SHACL shapes and artist influences in an ontological structure, with particular focus on RDF data modeling, SHACL validation patterns, and semantic relationships.</p>
     
 </section>
 
-<section id="api">
-    <h2>6. API Documentation</h2>
-
-    <h3>6.1 SPARQL Endpoints</h3>
-    <div class="api-endpoint">
-        <p><strong>Query Endpoint:</strong> <code>/api/sparql/query</code></p>
-        <p><strong>Update Endpoint:</strong> <code>/api/sparql/update</code></p>
-    </div>
-
-    <h3>6.2 RDF Service API</h3>
-    <div class="api-endpoint">
-        <p><strong>Get RDF Data:</strong> <code>GET /api/rdf/{resource-type}</code></p>
-        <p><strong>Update RDF Data:</strong> <code>POST /api/rdf/{resource-type}</code></p>
-    </div>
-</section>
-
 <section id="deployment">
-    <h2>7. Deployment</h2>
+    <h2>6. Deployment</h2>
 
-    <h3>7.1 Requirements</h3>
+    <h3>6.1 Requirements</h3>
     <ul>
         <li>.NET Core 7.0 or higher</li>
         <li>RDF Triple Store</li>
         <li>Web Server (IIS/Nginx)</li>
     </ul>
 
-    <h3>7.2 Configuration</h3>
+    <h3>6.2 Configuration</h3>
     <pre>
 {
     "RdfService": {
@@ -370,10 +567,11 @@ WHERE {
 }
     </pre>
 </section>
-<section id="detailed-tech-stack">
-    <h2>8. Detailed Technology Stack Analysis</h2>
 
-    <h3>8.1 Frontend Technologies</h3>
+<section id="detailed-tech-stack">
+    <h2>7. Detailed Technology Stack Analysis</h2>
+
+    <h3>7.1 Frontend Technologies</h3>
     <div class="component-details">
         <h4>HTML5 & CSS3</h4>
         <ul>
@@ -515,297 +713,58 @@ const resultsContainer = document.getElementById('results');
         </pre>
     </div>
 
-    <h3>8.2 Backend Technologies (.NET Razor)</h3>
+    <h3>7.2 Backend Technologies (.NET Razor)</h3>
     <div class="component-details">
-        <h4>Core Components</h4>
-        <pre>
-// Example Razor Page Model
-public class PaintingsModel : PageModel
-{
-    private readonly IRdfService _rdfService;
-    private readonly ILogger<PaintingsModel> _logger;
-
-    public PaintingsModel(
-        IRdfService rdfService,
-        ILogger<PaintingsModel> logger)
-    {
-        _rdfService = rdfService;
-        _logger = logger;
-    }
-
-    public IList<Painting> Paintings { get; set; }
-
-    public async Task OnGetAsync()
-    {
-        var query = @"
-            PREFIX art: <http://example.org/artontology#>
-            SELECT ?painting ?title ?artist ?year
-            WHERE {
-                ?painting a art:Painting ;
-                         art:title ?title ;
-                         art:creator ?artist ;
-                         art:year ?year .
-            }
-            ORDER BY ?year";
-
-        Paintings = await _rdfService.ExecuteQuery<Painting>(query);
-    }
-}
-        </pre>
-
-        <h4>Dependency Injection Configuration</h4>
-        <pre>
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddRazorPages();
-    
-    // RDF Service Configuration
-    services.AddSingleton<IRdfService, RdfService>();
-    services.Configure<RdfOptions>(Configuration.GetSection("RdfService"));
-    
-    // Add CORS policy for API access
-    services.AddCors(options =>
-    {
-        options.AddPolicy("AllowSpecificOrigin",
-            builder => builder
-                .WithOrigins("http://localhost:5000")
-                .AllowAnyMethod()
-                .AllowAnyHeader());
-    });
-}
-        </pre>
+    <h4>Core Components</h4>
+    <ul>
+        <li><strong>Razor Pages:</strong> For UI rendering and data presentation</li>
+        <li><strong>Services:</strong> For business logic and data processing</li>
+        <li><strong>Models:</strong> For data structures and DTOs</li>
+        <li><strong>Configuration:</strong> For application settings and environment variables</li>
+    </ul>
+        
     </div>
 
-    <h3>8.3 RDF Service Architecture</h3>
+    <h3>7.3 RDF Service Architecture</h3>
     <div class="component-details">
-        <h4>Service Interface</h4>
-        <pre>
-public interface IRdfService
-{
-    Task<IEnumerable<T>> ExecuteQuery<T>(string sparqlQuery);
-    Task<bool> UpdateData(string updateQuery);
-    Task<IGraph> GetOntologyGraph();
-}
-        </pre>
-
-        <h4>Implementation Details</h4>
-        <pre>
-public class RdfService : IRdfService
-{
-    private readonly IOptions<RdfOptions> _options;
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<RdfService> _logger;
-
-    public RdfService(
-        IOptions<RdfOptions> options,
-        HttpClient httpClient,
-        ILogger<RdfService> logger)
-    {
-        _options = options;
-        _httpClient = httpClient;
-        _logger = logger;
-    }
-
-    public async Task<IEnumerable<T>> ExecuteQuery<T>(string sparqlQuery)
-    {
-        try
-        {
-            var endpoint = _options.Value.EndpointUrl;
-            var response = await _httpClient.PostAsync(endpoint,
-                new StringContent(sparqlQuery));
-            
-            // Process SPARQL results
-            var results = await ProcessResults<T>(response);
-            return results;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error executing SPARQL query");
-            throw;
-        }
-    }
-}
-        </pre>
-    </div>
-</section>
-
-<section id="microservices-detailed">
-    <h2>10. Microservices Implementation Details</h2>
-
-    <h3>10.1 UI Microservice Architecture</h3>
-    <div class="component-details">
-        <h4>Project Structure</h4>
-        <pre>└──
-UI/
-├── Pages/
-│   ├── Paintings/
-│   │   ├── Index.cshtml
-│   │   ├── Models.cshtml
-│   │   ├── Sculptures.cshtml
-│   │   ├── Museums.cshtml
-│   │   └── DataAnalyzer.cshtml
-└── wwwroot/
-    ├── js/
-    │   ├── 1850-1900.js
-        ├── museum-comparison.js
-        ├── sculptures.js
-        ├── site.js
-    │   └── main.js
-    └── css/
-        └── styles.css
-        </pre>
-
-        <h4>Key Components</h4>
-        <ul>
-            <li><strong>Pages:</strong> Razor Pages implementing the UI</li>
-            <li><strong>Services:</strong> Internal services for data processing</li>
-            <li><strong>Models:</strong> Data models and DTOs</li>
-            <li><strong>wwwroot:</strong> Static files and client-side resources</li>
-        </ul>
-    </div>
-
-    <h3>10.2 RDF Service Architecture</h3>
-    <div class="component-details">
-        <h4>Project Structure</h4>
-        <pre>
-ArtGallery.RdfService/
-├── Controllers/
-│   ├── RdfController.cs
-│   └── SparqlController.cs
-├── Services/
-│   ├── IRdfStore.cs
-│   └── RdfStore.cs
-├── Models/
-│   ├── RdfEntity.cs
-│   └── SparqlQuery.cs
-└── Configuration/
-    └── RdfStoreOptions.cs
-        </pre>
-
-        <h4>Service Implementation</h4>
-        <pre>
-public class RdfStore : IRdfStore
-{
-    private readonly ITripleStore _store;
-    private readonly IConfiguration _configuration;
-
-    public RdfStore(IConfiguration configuration)
-    {
-        _configuration = configuration;
-        _store = new TripleStore();
-        InitializeStore();
-    }
-
-    private void InitializeStore()
-    {
-        // Load initial RDF data
-        var graph = new Graph();
-        graph.LoadFromFile("ontology.ttl");
-        _store.Add(graph);
-    }
-
-    public async Task<IEnumerable<Triple>> QueryAsync(string sparqlQuery)
-    {
-        var results = _store.ExecuteQuery(sparqlQuery);
-        return await Task.FromResult(results);
-    }
-}
-        </pre>
+    <h4>Service Interface</h4>
+        
     </div>
 </section>
 
 <section id="ui-screenshots">
-    <h2>13. User Interface Documentation</h2>
+    <h2>8. User Interface Documentation</h2>
 
-    <h3>13.1 Models</h3>
+    <h3>8.1 Models</h3>
     <div class="component-details">
     <p>The user can query and see different types of paintings.</p>
-        <!-- Add your actual screenshot here -->
         <div class="screenshot">
-            [Screenshot: Paintings Search Interface]
-            <!-- <img src="screenshots/paintings-search.png" alt="Paintings Search Interface"> -->
+             <img src="./files/screenshot1.png" alt="Paintings Search Interface"> 
         </div>
-        <p>Key features visible in the Models page:</p>
-        <ul>
-            <li>query 1</li>
-            <li>query 2</li>
-            <li>Thumbnail previews</li>
-            <li>Quick view modal</li>
-        </ul>
+        
     </div>
 
-    <h3>13.2 Museums</h3>
+    <h3>8.2 Museums</h3>
     <div class="component-details">
         <p>The user can query and see different types of paintings.</p>
-        <!-- Add your actual screenshot here -->
         <div class="screenshot">
-            [Screenshot: Paintings Search Interface]
-            <!-- <img src="screenshots/paintings-search.png" alt="Paintings Search Interface"> -->
+            <img src="./files/screenshot2.png" alt="Museums Search Interface And Comparison">
         </div>
-        <p>Key features visible in the Models page:</p>
-        <ul>
-            <li>query 1</li>
-            <li>query 2</li>
-            <li>Thumbnail previews</li>
-            <li>Quick view modal</li>
-        </ul>
     </div>
 
-    <h3>13.3 Sculptures</h3>
+    <h3>8.3 Sculptures</h3>
     <div class="component-details">
-        <p>The user can query and see different types of paintings.</p>
-        <!-- Add your actual screenshot here -->
         <div class="screenshot">
-            [Screenshot: Paintings Search Interface]
-            <!-- <img src="screenshots/paintings-search.png" alt="Paintings Search Interface"> -->
+            <img src="./files/screenshot3.png" alt="Sculptures Search Interface">
         </div>
-        <p>Key features visible in the Models page:</p>
-        <ul>
-            <li>query 1</li>
-            <li>query 2</li>
-            <li>Thumbnail previews</li>
-            <li>Quick view modal</li>
-        </ul>
     </div>
     
-    <h3>13.4 Data Relationships Visualizations</h3>
+    <h3>8.4 Data Relationships Visualizations</h3>
     <div class="component-details">
         <!-- Add your actual screenshot here -->
         <div class="screenshot">
-            [Screenshot: Ontology Graph Visualization]
-            <!-- <img src="screenshots/ontology-viz.png" alt="Ontology Visualization"> -->
+            <img src="./files/screenshot4.png" alt="Data Relationships Visualizations">
         </div>
-        <p>The ontology visualization provides:</p>
-        <ul>
-            <li>Interactive graph navigation</li>
-            <li>Zoom and pan controls</li>
-            <li>Class hierarchy display</li>
-            <li>Property relationship visualization</li>
-        </ul>
-    </div>
-</section>
-
-<section id="sequence-diagrams">
-    <h2>14. Operation Sequence Diagrams</h2>
-
-    <h3>14.1 SPARQL Query Flow</h3>
-    <div class="sequence-diagram">
-        <!-- Add your actual sequence diagram here -->
-        [Sequence Diagram: SPARQL Query Process]
-        <!--
-        Client -> UI Service: Request Paintings
-        UI Service -> RDF Service: Execute SPARQL Query
-        RDF Service -> Triple Store: Query Data
-        Triple Store -> RDF Service: Return Results
-        RDF Service -> UI Service: Process Results
-        UI Service -> Client: Display Results
-        -->
-    </div>
-
-    <h3>14.2 Data Update Flow</h3>
-    <div class="sequence-diagram">
-        <!-- Add your actual sequence diagram here -->
-        [Sequence Diagram: RDF Data Update Process]
     </div>
 </section>
 
