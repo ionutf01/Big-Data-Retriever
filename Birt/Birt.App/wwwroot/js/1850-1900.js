@@ -12,7 +12,7 @@ async function fetchLabel(wikidataId) {
     const data = await response.json();
     return data.results.bindings[0]?.label?.value || wikidataId;
 }
-async function fetchWithRetry(url, options = {}, retries = 3, backoff = 300) {
+export async function fetchWithRetry(url, options = {}, retries = 3, backoff = 300) {
     try {
         const response = await fetch(url, options);
         if (!response.ok) {
@@ -135,6 +135,9 @@ async function getInfluencesBetween1850and1900() {
 }
 
 function displayInfluencesBetween1850and1900(data) {
+    // show loading spinner
+    const loadingIndicator = document.getElementById('loading');
+    loadingIndicator.style.display = 'block'; // Show loading indicator
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = "<h2>Painters born 1850-1900 and their influences</h2>";
 
@@ -184,7 +187,11 @@ function displayInfluencesBetween1850and1900(data) {
 
         table.appendChild(row);
     });
+    
+    loadingIndicator.style.display = 'none';
 
+    document.getElementById("exportCsv").style.display = 'inline-block';
+    document.getElementById("exportHtml").style.display = 'inline-block';
     resultsContainer.appendChild(table);
 }
 

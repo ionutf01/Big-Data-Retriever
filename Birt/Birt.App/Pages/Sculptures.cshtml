@@ -16,8 +16,7 @@
     <option value="famous">List of Famous Sculptures</option>
     <option value="specific-artist">Sculptures by a Specific Artist</option>
     <option value="specific-museum">Sculptures in a Specific Museum</option>
-    <option value="historical">Historical Sculptures</option>
-    <option value="material">Sculptures by Material</option>
+    <option value="specific-material">Sculptures by a Specific Material</option>
     <option value="period">Sculptures from a Specific Period</option>
 
 </select>
@@ -32,10 +31,21 @@
     <img class="modal-content" id="img01">
     <div id="caption"></div>
 </div>
-
+<div id="loading" style="display: none;">
+    <div class="spinner"></div>
+    Loading data...
+</div>
 
 <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
 <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
+<button id="exportPeriodCsv" class="export-button" style="display: none;">Export CSV</button>
+<button id="exportPeriodHtml" class="export-button" style="display: none;">Export HTML</button>
+<button id="exportArtistsCsv" class="export-button" style="display: none;">Export CSV</button>
+<button id="exportArtistsHtml" class="export-button" style="display: none;">Export HTML</button>
+<button id="exportMuseumsCsv" class="export-button" style="display: none;">Export CSV</button>
+<button id="exportMuseumsHtml" class="export-button" style="display: none;">Export HTML</button>
+<button id="exportMaterialCsv" class="export-button" style="display: none;">Export CSV</button>
+<button id="exportMaterialHtml" class="export-button" style="display: none;">Export HTML</button>
 
 <form id="specificArtistForm" method="get" style="display: none;">
     <div class="form-group">
@@ -62,6 +72,58 @@
     </div>
 </form>
 
+<form id="specificMuseumForm" method="get" style="display: none;">
+    <div class="form-group">
+        <label for="museum">Select Museum:</label>
+        <select id="museum" name="museum" class="form-control">
+            <option value="">-- Select Museum --</option>
+            <option value="Q19675">The Louvre (Paris, France)</option>
+            <option value="Q182955">Vatican Museums (Vatican City)</option>
+            <option value="Q160112">Museo Nacional del Prado (Madrid, Spain)</option>
+            <option value="Q6373">The British Museum (London, UK)</option>
+            <option value="Q2019741">deCordova Museum and Sculpture Park (Lincoln, Massachusetts)</option>
+            <option value="Q160236">The Metropolitan Museum of Art (New York, USA)</option>
+            <option value="Q239303">The Art Institute of Chicago (Chicago, USA)</option>
+            <option value="Q731126">The J Paul Getty Museum (Los Angeles, CA, USA)</option>
+            <option value="Q1074318">The National Museum of China (Beijing, China)</option>
+            <option value="Q1338832">The National Gallery of Modern Art (New Delhi, India)</option>
+            <option value="Q653433">Tokyo National Museum (Tokyo, Japan)</option>
+            <option value="Q1463961">Istanbul Modern (Istanbul, Turkey)</option>
+            <option value="Q82941">Museu de Arte de São Paulo (São Paulo, Brazil)</option>
+            <option value="Q28003638">Zeitz MOCAA (Cape Town, South Africa)</option>
+        </select>
+    </div>
+</form>
+
+<form id="specificMaterialForm" method="get" style="display: none;">
+    <div class="form-group">
+        <label for="material">Select Material:</label>
+        <select id="material" name="material" class="form-control">
+            <option value="">-- Select Material --</option>
+            <option value="Q45621">ceramic</option>
+            <option value="Q34095">bronze</option>
+            <option value="Q753">copper</option>
+            <option value="Q929186">gold leaf</option>
+            <option value="Q40861">marble</option>
+            <option value="Q11469">glass</option>
+            <option value="Q22657">concrete</option>
+            <option value="Q82001">ivory</option>
+            <option value="Q23757">limestone</option>
+            <option value="Q33526">stucco</option>
+            <option value="Q43010">quartz</option>
+            <option value="Q11427">steel</option>
+            <option value="Q184190">reinforced concrete</option>
+            <option value="Q180884">onyx</option>
+            <option value="Q2075708">oakwood</option>
+            <option value="Q207079">slate</option>
+            <option value="Q677">iron</option>
+            <option value="Q283">water</option>
+            <option value="Q8063">rock</option>
+        </select>
+    </div>
+</form>
+
+
 
 <form id="periodForm" method="get" style="display: none;">
     <div class="form-group">
@@ -78,7 +140,7 @@
 <h2>Results</h2>
 <ul id="results"></ul>
 <script type="module">
-    import { getAllSculptures, toggleCriteriaForm, handleQuery, exportTableToCSV, exportTableToHTML, getSpecificArtistSculptures, getSculpturesByPeriod } from '/js/sculptures.js';
+    import { getAllSculptures, toggleCriteriaForm, handleQuery, exportTableToCSV, exportTableToHTML, getSpecificArtistSculptures, getSculpturesByPeriod, getSpecificMuseumSculptures, getSpecificMaterialSculptures } from '/js/sculptures.js';
     document.addEventListener('DOMContentLoaded', (event) => {
         const queryDropdown = document.getElementById("queryDropdown");
         queryDropdown.addEventListener("change", () => {
@@ -88,22 +150,102 @@
     
         document.getElementById("allsculptures").addEventListener("click", () => {
             getAllSculptures();
-            document.getElementById("exportCsv").style.display = 'inline-block';
-            document.getElementById("exportHtml").style.display = 'inline-block';
+            document.getElementById("exportCsv").style.display = "inline-block";
+            document.getElementById("exportHtml").style.display = "inline-block";
         });
-    
-        document.getElementById("specificArtistForm").addEventListener('submit', (event) => {
-            event.preventDefault();
-            getSpecificArtistSculptures(event).then(() => {
-                document.getElementById("exportCsv").style.display = 'inline-block';
-                document.getElementById("exportHtml").style.display = 'inline-block';
-            });
-        });
-    
+        // get chosen artist option
+        const artist = document.getElementById("artist");
+        const museum = document.getElementById("museum");
+        const material = document.getElementById("material");
+        
         document.getElementById("artist").addEventListener("change", (event) => {
             getSpecificArtistSculptures(event);
+            document.getElementById("exportMuseumsCsv").style.display = "none";
+            document.getElementById("exportMuseumsHtml").style.display = "none";
+            document.getElementById("exportArtistsCsv").style.display = "inline-block";
+            document.getElementById("exportArtistsHtml").style.display = "inline-block";
         });
-    
+
+        document.getElementById("museum").addEventListener("change", (event) => {
+            getSpecificMuseumSculptures(event);
+            document.getElementById("exportArtistsCsv").style.display = "none";
+            document.getElementById("exportArtistsHtml").style.display = "none";
+            document.getElementById("exportMaterialCsv").style.display = "none";
+            document.getElementById("exportMaterialHtml").style.display = "none";
+            document.getElementById("exportMuseumsCsv").style.display = "inline-block";
+            document.getElementById("exportMuseumsHtml").style.display = "inline-block";
+        });
+
+        document.getElementById("material").addEventListener("change", (event) => {
+            getSpecificMaterialSculptures(event);
+            document.getElementById("exportMuseumsCsv").style.display = "none";
+            document.getElementById("exportMuseumsHtml").style.display = "none";
+            document.getElementById("exportArtistsCsv").style.display = "none";
+            document.getElementById("exportArtistsHtml").style.display = "none";
+            document.getElementById("exportMaterialCsv").style.display = "inline-block";
+            document.getElementById("exportMaterialHtml").style.display = "inline-block";
+        });
+        
+        document.getElementById("exportArtistsCsv").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as CSV?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const artistName = artist.options[artist.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}_${artistName}.csv`;
+                exportTableToCSV(filename);
+            }
+        });
+        
+        document.getElementById("exportArtistsHtml").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as HTML?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const museumName = artist.options[artist.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}_${museumName}.html`;
+                exportTableToHTML(filename);
+            }
+        });
+
+        document.getElementById("exportMuseumsCsv").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as CSV?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const artistName = museum.options[museum.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}_${artistName}.csv`;
+                exportTableToCSV(filename);
+            }
+        });
+
+        document.getElementById("exportMuseumsHtml").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as HTML?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const museumName = museum.options[museum.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}_${museumName}.html`;
+                exportTableToHTML(filename);
+            }
+        });
+
+        document.getElementById("exportMaterialCsv").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as CSV?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const artistName = material.options[material.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}_${artistName}.csv`;
+                exportTableToCSV(filename);
+            }
+        });
+
+        document.getElementById("exportMaterialHtml").addEventListener("click", () => {
+            if (confirm("Do you want to download the results as HTML?")) {
+                const dropdown = document.getElementById("queryDropdown");
+                const selectedOption = dropdown.options[dropdown.selectedIndex].text;
+                const museumName = material.options[material.selectedIndex].text;
+                const filename = `${selectedOption.replace(/\s+/g, '_').toLowerCase()}_${museumName}.html`;
+                exportTableToHTML(filename);
+            }
+        });
+
         document.getElementById("exportCsv").addEventListener("click", () => {
             if (confirm("Do you want to download the results as CSV?")) {
                 const dropdown = document.getElementById("queryDropdown");
@@ -112,7 +254,7 @@
                 exportTableToCSV(filename);
             }
         });
-    
+
         document.getElementById("exportHtml").addEventListener("click", () => {
             if (confirm("Do you want to download the results as HTML?")) {
                 const dropdown = document.getElementById("queryDropdown");
@@ -122,7 +264,7 @@
             }
         });
     });
-    
+
     document.getElementById("periodForm").addEventListener("submit", async (event) => {
         event.preventDefault();
         const startDate = document.getElementById("startDate").value;
@@ -132,14 +274,18 @@
             alert("Please select both start and end dates.");
             return;
         }
-
+        
         getSculpturesByPeriod(startDate, endDate).then(() => {
+            document.getElementById("exportMuseumsCsv").style.display = "none";
+            document.getElementById("exportMuseumsHtml").style.display = "none";
+            document.getElementById("exportArtistsCsv").style.display = "none";
+            document.getElementById("exportArtistsHtml").style.display = "none";
+            document.getElementById("exportMaterialCsv").style.display = "none";
+            document.getElementById("exportMaterialHtml").style.display = "none";
             document.getElementById("exportCsv").style.display = "inline-block";
             document.getElementById("exportHtml").style.display = "inline-block";
         });
     });
-
-
 </script>
 </body>
 </html>
