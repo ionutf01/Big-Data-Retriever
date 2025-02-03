@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Deliverables - BIRT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px 0;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📦 Project Deliverables</h1>
+        <p>This page lists all deliverables related to the **Big Data Retriever (BIRT) project**.</p>
+
+        <h2>📝 Project Proposal</h2>
+        <p>The initial project proposal outlines the objectives and expected outcomes of BIRT.</p>
+        <ul>
+            <li>📜 <a href="files/project_proposal.pdf">Download Proposal (PDF)</a></li>
+        </ul>
+
+        <h2>📊 Architecture Diagram</h2>
+        <p>The system architecture diagram represents the structure and data flow of BIRT.</p>
+        <img src="files/architecture_diagram.png" alt="Architecture Diagram">
+        <p>📥 <a href="files/architecture_diagram.png" download>Download Diagram</a></p>
+
+        <h2>🔍 Sample SPARQL Query</h2>
+        <p>Example of a SPARQL query used to fetch artists influenced by Van Gogh:</p>
+        <pre>
+SELECT DISTINCT ?artist ?artistLabel WHERE {
+    ?artist wdt:P737 wd:Q5582.
+    ?artist wdt:P106 wd:Q1028181.
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+        </pre>
+        <p>📥 <a href="files/sample_sparql_query.txt" download>Download SPARQL Query</a></p>
+
+        <h2>🖼️ Screenshots</h2>
+        <p>Screenshots of the current implementation:</p>
+        <img src="files/screenshot1.png" alt="Screenshot 1">
+        <p>📥 <a href="files/screenshot1.png" download>Download Screenshot</a></p>
+        <img src="files/screenshot3.png" alt="Screenshot 2">
+        <p>📥 <a href="files/screenshot3.png" download>Download Screenshot</a></p>
+        <img src="files/screenshot2.png" alt="Screenshot 3">
+        <p>📥 <a href="files/screenshot2.png" download>Download Screenshot</a></p>
+        <h2>📅 Future Deliverables</h2>
+        <ul>
+            <li>📄 <strong>Final Report</strong> (To be added)</li>
+            <li>📊 <strong>Final Presentation</strong> (To be added)</li>
+        </ul>
+
+        <hr>
+        <p><em>Last updated: 3rd February 2025</em></p>
+        <a href="index.html" class="back-link">⬅ Back to Home</a>
+    </div>
+</body>
+
+</html>

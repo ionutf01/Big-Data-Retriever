@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Documentation - BIRT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px 0;
+        }
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚙️ Technical Documentation</h1>
+        <p>This page provides an overview of the BIRT project's architecture and data retrieval methods.</p>
+
+        <h2>🏗️ Architecture Overview</h2>
+        <p><strong>BIRT</strong> is a <strong>web-based platform</strong> built using:</p>
+        <ul>
+            <li><strong>Frontend & Backend:</strong> ASP.NET Core (Razor Pages)</li>
+            <li><strong>Client-side scripting:</strong> JavaScript (fetching data directly from Wikidata)</li>
+            <li><strong>Data Source:</strong> Wikidata SPARQL endpoint (queried directly from JavaScript)</li>
+        </ul>
+
+        <h2>🔌 How Data is Retrieved</h2>
+        <p>BIRT uses <strong>SPARQL queries</strong> to fetch data from <strong>Wikidata</strong>, making direct requests via JavaScript.</p>
+
+        <h3>Example Query (Fetching Artists Influenced by Van Gogh)</h3>
+        <div class="code-block">
+            <code>
+const artistsQuery = `
+    SELECT DISTINCT ?artist ?artistLabel WHERE {
+        ?artist wdt:P737 wd:Q5582.  # Influenced by Van Gogh (Q5582)
+        ?artist wdt:P106 wd:Q1028181.  # Occupation: painter
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+    }
+`;
+const artistsUrl = "https://query.wikidata.org/sparql?query=" + encodeURIComponent(artistsQuery);
+
+async function fetchArtists() {
+    try {
+        const response = await fetch(artistsUrl, {
+            headers: { 'Accept': 'application/sparql-results+json' }
+        });
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+fetchArtists();
+            </code>
+        </div>
+
+        <h2>🚀 Setup Guide</h2>
+        <p>To run the project locally, follow these steps:</p>
+        <div class="code-block">
+            <code>
+git clone https://github.com/ionutf01/Big-Data-Retriever.git
+cd birt-project
+dotnet run
+            </code>
+        </div>
+        <p>Ensure you have:</p>
+        <ul>
+            <li>✅ <strong>.NET SDK installed</strong> (version 9.0)</li>
+            <li>✅ A working <strong>internet connection</strong> (for SPARQL queries)</li>
+        </ul>
+
+        <hr>
+        <p><em>Last updated: 3rd February 2025</em></p>
+        <a href="index.html" class="back-link">⬅ Back to Home</a>
+    </div>
+</body>
+</html>

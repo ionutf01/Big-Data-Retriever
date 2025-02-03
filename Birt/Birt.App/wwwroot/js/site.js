@@ -567,7 +567,7 @@ function displayArtistsInfluencedByVanGogh(data) {
         table.appendChild(row);
     });
 
-    loadingIndicator.style.display = 'none'; // Hide loading indicator
+    // loadingIndicator.style.display = 'none'; // Hide loading indicator
     document.getElementById("exportCsv").style.display = 'inline-block';
     document.getElementById("exportHtml").style.display = 'inline-block';
     container.appendChild(table);
@@ -737,34 +737,41 @@ async function fetchMessage(property) {
         // You can also update the DOM or perform other actions with the message
     }
 }
+let isTableView = true; // Variabilă globală pentru a urmări starea vizualizării
+// let lastData = null; // Stochează ultima interogare
 
 window.toggleView = function () {
+    console.log("Toggling view..."); // Debugging
     isTableView = !isTableView;
     document.getElementById("toggleView").textContent = isTableView ? "See Cards" : "See Table";
+
     if (lastData) {
         displayResultsPaintings(lastData);
     }
 };
+
 window.displayResultsPaintings = function (data) {
     lastData = data;
     const resultsContainer = document.getElementById('results');
-    resultsContainer.innerHTML = '';
+    resultsContainer.innerHTML = ''; // Curățare anterioară
 
     if (isTableView) {
+        console.log("Displaying table..."); // Debugging
         displayTable(data, resultsContainer);
     } else {
-        displayCards(data, resultsContainer);
+        console.log("Displaying cards..."); // Debugging
+        displayCards(data);
     }
 };
 
-let isTableView = true; // Variabilă globală pentru a urmări starea vizualizării
 
-export function toggleView() {
-    console.log("Toggling view..."); // Debugging
-    let isTableView = true;
-    isTableView = !isTableView;
-    document.getElementById("toggleView").textContent = isTableView ? "See Cards" : "See Table";
-}
+
+// export function toggleView() {
+//     console.log("Toggling view..."); // Debugging
+//     let isTableView = true;
+//     isTableView = !isTableView;
+//     document.getElementById("toggleView").textContent = isTableView ? "See Cards" : "See Table";
+// }
 
 
 let lastData = null; // Variabilă pentru a stoca ultima interogare de date
@@ -777,7 +784,7 @@ function displayResultsPaintings(data) {
     loadingIndicator.style.display = 'block'; 
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Curăță rezultatele anterioare
-
+    loadingIndicator.style.display = 'none'; 
     if (isTableView) {
         displayTable(data, resultsContainer);
     } else {
@@ -789,7 +796,7 @@ function displayTable(data, container) {
     const table = document.createElement('table');
     table.style.width = '100%';
     table.style.borderCollapse = 'collapse';
-
+    console.log("Appending table to container:", container);
     // Antet tabel
     const headerRow = document.createElement('tr');
     const headers = ['Image', 'Title', 'Painter', 'Museum'];
@@ -871,13 +878,23 @@ function displayTable(data, container) {
     });
 
     container.appendChild(table);
+    document.getElementById("exportCsv").style.display = 'inline-block';
+    document.getElementById("exportHtml").style.display = 'inline-block';
 }
 
-function displayCards(data, container) {
+function displayCards(data) {
+    
+    console.log("DATA IN DISPLAY CARDS", data);
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Curăță rezultatele anterioare
+    console.log("resultsContainer", resultsContainer);
     const grid = document.createElement('div');
     grid.style.display = 'grid';
     grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
     grid.style.gap = '16px';
+
+    // const loadingIndicator = document.getElementById('loading');
+    // loadingIndicator.style.display = 'block';
 
     data.results.bindings.forEach(item => {
         if (!item.workImage || !item.workImage.value) return;
@@ -946,13 +963,13 @@ function displayCards(data, container) {
         grid.appendChild(card);
     });
 
-    container.appendChild(grid);
+    resultsContainer.appendChild(grid);
 
-    loadingIndicator.style.display = 'none';
+    // loadingIndicator.style.display = 'none';
     document.getElementById("exportCsv").style.display = 'inline-block';
     document.getElementById("exportHtml").style.display = 'inline-block';
-    resultsContainer.appendChild(table);
 }
+
 
 
 export function openModal(src, alt) {
