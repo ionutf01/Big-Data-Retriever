@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Technical documentation for the Art Gallery RDF Application">
+    <meta name="author" content="ionutf01">
+    <meta name="last-modified" content="2025-02-03 20:41:47">
     <title>Art Gallery RDF Application - Technical Documentation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style_scholarly.css">
@@ -106,12 +109,9 @@ Project Structure:
     <h3>3.2 RDF Service</h3>
     <div class="api-endpoint">
         <h4>Main Endpoints:</h4>
-        <code>
-            GET /api/rdf/paintings
-            GET /api/rdf/museums
-            GET /api/rdf/sculptures
-            GET /api/rdf/ontology
-        </code>
+        <pre>
+GET /rdf/{property}
+POST /rdf/validate</pre>
     </div>
 </section>
 
