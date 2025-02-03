@@ -45,14 +45,14 @@
 </form>
 
 
-<div id="results">
+<div id="comparison-results">
     <h2>Results</h2>
     <div>
         <button id="hideTableBtn" class="btn btn-secondary" style="display: none;" onclick="toggleResultsTable()">Hide Table</button>
         <button id="exportCsv" class="export-button" style="display: none;">Export CSV</button>
         <button id="exportHtml" class="export-button" style="display: none;">Export HTML</button>
     </div>
-    <table class="table" id="resultsTable" style="display: none;">
+    <table class="table" id="comparisonResultsTable" style="display: none;">
         <thead>
         <tr>
             <th>Painting</th>
@@ -60,10 +60,10 @@
             <th>Museum</th>
         </tr>
         </thead>
-        <tbody id="resultsBody">
+        <tbody id="comparisonResultsBody">
         </tbody>
     </table>
-    <p id="noResults" style="display: none;">No results found.</p>
+    <p id="noComparisonResults" style="display: none;">No results found.</p>
 </div>
 
 <hr />
@@ -212,19 +212,19 @@
     const exportCsvBtnComparePaintings = document.getElementById("exportCsv");
     const exportHtmlBtnComparePaintings = document.getElementById("exportHtml");
     window.toggleResultsTable = function () {
-        const resultsTable = document.getElementById("resultsTable");
+        const resultsTable = document.getElementById("comparisonResultsTable");
         const hideTableBtn = document.getElementById("hideTableBtn");
 
         if (resultsTable.style.display === "none") {
             resultsTable.style.display = "table";
             hideTableBtn.textContent = "Hide Table";
-            exportCsvBtnComparePaintings.style.display = "inline-block";
-            exportHtmlBtnComparePaintings.style.display = "inline-block";
+            document.getElementById("exportCsv").style.display = "inline-block";
+            document.getElementById("exportHtml").style.display = "inline-block";
         } else {
             resultsTable.style.display = "none";
             hideTableBtn.textContent = "Show Table";
-            exportCsvBtnComparePaintings.style.display = "none";
-            exportHtmlBtnComparePaintings.style.display = "none";
+            document.getElementById("exportCsv").style.display = "none";
+            document.getElementById("exportHtml").style.display = "none";
         }
     };
 

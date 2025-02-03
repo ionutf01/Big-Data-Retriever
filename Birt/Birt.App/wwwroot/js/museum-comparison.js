@@ -14,9 +14,9 @@ export async function fetchComparisonResults(event) {
 
     const museum = document.getElementById("museum").value;
     const artist = document.getElementById("artist").value;
-    const resultsTable = document.getElementById("resultsTable");
-    const resultsBody = document.getElementById("resultsBody");
-    const noResults = document.getElementById("noResults");
+    const resultsTable = document.getElementById("comparisonResultsTable");
+    const resultsBody = document.getElementById("comparisonResultsBody");
+    const noResults = document.getElementById("noComparisonResults");
     const hideTableBtn = document.getElementById("hideTableBtn");
 
     if (!museum || !artist) {
@@ -25,8 +25,8 @@ export async function fetchComparisonResults(event) {
     }
 
     const filterCondition = notMode
-        ? `FILTER (?museum != wd:${museum})`  
-        : `FILTER (?museum = wd:${museum})`; 
+        ? `FILTER (?museum != wd:${museum})`
+        : `FILTER (?museum = wd:${museum})`;
 
     const sparqlQuery = `
         PREFIX wd: <http://www.wikidata.org/entity/>
@@ -63,7 +63,7 @@ export async function fetchComparisonResults(event) {
         if (results.length > 0) {
             resultsTable.style.display = "table";
             noResults.style.display = "none";
-            hideTableBtn.style.display = "inline-block"; // Show Hide Table button
+            hideTableBtn.style.display = "inline-block";
 
             results.forEach(result => {
                 const row = document.createElement("tr");
@@ -74,9 +74,9 @@ export async function fetchComparisonResults(event) {
                     img.src = result.image.value;
                     img.alt = result.title.value;
                     img.style.maxWidth = "100px";
-                    img.style.cursor = 'pointer'; // Change cursor to pointer
+                    img.style.cursor = 'pointer';
                     img.addEventListener('click', () => {
-                        openModal(img.src, img.alt); // Open the modal with the clicked image
+                        openModal(img.src, img.alt);
                     });
                     imageCell.appendChild(img);
                 }
