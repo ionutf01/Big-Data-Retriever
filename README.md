@@ -21,5 +21,9 @@ Welcome to the **BIRT (Big Data Retriever) Wiki**, a project developed as part o
 ## 🚀 Repository
 The source code for **BIRT** is available [here](https://github.com/ionutf01/Big-Data-Retriever).
 
+## 🚀🚀🚀 Deployment
+The application is publicly available on https://birt-webapp-latest.onrender.com.
+It is deployed using 2 docker images, one for the main UI Application and one for the RDF Service.
+
 ---
 *This wiki is actively maintained. Last updated: `{{date}}`*
