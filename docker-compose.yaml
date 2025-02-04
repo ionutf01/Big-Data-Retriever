@@ -1,0 +1,28 @@
+services:
+  webapp:
+    build:
+      context: ./Birt
+      dockerfile: Dockerfile.webapp
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - RdfServiceUrl=http://rdfapi:80
+    depends_on:
+      - rdfapi
+
+  rdfapi:
+    build:
+      context: ./Birt
+      dockerfile: Dockerfile.rdfapi
+    ports:
+      - "5242:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - AllowedOrigins=http://localhost:8080
+
+networks:
+  default:
+    driver: bridge
