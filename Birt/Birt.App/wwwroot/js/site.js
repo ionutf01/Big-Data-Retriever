@@ -729,7 +729,7 @@ async function displayInfluencedByGogh() {
     }
 }
 async function fetchMessage(property) {
-    const response = await fetch('http://localhost:5242/rdf/' + property);
+    const response = await fetch(`${window.config.rdfServiceUrl}/rdf/` + property);
     if (response.ok) {
         const message = await response.text();
         console.log(message); // Output the message to the console
