@@ -12,11 +12,7 @@ Welcome to the **BIRT (Big Data Retriever) Wiki**, a project developed as part o
 - Implements **real-world use cases** related to **art, paintings, museums, and sculptures**, allowing users to analyze and compare artistic works across different institutions.
 
 ## 📖 Contents
-- [📈 Project Progress](progress.md)
-- [⚙️ Technical Documentation](technical.md)
-- [📦 Project Deliverables](deliverables.md)
-- [🤝 Contribution Guidelines](contribution.md)
-- [📚 References & Resources](references.md)
+The wiki for our project can be found [here](https://ionutf01.github.io/Big-Data-Retriever).
 
 ## 🚀 Repository
 The source code for **BIRT** is available [here](https://github.com/ionutf01/Big-Data-Retriever).
