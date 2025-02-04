@@ -40,5 +40,11 @@ app.MapControllers();
 app.MapDefaultControllerRoute();
 
 app.MapRazorPages();
-
+app.MapGet("/api/config", (IConfiguration configuration) =>
+{
+    return Results.Ok(new
+    {
+        rdfServiceUrl = configuration["RdfServiceUrl"]
+    });
+});
 app.Run();

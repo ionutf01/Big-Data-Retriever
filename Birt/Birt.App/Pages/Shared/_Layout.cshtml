@@ -56,6 +56,13 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/main.js" asp-append-version="true"></script>
+<script>
+    fetch('/api/config')
+    .then(response => response.json())
+    .then(config => {
+        window.config = config;
+    });
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

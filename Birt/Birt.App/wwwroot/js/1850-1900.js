@@ -107,7 +107,7 @@ async function validateSparqlResults(sparqlResults) {
 
     const requestBody = JSON.stringify({ queryResults: transformedResults });
     try {
-        const response = await fetch('http://localhost:5242/rdf/validate', {
+        const response = await fetch(`${window.config.rdfServiceUrl}/rdf/validate`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -218,7 +218,7 @@ export function openReportModal(validationResults) {
     // Show the modal
     modal.style.display = 'block';
 }
-document.querySelector('.close').addEventListener('click', closeReportModal);
+// document.querySelector('.close').addEventListener('click', closeReportModal);
 // Event listener for closing the modal when clicking outside of it
 window.onclick = function(event) {
     const modal = document.getElementById('validationReportModal');
