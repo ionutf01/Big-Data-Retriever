@@ -175,8 +175,7 @@ async function displaySculptureResults(data) {
     resultsContainer.innerHTML = ''; // Clear previous results
 
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    table.classList.add('data-table');
 
     // Add headers for the table
     const headerRow = document.createElement('tr');
@@ -184,10 +183,6 @@ async function displaySculptureResults(data) {
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
         headerRow.appendChild(header);
     });
     table.appendChild(headerRow);
@@ -200,7 +195,6 @@ async function displaySculptureResults(data) {
         noResultsCell.colSpan = headers.length;
         noResultsCell.textContent = 'No results found.';
         noResultsCell.style.textAlign = 'center';
-        noResultsCell.style.padding = '8px';
         noResultsRow.appendChild(noResultsCell);
         table.appendChild(noResultsRow);
     } else {
@@ -214,8 +208,6 @@ async function displaySculptureResults(data) {
 
                     // Image column
                     const imgCell = document.createElement('td');
-                    imgCell.style.border = '1px solid #ddd';
-                    imgCell.style.padding = '8px';
                     const img = document.createElement('img');
                     img.src = item.image.value;
                     img.alt = title;
@@ -231,8 +223,6 @@ async function displaySculptureResults(data) {
 
                     // Title column
                     const titleCell = document.createElement('td');
-                    titleCell.style.border = '1px solid #ddd';
-                    titleCell.style.padding = '8px';
                     const link = document.createElement('a');
                     const sculptureId = item.sculpture.value.split('/').pop();
                     link.href = `https://www.wikidata.org/wiki/${sculptureId}`;
@@ -244,8 +234,6 @@ async function displaySculptureResults(data) {
 
                     // Creation Date column
                     const creationDateCell = document.createElement('td');
-                    creationDateCell.style.border = '1px solid #ddd';
-                    creationDateCell.style.padding = '8px';
                     creationDateCell.textContent = item.creationDate ? item.creationDate.value : 'N/A';
                     row.appendChild(creationDateCell);
 
