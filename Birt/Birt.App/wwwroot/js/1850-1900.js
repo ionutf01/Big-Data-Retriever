@@ -238,18 +238,13 @@ async function displayInfluencesBetween1850and1900(data) {
     resultsContainer.innerHTML = "<h2>Painters born 1850-1900 and their influences</h2>";
 
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    table.classList.add('data-table');
 
     const headerRow = document.createElement('tr');
     const headers = ['Artist', 'Birth Date', 'Influence', 'Influence Type'];
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
         headerRow.appendChild(header);
     });
     table.appendChild(headerRow);
@@ -258,26 +253,18 @@ async function displayInfluencesBetween1850and1900(data) {
         const row = document.createElement('tr');
 
         const artistCell = document.createElement('td');
-        artistCell.style.border = '1px solid #ddd';
-        artistCell.style.padding = '8px';
         artistCell.textContent = item.artistLabel.value;
         row.appendChild(artistCell);
 
         const birthDateCell = document.createElement('td');
-        birthDateCell.style.border = '1px solid #ddd';
-        birthDateCell.style.padding = '8px';
         birthDateCell.textContent = item.birthDate.value.split('T')[0];
         row.appendChild(birthDateCell);
 
         const influenceCell = document.createElement('td');
-        influenceCell.style.border = '1px solid #ddd';
-        influenceCell.style.padding = '8px';
         influenceCell.textContent = item.influenceLabel.value;
         row.appendChild(influenceCell);
 
         const influenceTypeCell = document.createElement('td');
-        influenceTypeCell.style.border = '1px solid #ddd';
-        influenceTypeCell.style.padding = '8px';
         influenceTypeCell.textContent = item.influenceTypeLabel.value;
         row.appendChild(influenceTypeCell);
 

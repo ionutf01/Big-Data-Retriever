@@ -484,8 +484,7 @@ function displayArtistsInfluencedByVanGogh(data) {
     container.innerHTML = ''; // Clear previous results
 
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    table.classList.add('data-table');
 
     // Add headers for the table
     const headerRow = document.createElement('tr');
@@ -493,10 +492,6 @@ function displayArtistsInfluencedByVanGogh(data) {
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
         headerRow.appendChild(header);
     });
     table.appendChild(headerRow);
@@ -521,8 +516,6 @@ function displayArtistsInfluencedByVanGogh(data) {
 
         // Artist column
         const artistCell = document.createElement('td');
-        artistCell.style.border = '1px solid #ddd';
-        artistCell.style.padding = '8px';
         const artistLink = document.createElement('a');
         artistLink.href = `https://www.wikidata.org/wiki/${artistId}`;
         artistLink.target = '_blank';
@@ -533,8 +526,6 @@ function displayArtistsInfluencedByVanGogh(data) {
 
         // Work column
         const workCell = document.createElement('td');
-        workCell.style.border = '1px solid #ddd';
-        workCell.style.padding = '8px';
         if (workId) {
             const workLink = document.createElement('a');
             workLink.href = `https://www.wikidata.org/wiki/${workId}`;
@@ -549,8 +540,6 @@ function displayArtistsInfluencedByVanGogh(data) {
 
         // Image column
         const imgCell = document.createElement('td');
-        imgCell.style.border = '1px solid #ddd';
-        imgCell.style.padding = '8px';
         const img = document.createElement('img');
         img.src = workImage;
         img.alt = work;
@@ -598,18 +587,13 @@ function displayResults(data) {
     resultsContainer.innerHTML = ''; // Clear previous results
 
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    table.classList.add('data-table');
 
     const headerRow = document.createElement('tr');
     const headers = ['Image', 'Title', 'Painter'];
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
         headerRow.appendChild(header);
     });
     table.appendChild(headerRow);
@@ -622,8 +606,6 @@ function displayResults(data) {
         const row = document.createElement('tr');
 
         const imgCell = document.createElement('td');
-        imgCell.style.border = '1px solid #ddd';
-        imgCell.style.padding = '8px';
         const img = document.createElement('img');
         img.src = item.workImage.value;
         img.alt = item.workLabel ? item.workLabel.value : 'Image';
@@ -638,8 +620,6 @@ function displayResults(data) {
         row.appendChild(imgCell);
 
         const titleCell = document.createElement('td');
-        titleCell.style.border = '1px solid #ddd';
-        titleCell.style.padding = '8px';
         const link = document.createElement('a');
         const workId = item.work.value.split('/').pop();
         link.href = `https://www.wikidata.org/wiki/${workId}`;
@@ -650,8 +630,6 @@ function displayResults(data) {
         row.appendChild(titleCell);
 
         const painterCell = document.createElement('td');
-        painterCell.style.border = '1px solid #ddd';
-        painterCell.style.padding = '8px';
         const painterLink = document.createElement('a');
         const painterId = item.artist.value.split('/').pop();
         painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
@@ -784,8 +762,7 @@ function displayResultsPaintings(data) {
 
 function displayTable(data, container) {
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    table.classList.add('data-table');
     console.log("Appending table to container:", container);
     // Antet tabel
     const headerRow = document.createElement('tr');
@@ -793,10 +770,6 @@ function displayTable(data, container) {
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
         headerRow.appendChild(header);
     });
     table.appendChild(headerRow);
@@ -808,8 +781,6 @@ function displayTable(data, container) {
 
         // Coloana Imagine
         const imgCell = document.createElement('td');
-        imgCell.style.border = '1px solid #ddd';
-        imgCell.style.padding = '8px';
         const img = document.createElement('img');
         img.src = item.workImage.value;
         img.alt = item.workLabel ? item.workLabel.value : 'Image';
@@ -823,8 +794,6 @@ function displayTable(data, container) {
 
         // Coloana Titlu
         const titleCell = document.createElement('td');
-        titleCell.style.border = '1px solid #ddd';
-        titleCell.style.padding = '8px';
         const link = document.createElement('a');
         const workId = item.work.value.split('/').pop();
         link.href = `https://www.wikidata.org/wiki/${workId}`;
@@ -836,8 +805,6 @@ function displayTable(data, container) {
 
         // Coloana Pictor
         const painterCell = document.createElement('td');
-        painterCell.style.border = '1px solid #ddd';
-        painterCell.style.padding = '8px';
         const painterLink = document.createElement('a');
         const painterId = item.artist.value.split('/').pop();
         painterLink.href = `https://www.wikidata.org/wiki/${painterId}`;
@@ -849,8 +816,6 @@ function displayTable(data, container) {
 
         // Coloana Muzeu
         const museumCell = document.createElement('td');
-        museumCell.style.border = '1px solid #ddd';
-        museumCell.style.padding = '8px';
         if (item.museum && item.museumLabel) {
             const museumLink = document.createElement('a');
             const museumId = item.museum.value.split('/').pop();

@@ -1,4 +1,6 @@
 import { fetchWithRetry } from './1850-1900.js';
+import { exportTableToCSV, exportTableToHTML } from './export-utils.js';
+
 export function getAllSculptures() {
     const dropdown = document.getElementById("queryDropdown");
     const selectedArtist = dropdown.value;
@@ -173,8 +175,7 @@ async function displaySculptureResults(data) {
     resultsContainer.innerHTML = ''; // Clear previous results
 
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
+    table.classList.add('data-table');
 
     // Add headers for the table
     const headerRow = document.createElement('tr');
@@ -182,10 +183,6 @@ async function displaySculptureResults(data) {
     headers.forEach(headerText => {
         const header = document.createElement('th');
         header.textContent = headerText;
-        header.style.border = '1px solid #ddd';
-        header.style.padding = '8px';
-        header.style.textAlign = 'left';
-        header.style.backgroundColor = '#f2f2f2';
         headerRow.appendChild(header);
     });
     table.appendChild(headerRow);
@@ -198,7 +195,6 @@ async function displaySculptureResults(data) {
         noResultsCell.colSpan = headers.length;
         noResultsCell.textContent = 'No results found.';
         noResultsCell.style.textAlign = 'center';
-        noResultsCell.style.padding = '8px';
         noResultsRow.appendChild(noResultsCell);
         table.appendChild(noResultsRow);
     } else {
@@ -212,8 +208,6 @@ async function displaySculptureResults(data) {
 
                     // Image column
                     const imgCell = document.createElement('td');
-                    imgCell.style.border = '1px solid #ddd';
-                    imgCell.style.padding = '8px';
                     const img = document.createElement('img');
                     img.src = item.image.value;
                     img.alt = title;
@@ -229,8 +223,6 @@ async function displaySculptureResults(data) {
 
                     // Title column
                     const titleCell = document.createElement('td');
-                    titleCell.style.border = '1px solid #ddd';
-                    titleCell.style.padding = '8px';
                     const link = document.createElement('a');
                     const sculptureId = item.sculpture.value.split('/').pop();
                     link.href = `https://www.wikidata.org/wiki/${sculptureId}`;
@@ -242,8 +234,6 @@ async function displaySculptureResults(data) {
 
                     // Creation Date column
                     const creationDateCell = document.createElement('td');
-                    creationDateCell.style.border = '1px solid #ddd';
-                    creationDateCell.style.padding = '8px';
                     creationDateCell.textContent = item.creationDate ? item.creationDate.value : 'N/A';
                     row.appendChild(creationDateCell);
 
@@ -282,39 +272,7 @@ export function closeModal() {
         modal.classList.remove('fade-out');
     }, 600); // Match the duration of the fade-out animation
 }
-export function exportTableToCSV(filename) {
-    const csv = [];
-    const rows = document.querySelectorAll("#results table tr");
-
-    for (const row of rows) {
-        const cols = row.querySelectorAll("td, th");
-        const rowData = [];
-        for (const col of cols) {
-            rowData.push(col.innerText);
-        }
-        csv.push(rowData.join(","));
-    }
-
-    const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
-    const downloadLink = document.createElement("a");
-    downloadLink.download = filename;
-    downloadLink.href = window.URL.createObjectURL(csvFile);
-    downloadLink.style.display = "none";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-}
-export function exportTableToHTML(filename) {
-    const table = document.querySelector("#results table").outerHTML;
-    const htmlFile = new Blob([table], { type: "text/html" });
-    const downloadLink = document.createElement("a");
-    downloadLink.download = filename;
-    downloadLink.href = window.URL.createObjectURL(htmlFile);
-    downloadLink.style.display = "none";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-}
+export { exportTableToCSV, exportTableToHTML };
 export async function getSculpturesByPeriod(startDate, endDate) {
     const endpointUrl = "https://query.wikidata.org/sparql";
 
