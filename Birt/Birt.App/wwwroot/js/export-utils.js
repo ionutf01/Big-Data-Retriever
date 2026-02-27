@@ -1,5 +1,6 @@
 export function exportTableToCSV(filename, tableId = "results") {
     const csv = [];
+    // Supports both <div id="results"><table>...</table></div> and <table id="tableId">...</table> patterns
     const rows = document.querySelectorAll(`#${tableId} table tr, table#${tableId} tr`);
 
     for (const row of rows) {
